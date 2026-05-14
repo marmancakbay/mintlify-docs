@@ -1,0 +1,237 @@
+---
+title: "MCP Endpoint"
+api: "POST /api/v1/agent/{user_id}/mcp"
+description: "Model Context Protocol endpoint for external tool discovery and execution."
+---
+
+Provides a JSON-RPC compatible [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) endpoint for discovering and invoking your user's agents and pipelines as tools. This enables external AI systems, IDE extensions, and automation platforms to interact with your DEHA ONE agents programmatically using the standard MCP protocol.
+
+## Authentication
+
+Requires an API key in the `Authorization` header with the `Bearer` prefix.
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body (JSON-RPC 2.0)
+
+<ParamField body="jsonrpc" type="string" required>
+  JSON-RPC version. Must be `"2.0"`.
+</ParamField>
+<ParamField body="id" type="integer" required>
+  Request identifier. Used to correlate responses.
+</ParamField>
+<ParamField body="method" type="string" required>
+  MCP method to invoke. See supported methods below.
+</ParamField>
+<ParamField body="params" type="object">
+  Method parameters. Required for `tools/call`.
+</ParamField>
+
+## Supported Methods
+
+| Method | Description |
+|--------|-------------|
+| `tools/list` | Lists all available agents and pipelines as MCP-compatible tools |
+| `tools/call` | Invokes a specific agent or pipeline by tool name |
+| `ping` | Health check -- verifies endpoint connectivity |
+
+### Tool Naming Convention
+
+Your agents and pipelines are automatically exposed as MCP tools with the following naming pattern:
+
+- **Agent tools**: `invoke_{agent_name}` (e.g., `invoke_support_agent`)
+- **Pipeline tools**: `run_{pipeline_name}` (e.g., `run_sentiment_routing`)
+
+### Tool Input Schema
+
+All tools accept the following input parameters:
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `message` | string | Yes | The message or input for the agent/pipeline |
+| `session_id` | string | No | Session identifier for conversation continuity |
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Invalid or missing API key |
+| `403` | API key user does not match URL user |
+| `429` | Rate limit exceeded |
+
+JSON-RPC errors are returned in the standard format:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32601,
+    "message": "Method not found"
+  }
+}
+```
+
+<CodeGroup>
+```bash cURL (List Tools)
+curl -X POST "https://api.deha.one/api/v1/agent/acme_corp/mcp" \
+  -H "Authorization: Bearer dh_live_a1b2c3d4e5f6..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/list"
+  }'
+```
+
+```bash cURL (Call Tool)
+curl -X POST "https://api.deha.one/api/v1/agent/acme_corp/mcp" \
+  -H "Authorization: Bearer dh_live_a1b2c3d4e5f6..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/call",
+    "params": {
+      "name": "invoke_support_agent",
+      "arguments": {"message": "Check order status for #12345"}
+    }
+  }'
+```
+
+```python Python
+import httpx
+
+# List available tools
+response = httpx.post(
+    "https://api.deha.one/api/v1/agent/acme_corp/mcp",
+    headers={"Authorization": "Bearer dh_live_a1b2c3d4e5f6..."},
+    json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"}
+)
+
+# Call a tool
+response = httpx.post(
+    "https://api.deha.one/api/v1/agent/acme_corp/mcp",
+    headers={"Authorization": "Bearer dh_live_a1b2c3d4e5f6..."},
+    json={
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/call",
+        "params": {
+            "name": "invoke_support_agent",
+            "arguments": {"message": "Check order status for #12345"}
+        }
+    }
+)
+```
+
+```javascript Node.js
+// List available tools
+const listResponse = await fetch(
+  "https://api.deha.one/api/v1/agent/acme_corp/mcp",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer dh_live_a1b2c3d4e5f6...",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "tools/list"
+    })
+  }
+);
+
+// Call a tool
+const callResponse = await fetch(
+  "https://api.deha.one/api/v1/agent/acme_corp/mcp",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer dh_live_a1b2c3d4e5f6...",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "tools/call",
+      params: {
+        name: "invoke_support_agent",
+        arguments: { message: "Check order status for #12345" }
+      }
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response (tools/list)
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tools": [
+      {
+        "name": "invoke_support_agent",
+        "description": "Invoke support_agent agent",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "The message to send to the agent"
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Optional session identifier for conversation continuity"
+            }
+          },
+          "required": ["message"]
+        }
+      },
+      {
+        "name": "run_sentiment_routing",
+        "description": "Run sentiment_routing pipeline",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "The input message for the pipeline"
+            },
+            "session_id": {
+              "type": "string",
+              "description": "Optional session identifier"
+            }
+          },
+          "required": ["message"]
+        }
+      }
+    ]
+  }
+}
+```
+
+```json Example Response (tools/call)
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Order #12345 is currently in transit and expected to arrive on March 18th."
+      }
+    ]
+  }
+}
+```
+
+<Tip>
+Use the MCP endpoint to integrate DEHA ONE agents into Claude Desktop, VS Code extensions, or any MCP-compatible client. Configure the endpoint URL and API key in your MCP client settings.
+</Tip>

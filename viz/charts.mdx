@@ -1,0 +1,125 @@
+---
+title: "Charts"
+sidebarTitle: "Charts"
+description: "Generate single charts from natural language or hand-authored specs. PNG, SVG, PDF, or live HTML."
+icon: "chart-line"
+---
+
+A chart is a single visual — one bar chart, one line chart, one scatter plot. For multi-widget views, see [Dashboards](/viz/dashboards).
+
+---
+
+## Three ways to create a chart
+
+<Tabs>
+  <Tab title="Plain English">
+    Describe what you want and the platform builds the spec:
+
+    > "Plot monthly active users for 2025 as a line chart with a 3-month moving average, in our brand colors."
+
+    Behind the scenes the platform:
+
+    1. Resolves your data source via the Query Engine
+    2. Generates a Vega-Lite spec
+    3. Validates field types and aggregations
+    4. Renders the result
+    5. Returns both the chart and the spec, so you can tweak or save it
+
+    Best for: prototyping, ad-hoc analysis, agent-generated visuals.
+  </Tab>
+
+  <Tab title="Vega-Lite spec">
+    Hand-author a [Vega-Lite](https://vega.github.io/vega-lite/) JSON spec for full control:
+
+    ```json
+    {
+      "data": { "name": "monthly_active_users" },
+      "mark": "line",
+      "encoding": {
+        "x": { "field": "month", "type": "temporal" },
+        "y": { "field": "users",  "type": "quantitative" }
+      }
+    }
+    ```
+
+    Vega-Lite is the platform's native spec format. Best for: precise control, version-controlled chart definitions.
+  </Tab>
+
+  <Tab title="Plotly spec">
+    Hand authoring a Plotly figure works too — the renderer normalizes it to Vega-Lite under the hood:
+
+    ```python
+    fig = px.line(df, x="month", y="users", title="Monthly Active Users")
+    spec = fig.to_dict()
+    ```
+
+    Best for: teams who already have a Plotly codebase.
+  </Tab>
+</Tabs>
+
+---
+
+## Chart types supported
+
+Any chart Vega-Lite supports renders out of the box. The most common:
+
+| Family | Examples |
+|---|---|
+| **Comparison** | Bar, grouped bar, stacked bar, radial bar |
+| **Trend** | Line, area, stacked area, step |
+| **Distribution** | Histogram, density, box plot, violin |
+| **Correlation** | Scatter, bubble, heatmap |
+| **Composition** | Pie, donut, treemap, sunburst |
+| **Spatial** | Choropleth (with geometry data), point map |
+| **Statistical** | Error bars, confidence intervals, regression fit |
+
+---
+
+## Output formats
+
+| Format | Use case |
+|---|---|
+| **PNG** | Email attachments, Slack messages, static reports |
+| **SVG** | Web embeds where you want crisp scaling |
+| **PDF** | Single-page exports, slide decks |
+| **HTML (Vega embed)** | Interactive in-browser rendering with tooltips and zoom |
+
+You request the format you need; the platform renders and caches it.
+
+---
+
+## Color, theme, and branding
+
+You can configure per-user defaults that apply to every chart generated from plain English:
+
+- **Brand color palette** — used for categorical encodings
+- **Diverging palette** — used for sequential and diverging scales
+- **Font family** — used for titles, labels, and annotations
+- **Logo / watermark** — optional, applied to PDF exports
+
+Hand-authored specs always win over defaults — you can override anything per chart.
+
+---
+
+## Saving and embedding
+
+A chart you save gets a unique ID, a slug, and a versioned definition stored in the Config Service. From there:
+
+- **Embed**: `https://embed.deha.one/c/{chart_id}?token=<hs256>` — signed, expiring, revokable
+- **Reference from an agent**: agents can fetch a saved chart by name and include it in a response
+- **Re-render programmatically**: hit the renderer API with the saved chart ID and a format
+- **Diff across versions**: see exactly what changed between any two versions
+
+---
+
+## A few patterns
+
+**Inline in an agent reply.** Your agent answers a question and embeds a chart of the underlying data:
+
+> "Sales for the last quarter are up 18%. Here is the breakdown: [chart]"
+
+**Auto-attached to alerts.** When a forecast threshold trips, the alert message includes a chart of the forecast and the actuals.
+
+**Slack reports.** A daily pipeline renders a chart of yesterday's metrics and posts it to a Slack channel as a PNG.
+
+**Customer-facing dashboards.** Embed live charts in your own product using signed iframe tokens — no data leaves the platform, no SDK to install.

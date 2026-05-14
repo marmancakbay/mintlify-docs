@@ -1,0 +1,154 @@
+---
+title: "Search and Retrieval"
+sidebarTitle: "Search & Retrieval"
+description: "Understand how your AI agents find and use information from your knowledge base."
+icon: "magnifying-glass"
+---
+
+When a customer asks your AI agent a question, the agent automatically searches your knowledge base to find the most relevant information. This page explains how that process works and how you can improve search quality.
+
+---
+
+## How Your Agent Finds Answers
+
+When a customer asks a question, here is what happens behind the scenes:
+
+<Steps>
+  <Step title="Agent recognizes the need for information">
+    Your agent reads the customer's question and decides whether it needs to look something up. For factual questions ("What is your return policy?"), it will search the knowledge base. For general conversation ("Hello!"), it will not.
+  </Step>
+  <Step title="Question is embedded">
+    The question is converted into a high-dimensional vector using the embedding model configured for the collection (OpenAI `text-embedding-3-small`, Google embeddings, HuggingFace local models, or your own).
+  </Step>
+  <Step title="Vector search retrieves candidates">
+    The vector is compared against every chunk in the collection. The top-N most similar chunks are returned as candidates.
+  </Step>
+  <Step title="Reranker re-scores the candidates">
+    A cross-encoder reranker (`ms-marco-MiniLM-L-6-v2`) reads each candidate together with the question and produces a more accurate relevance score. This typically lifts top-1 accuracy by 15-30% over vector similarity alone.
+  </Step>
+  <Step title="Agent crafts a response">
+    Your agent reads the top-scored chunks and uses them to write an answer. The response can include citations back to the source documents so users see where the information came from.
+  </Step>
+</Steps>
+
+This entire process takes a few hundred milliseconds and is completely automatic.
+
+---
+
+## Choosing an embedding model
+
+Different models suit different content. You can configure per-collection embedding models from the dashboard.
+
+| Provider | Model | Best for |
+|---|---|---|
+| **OpenAI** | `text-embedding-3-small` | General-purpose English/multilingual, fast |
+| **OpenAI** | `text-embedding-3-large` | Higher quality, slower, more expensive |
+| **Google** | `text-embedding-004` | Multilingual, free tier available |
+| **HuggingFace** | `sentence-transformers/all-MiniLM-L6-v2` | Local, fast, no API cost |
+| **HuggingFace** | `BAAI/bge-large-en` | Top-of-leaderboard quality (local) |
+| **Custom** | Anything in the embedding marketplace | Bring your own model |
+
+<Info>
+  Switching embedding models on an existing collection triggers a **blue-green re-index** — the platform builds the new index in the background, runs a comparison, and only flips reads once the new index is healthy. Zero downtime, zero stale results.
+</Info>
+
+---
+
+## Understanding Search Quality
+
+Search quality determines how well your agent can find the right information. Here is what "good" and "poor" search quality looks like:
+
+| | Good Search Quality | Poor Search Quality |
+|---|---|---|
+| **Documents** | Clear, well-organized content | Messy, unstructured content |
+| **Titles** | Descriptive file names | Generic names like "doc1.pdf" |
+| **Collections** | Logically organized | Everything in one huge collection |
+| **Results** | Agent finds the right answer quickly | Agent gives vague or incorrect answers |
+
+---
+
+## Tips for Better Search Results
+
+### Write clear, focused content
+
+Your agent can only find information that exists in your documents. Make sure your documents:
+
+- Cover topics clearly and directly
+- Use the same terminology your customers use
+- Avoid jargon unless your customers use it too
+
+### Use descriptive document titles
+
+Name your files with clear, descriptive titles. "Employee Benefits Guide 2025" is much more useful than "HR_doc_v3_final_REVISED".
+
+### Organize documents into focused collections
+
+Group related documents together. If your "Company Knowledge" collection contains everything from HR policies to product specs, consider splitting it into focused collections like "HR Policies" and "Product Documentation".
+
+### Keep documents up to date
+
+Outdated documents lead to outdated answers. When policies change or products are updated, re-upload the latest versions. DEHA ONE automatically handles the update without creating duplicates.
+
+### Break up large documents
+
+A 100-page PDF is harder to search effectively than 10 focused documents of 10 pages each. When possible, split large documents into logical sections.
+
+---
+
+## Testing Search from the Dashboard
+
+You can test how well your knowledge base answers questions directly from the dashboard:
+
+1. Go to **Knowledge Base** in the dashboard
+2. Select a collection
+3. Use the **Search** feature to type a question
+4. Review the results -- you will see the matching document sections and how relevant they are
+
+This is a great way to verify that your documents are being found correctly before connecting them to a customer-facing agent.
+
+<Tip>
+  Test with real customer questions. Look through your support history for common questions and try them in the search tool. If the right answers do not come up, you may need to add or improve your documents.
+</Tip>
+
+---
+
+## Connecting Your Knowledge Base to Agents
+
+To enable an agent to use your knowledge base:
+
+1. Go to **Agents** in the dashboard
+2. Select the agent you want to configure
+3. Under **Knowledge Base**, enable access
+4. Choose which collections the agent should search
+
+You can give different agents access to different collections. For example:
+
+- **Customer support agent** -- Searches "Product Documentation" and "FAQs"
+- **HR assistant** -- Searches "HR Policies" and "Employee Benefits"
+- **Sales bot** -- Searches "Product Catalog" and "Pricing"
+
+<Info>
+  Agents can search across multiple collections at once. You do not need to put all your documents in a single collection for an agent to find them.
+</Info>
+
+---
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="How quickly are new documents available for search?">
+    Documents are usually available within a few seconds of processing completing. You can check the processing status in the dashboard.
+  </Accordion>
+  <Accordion title="What happens if my agent cannot find relevant information?">
+    If no relevant documents are found, your agent will respond based on its general knowledge and instructions. It will not make up information from documents that do not exist in your knowledge base.
+  </Accordion>
+  <Accordion title="Can I control how many documents my agent looks at?">
+    Yes. You can configure how many relevant sections the agent retrieves per search. The default is well-tuned for most use cases, but you can adjust it in the agent settings.
+  </Accordion>
+  <Accordion title="Does the agent always search the knowledge base?">
+    No. Your agent is smart enough to decide when a search is needed. For greetings, follow-up questions where it already has context, or topics outside the knowledge base scope, it will skip the search.
+  </Accordion>
+  <Accordion title="Can different agents search different collections?">
+    Yes. Each agent can be configured with access to specific collections. This lets you control exactly what information each agent can reference.
+  </Accordion>
+</AccordionGroup>

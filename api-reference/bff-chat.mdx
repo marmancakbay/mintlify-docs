@@ -1,0 +1,151 @@
+---
+title: "Chat"
+api: "POST https://api.deha.one/api/v1/chat"
+description: "Send a message to an AI agent and receive a synchronous response."
+---
+
+Sends a message to a named AI agent and returns the response synchronously. The agent's system prompt and model are loaded from your user's configuration. For asynchronous, graph-aware chat with pipeline support, use the [Graph Chat](#graph-chat) endpoint below.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="agent_name" type="string" required>
+  Name of the agent to chat with, as defined in your user configuration.
+</ParamField>
+<ParamField body="message" type="string" required>
+  The user's message to send to the agent.
+</ParamField>
+<ParamField body="user_id" type="string">
+  Optional user identifier for session tracking.
+</ParamField>
+
+## Response
+
+<ResponseField name="reply" type="string">
+  The agent's response text.
+</ResponseField>
+<ResponseField name="agent" type="string">
+  Agent name that generated the response.
+</ResponseField>
+<ResponseField name="model" type="string">
+  LLM model used for generation.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing or invalid authentication |
+| 502 | LLM proxy error |
+| 504 | LLM request timeout (60 seconds) |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/api/v1/chat" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "agent_name": "support_agent",
+    "message": "How can I help you?"
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/api/v1/chat",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "agent_name": "support_agent",
+        "message": "How can I help you?"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/chat",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      agent_name: "support_agent",
+      message: "How can I help you?"
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "reply": "I can assist you with order tracking, returns, and product information.",
+  "agent": "support_agent",
+  "model": "gpt-4o"
+}
+```
+
+---
+
+## Graph Chat
+
+`POST https://api.deha.one/api/v1/chat/graph`
+
+Publishes a message for graph-aware processing. Supports two modes: direct agent invocation (bypasses pipelines) or pipeline-based routing. Responses are delivered asynchronously via [WebSocket](/api-reference/bff-websocket).
+
+### Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="message" type="string" required>
+  The user's message.
+</ParamField>
+<ParamField body="user_id" type="string">
+  User identifier for session tracking.
+</ParamField>
+<ParamField body="session_id" type="string">
+  Session identifier for conversation continuity. Auto-generated if omitted.
+</ParamField>
+<ParamField body="agent_name" type="string">
+  Agent name for direct agent mode (bypasses pipeline matching).
+</ParamField>
+<ParamField body="pipeline_name" type="string">
+  Pipeline name for pipeline mode (uses pipeline matching).
+</ParamField>
+<ParamField body="pipeline_params" type="object">
+  Additional parameters passed to the pipeline context.
+</ParamField>
+
+### Response
+
+```json
+{
+  "session_id": "webchat-abc123",
+  "trace_id": "trc-1710000000-a1b2c3",
+  "status": "published"
+}
+```

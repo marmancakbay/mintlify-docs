@@ -1,0 +1,106 @@
+---
+title: "Connector Status"
+api: "GET https://api.deha.one/connectors"
+description: "List all connectors and their sync status for your user."
+---
+
+Returns a list of all configured connectors for your user, including their type, sync mode, enabled status, and last sync information.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request completed successfully.
+</ResponseField>
+<ResponseField name="data.connectors" type="array">
+  Array of connector objects.
+</ResponseField>
+
+## Connector Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Connector name |
+| `connector_type` | string | Type: `rest_api`, `postgresql`, `mysql`, `file_storage`, `csv`, `excel`, `webhook` |
+| `sync_mode` | string | Sync mode: `full_refresh`, `incremental`, or `cdc` |
+| `enabled` | boolean | Whether the connector is active |
+| `schedule_ref` | string | Reference to the associated schedule (if any) |
+| `schema_ref` | string | Reference to the associated schema definition (if any) |
+| `last_sync_at` | string | ISO 8601 timestamp of last sync |
+| `last_sync_records` | integer | Number of records in the last sync |
+| `last_status` | string | Status of last sync: `success` or `error` |
+| `last_error` | string | Error message from last sync (null if successful) |
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing or invalid authentication |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/connectors?user_id=acme_corp" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/connectors",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    params={"user_id": "acme_corp"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/connectors?user_id=acme_corp",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "connectors": [
+      {
+        "name": "shipment_api",
+        "connector_type": "rest_api",
+        "sync_mode": "incremental",
+        "enabled": true,
+        "schedule_ref": "every_15m",
+        "last_sync_at": "2026-03-15T10:30:00+00:00",
+        "last_sync_records": 150,
+        "last_status": "success",
+        "last_error": null
+      }
+    ]
+  }
+}
+```

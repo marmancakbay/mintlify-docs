@@ -1,0 +1,159 @@
+---
+title: "Extract Data"
+api: "POST https://api.deha.one/connectors/extract"
+description: "Extract data from a configured external data source."
+---
+
+Triggers a data extraction operation from a configured connector. Supports REST APIs, databases (PostgreSQL, MySQL), files (CSV, Excel, JSON, Parquet), and webhooks. The connector uses incremental or full-refresh sync modes based on its configuration.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="connector_name" type="string" required>
+  Name of the connector as defined in your user configuration.
+</ParamField>
+<ParamField body="target_entity" type="string">
+  Target table or endpoint to extract from. Defaults to the connector's configured default entity.
+</ParamField>
+<ParamField body="filters" type="object">
+  Key-value filter parameters passed to the connector for server-side filtering.
+</ParamField>
+<ParamField body="limit" type="integer">
+  Maximum records to extract. Maximum allowed value is 100,000.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the extraction completed successfully.
+</ResponseField>
+<ResponseField name="data.status" type="string">
+  Extraction status: `success` or `error`.
+</ResponseField>
+<ResponseField name="data.records" type="array">
+  Array of extracted data records as JSON objects.
+</ResponseField>
+<ResponseField name="data.record_count" type="integer">
+  Number of records extracted.
+</ResponseField>
+<ResponseField name="data.cursor" type="string">
+  Cursor value for the next incremental sync. Use this to track sync progress.
+</ResponseField>
+<ResponseField name="data.has_more" type="boolean">
+  Whether more data is available beyond the current extraction.
+</ResponseField>
+<ResponseField name="data.connector_type" type="string">
+  Type of connector used: `rest_api`, `postgresql`, `mysql`, `file_storage`, `csv`, `excel`, or `webhook`.
+</ResponseField>
+<ResponseField name="data.sync_mode" type="string">
+  Sync mode used: `full_refresh`, `incremental`, or `cdc`.
+</ResponseField>
+<ResponseField name="data.duration_ms" type="number">
+  Extraction duration in milliseconds.
+</ResponseField>
+<ResponseField name="error" type="string">
+  Error message if extraction failed. `null` on success.
+</ResponseField>
+
+## Sync Modes
+
+| Mode | Description |
+|------|-------------|
+| `full_refresh` | Extracts all records on every run |
+| `incremental` | Only extracts records newer than the last sync cursor |
+| `cdc` | Change Data Capture: similar to incremental using a timestamp column |
+
+## Credit Cost
+
+Each extraction consumes **3 credits**.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Connector not found or invalid configuration |
+| 401 | Missing or invalid authentication |
+| 500 | Extraction execution error |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/connectors/extract" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "connector_name": "shipment_api",
+    "target_entity": "shipments",
+    "limit": 1000
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/connectors/extract",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "connector_name": "shipment_api",
+        "target_entity": "shipments",
+        "limit": 1000
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/connectors/extract",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      connector_name: "shipment_api",
+      target_entity: "shipments",
+      limit: 1000
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "status": "success",
+    "records": [
+      {"id": 1, "status": "active", "destination": "Istanbul"}
+    ],
+    "record_count": 150,
+    "cursor": "2026-03-15T10:30:00Z",
+    "has_more": true,
+    "connector_type": "rest_api",
+    "sync_mode": "incremental",
+    "duration_ms": 1250.5
+  },
+  "error": null
+}
+```

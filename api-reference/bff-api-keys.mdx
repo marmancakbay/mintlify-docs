@@ -1,0 +1,141 @@
+---
+title: "API Keys"
+api: "GET https://api.deha.one/api/v1/api-keys"
+description: "Manage user-level API keys for programmatic access."
+---
+
+Create, list, delete, and rotate user-level API keys. API keys enable programmatic access to the platform via the [Agent Invoke](/api-reference/gateway-agent-invoke) and [MCP](/api-reference/gateway-mcp-endpoint) endpoints. Maximum 5 keys per user.
+
+Requires `owner` or `admin` role.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField header="X-User-Role" type="string" required>
+  Your role (`owner` or `admin` required).
+</ParamField>
+
+## List Keys
+
+`GET https://api.deha.one/api/v1/api-keys`
+
+Returns all API keys for the user with masked values, sorted newest-first.
+
+```json Example Response
+{
+  "keys": [
+    {
+      "key_id": "abc123...",
+      "label": "Production API Key",
+      "prefix": "dh_live_abc12345...",
+      "created_at": "2026-03-15T10:00:00Z",
+      "last_used_at": null,
+      "rate_limit": 60
+    }
+  ]
+}
+```
+
+---
+
+## Create Key
+
+`POST https://api.deha.one/api/v1/api-keys`
+
+<ParamField body="label" type="string" required>
+  Human-readable label for the key.
+</ParamField>
+
+<Warning>
+The plaintext API key is shown only once in the response. Store it securely immediately -- it cannot be retrieved again.
+</Warning>
+
+```json Example Response
+{
+  "api_key": "dh_live_a1b2c3d4e5f6...",
+  "key_id": "sha256_hash_value",
+  "label": "Production API Key"
+}
+```
+
+---
+
+## Delete Key
+
+`DELETE https://api.deha.one/api/v1/api-keys/{key_id}`
+
+Validates user ownership before deletion.
+
+---
+
+## Rotate Key
+
+`POST https://api.deha.one/api/v1/api-keys/{key_id}/rotate`
+
+Deletes the old key and creates a new one with the same label. Returns the new plaintext key.
+
+## Key Format
+
+API keys follow the format `dh_live_` followed by 32 hexadecimal characters. Default rate limit is 60 requests per minute.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing authentication headers |
+| 403 | Admin or owner role required |
+| 404 | Key not found |
+| 409 | Maximum 5 keys per user reached |
+| 500 | Failed to create or delete key |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/api/v1/api-keys" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "X-User-Id: user_123" \
+  -H "X-User-Role: admin" \
+  -H "Content-Type: application/json" \
+  -d '{"label": "Production API Key"}'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/api/v1/api-keys",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp",
+        "X-User-Id": "user_123",
+        "X-User-Role": "admin"
+    },
+    json={"label": "Production API Key"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/api-keys",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "X-User-Id": "user_123",
+      "X-User-Role": "admin",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ label: "Production API Key" })
+  }
+);
+```
+</CodeGroup>

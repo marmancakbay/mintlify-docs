@@ -1,0 +1,189 @@
+---
+title: "Meet DEHA"
+sidebarTitle: "Overview"
+description: "Your AI-powered assistant that builds agents, automations, and integrations from a simple conversation. Just describe what you need -- DEHA handles the rest."
+icon: "wand-magic-sparkles"
+---
+
+DEHA is the AI assistant at the heart of DEHA ONE. Instead of navigating complex settings or writing code, you simply tell DEHA what you want in plain language. It understands your business needs, builds the solution, tests it, and makes sure everything works -- all in a single conversation.
+
+**Think of DEHA as your personal platform engineer.** It can create customer support bots, set up data pipelines, connect your tools, and design multi-agent workflows -- without you ever touching a line of code.
+
+---
+
+## What can DEHA do?
+
+<CardGroup cols={2}>
+  <Card title="Build AI agents" icon="robot">
+    Create intelligent agents that handle customer support, answer questions, analyze data, or automate tasks -- deployed to WhatsApp, Telegram, Slack, Email, or Web in minutes.
+  </Card>
+  <Card title="Set up automations & pipelines" icon="gears">
+    Design 27-step pipelines that extract data, transform, optimize, analyze, scrape the web, or generate reports -- on schedules, events, or webhooks.
+  </Card>
+  <Card title="Connect your tools" icon="plug">
+    Integrate your CRM, helpdesk, databases, analytics platforms, IoT devices, and any REST API. DEHA configures connections, vaults credentials, and exposes them as pipeline endpoints.
+  </Card>
+  <Card title="Answer platform questions" icon="circle-question">
+    "What do I have?", "How much am I spending?", "Why did this pipeline fail yesterday?" -- DEHA reads your user inventory and answers in plain English.
+  </Card>
+  <Card title="Test, judge, and self-heal" icon="circle-check">
+    Every solution is automatically tested. A 6-dimensional judge scores quality. If something fails, the **Smart Healer** auto-fixes using 7 repair strategies and a learned healing memory.
+  </Card>
+  <Card title="Iterate with you" icon="comments">
+    Refine your solution through conversation. Ask DEHA to add features, change behavior, or fix issues -- it remembers your context across the session and builds on previous work.
+  </Card>
+  <Card title="Stay safe with approvals" icon="shield-check">
+    DEHA shows a plan with a diff and a risk assessment before making changes. You review, approve, modify, or reject. Auto-rollback on failure.
+  </Card>
+  <Card title="Explain your configs" icon="book-open-cover">
+    Give DEHA an agent or pipeline name and ask "what does this do?" -- it generates a plain-English explanation of the YAML.
+  </Card>
+</CardGroup>
+
+---
+
+## How DEHA is built
+
+Under the hood, DEHA is a **multi-agent team** orchestrated by a single brain.
+
+| Component | Role |
+|---|---|
+| **Cortex** | The router and brain. Parses intent, decomposes the request, picks which sub-agent(s) to engage, and synthesizes the final reply. |
+| **Commander** | Handles configuration changes: create / update / delete agents, pipelines, routes, channels, vault entries. Validates against schemas, applies atomically. |
+| **Analyst** | Handles data queries: text-to-SQL, profiling, ML, anomaly, forecasting -- anything that reads or computes over your data. |
+| **Communicator** | Handles platform Q&A: feature explanations, credit usage, costs, status, what-do-I-have. |
+| **Smart Healer** | Owns its own LLM call. When tests fail, applies repair strategies (rephrase prompts, adjust tools, split steps, retry with backoff, etc.) and remembers what worked. |
+| **Judge** | Scores every response on 6 dimensions: relevance, safety, accuracy, compliance, performance, bias. |
+
+You only ever talk to one assistant. The orchestration is invisible.
+
+---
+
+## See DEHA in action
+
+Here is what a typical conversation with DEHA looks like:
+
+<Steps>
+  <Step title="You describe what you need">
+    Tell DEHA what you want to build in your own words. No special syntax required.
+
+    > **You:** "I need a customer support bot for our WhatsApp channel. It should be able to look up order status using our Shopify API and escalate to a human agent when the customer is frustrated."
+  </Step>
+  <Step title="DEHA presents a plan">
+    DEHA analyzes your request, considers your existing setup, and creates a clear plan.
+
+    > **DEHA:** "Here's what I'll build for you:
+    >
+    > 1. A customer support agent connected to your WhatsApp channel
+    > 2. Integration with your Shopify API for order lookups
+    > 3. Automatic escalation to your support team when frustration is detected
+    >
+    > Risk: Low -- this creates new components without affecting existing ones.
+    >
+    > Shall I proceed?"
+  </Step>
+  <Step title="You approve (or adjust)">
+    Review the plan and give the green light, or ask for changes before execution.
+
+    > **You:** "Looks good, but also add the ability to process returns."
+    >
+    > **DEHA:** "Updated the plan to include return processing via Shopify. Ready to proceed?"
+    >
+    > **You:** "Yes, go ahead."
+  </Step>
+  <Step title="DEHA builds, tests, and delivers">
+    DEHA creates your solution, runs automated tests, and confirms everything works.
+
+    > **DEHA:** "All done! Your customer support bot is live on WhatsApp. Here's what I built:
+    >
+    > - Support agent with order lookup and return processing
+    > - Shopify API integration (order status + returns)
+    > - Automatic escalation when frustration is detected
+    >
+    > I tested the agent with sample conversations and everything passed. Your customers can start messaging now."
+  </Step>
+</Steps>
+
+---
+
+## Example conversations
+
+<Tabs>
+  <Tab title="Build a support bot">
+    > **You:** Create a customer support bot that answers questions about our products and can look up order status.
+    >
+    > **DEHA:** I'll create a support agent with product knowledge and order lookup capabilities. It will be available on all your active channels. Here's the plan...
+    >
+    > **You:** Can it also handle returns?
+    >
+    > **DEHA:** Absolutely. I'll add return processing to the agent. It will walk customers through the return steps and create a return request through your API.
+  </Tab>
+  <Tab title="Set up a daily report">
+    > **You:** I want a daily sales report sent to my email every morning at 8 AM.
+    >
+    > **DEHA:** I'll set up a pipeline that pulls your sales data, runs a summary analysis, and emails the report to you at 8 AM every day. Want me to include charts and trend comparisons?
+    >
+    > **You:** Yes, include week-over-week comparisons.
+    >
+    > **DEHA:** Updated. The report will include daily totals, top products, and week-over-week trend analysis. Shall I proceed?
+  </Tab>
+  <Tab title="Connect a CRM">
+    > **You:** Connect our HubSpot CRM so agents can look up customer profiles and create tickets.
+    >
+    > **DEHA:** I'll set up the HubSpot integration with contact lookup and ticket creation. Once connected, any of your agents can use these capabilities. I just need your HubSpot API key to get started.
+    >
+    > **You:** I've added the API key. Go ahead.
+    >
+    > **DEHA:** Done! HubSpot is connected. I tested the connection -- contact lookup and ticket creation are both working. You can now add these tools to any of your agents.
+  </Tab>
+  <Tab title="Multi-agent team">
+    > **You:** I want a team of agents: one for general questions, one for billing issues, and one for technical support. Route customers to the right one automatically.
+    >
+    > **DEHA:** I'll create a smart routing system with three specialist agents and an orchestrator that automatically detects the topic and delegates to the right specialist. Here's the plan...
+  </Tab>
+</Tabs>
+
+---
+
+## How DEHA keeps things safe
+
+<AccordionGroup>
+  <Accordion title="Always shows a plan first">
+    DEHA never makes changes without your approval. Every request produces a clear plan with a summary, risk assessment, and rollback strategy. You decide when to proceed.
+  </Accordion>
+  <Accordion title="Automatic testing">
+    After building your solution, DEHA runs automated tests to verify everything works correctly. You get a clear pass or fail result with details.
+  </Accordion>
+  <Accordion title="Self-healing">
+    If a test reveals an issue, DEHA automatically diagnoses the problem and attempts to fix it. You are notified of any fixes made and their outcomes.
+  </Accordion>
+  <Accordion title="Version history and rollback">
+    Every change is versioned. If you ever need to go back, DEHA can roll back to any previous version of your configuration.
+  </Accordion>
+  <Accordion title="Destructive actions require confirmation">
+    Deleting agents, pipelines, or integrations always requires your explicit confirmation -- even if you have auto-execution enabled.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Getting started
+
+DEHA is available from the DEHA ONE dashboard. Open the DEHA assistant panel and start describing what you want to build. There is no setup required -- DEHA already knows your platform, your existing agents, integrations, and data sources.
+
+<Tip>
+  Start simple. Ask DEHA to create a basic agent, then refine it in follow-up messages. DEHA remembers your conversation context and builds on previous work.
+</Tip>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Creating with DEHA" icon="comment" href="/deha/natural-language-config">
+    See detailed examples of what you can build through conversation with DEHA.
+  </Card>
+  <Card title="How DEHA Works" icon="list-check" href="/deha/plan-and-execute">
+    Learn how DEHA plans, builds, tests, and delivers your solutions.
+  </Card>
+</CardGroup>

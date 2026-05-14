@@ -1,0 +1,11 @@
+{
+  "name": "deha-docs",
+  "private": true,
+  "scripts": {
+    "dev": "mintlify dev",
+    "build": "mintlify export && mkdir -p out && cd out && unzip -o ../export.zip && rm ../export.zip"
+  },
+  "dependencies": {
+    "mintlify": "^4.0.0"
+  }
+}

@@ -1,0 +1,89 @@
+---
+title: "Knowledge Base"
+sidebarTitle: "Overview"
+description: "Give your AI agents access to your company's documents so they can answer questions accurately."
+icon: "book"
+---
+
+The Knowledge Base is your AI agent's reference library. Upload your company documents -- policies, FAQs, product guides, manuals -- and your agent will automatically use them to answer customer questions with accurate, up-to-date information.
+
+## How It Works
+
+<Steps>
+  <Step title="Upload your documents">
+    Upload files through the dashboard or API. DEHA ONE supports PDF, Word, Excel, CSV, plain text, Markdown, and HTML files.
+  </Step>
+  <Step title="DEHA ONE processes them">
+    Your documents are automatically broken into smaller sections, analyzed for meaning, and indexed so they can be searched quickly.
+  </Step>
+  <Step title="Your agent uses them">
+    When a customer asks a question, your agent searches the knowledge base, finds the most relevant information, and uses it to craft an accurate response.
+  </Step>
+</Steps>
+
+This all happens automatically. You do not need to tell your agent which document to look at or what to search for -- it figures that out on its own based on the customer's question.
+
+## What You Can Upload
+
+| Format | File Types | Notes |
+|---|---|---|
+| **Documents** | PDF, Word (.docx), PowerPoint (.pptx) | Includes scanned PDFs (OCR), tables, and figures |
+| **Spreadsheets** | Excel (.xlsx), CSV | Sheet-aware parsing, schema inference |
+| **Text files** | Plain text (.txt), Markdown (.md) | |
+| **Web content** | HTML (.html), live URLs | The platform fetches and cleans the URL for you |
+| **Structured data** | JSON (.json), JSONL (.jsonl) | Per-row vectorization with field selection |
+| **Audio (optional)** | MP3, WAV, M4A | Transcribed via Whisper before indexing |
+
+<Info>
+  Parsing is powered by IBM Docling — it handles scanned PDFs (OCR), preserves tables, captures figures, and chunks text along document structure (headings, sections, paragraphs) rather than naive fixed-size chunks. The result: better recall when an agent searches.
+</Info>
+
+## Organizing with Collections
+
+Collections let you group related documents together. Think of them as folders for your knowledge base. For example:
+
+- **Company Policies** -- HR handbook, return policy, terms of service
+- **Product Documentation** -- User guides, technical specs, release notes
+- **FAQs** -- Common questions and answers
+
+You can create as many collections as you need, or keep things simple with a single collection for all your documents.
+
+<Tip>
+  Start with one or two collections and add more as your knowledge base grows. You can always reorganize later.
+</Tip>
+
+## Connecting to Your Agents
+
+To give an agent access to your knowledge base, enable it in the agent's settings. Once enabled, the agent will automatically search your documents when it needs information to answer a question.
+
+You can also control which collections an agent can access. For example, your customer support agent might search "Product Documentation" and "FAQs", while your HR bot only searches "Company Policies".
+
+## Your Data Stays Private
+
+Every organization's knowledge base is completely isolated:
+
+- Per-user Qdrant collections with **mandatory user-id filter** on every query
+- **BYOD option**: point the knowledge base at your own Qdrant cluster — your data never sits on platform infrastructure
+- **BYOK option**: use your own embedding API keys (OpenAI, Google, etc.) — embeddings are billed to your account, not platform credits
+- Deterministic UUID5 deduplication — re-uploading the same content does not double-bill or duplicate vectors
+- Zero-downtime re-indexing: when you switch embedding models, the platform does a blue-green migration and only flips reads once the new index is healthy
+
+## Reranking for accuracy
+
+For every query, the platform pulls the top-N candidates by vector similarity, then applies a **cross-encoder reranker** (`ms-marco-MiniLM-L-6-v2`) to score them more precisely. This typically lifts top-1 accuracy by 15-30% compared to vector similarity alone. If the reranker is unavailable, the system falls back to vector similarity gracefully.
+
+## Getting Started
+
+1. **Upload a few documents** -- Start with your most frequently referenced materials (FAQs, product guides, policies)
+2. **Create a collection** -- Organize your documents into at least one collection
+3. **Enable knowledge base** on your agent -- Turn on knowledge base access in your agent's settings
+4. **Test it** -- Ask your agent questions that require information from your uploaded documents
+
+<CardGroup cols={2}>
+  <Card title="Uploading Documents" icon="file-arrow-up" href="/knowledge-base/uploading-documents">
+    Learn how to upload, organize, and manage your documents.
+  </Card>
+  <Card title="Search and Retrieval" icon="magnifying-glass" href="/knowledge-base/search-and-retrieval">
+    Understand how your agent finds and uses information from your knowledge base.
+  </Card>
+</CardGroup>

@@ -1,0 +1,86 @@
+---
+title: "Webhooks"
+description: "Signed HMAC callbacks for async pipeline and agent invocations."
+---
+
+Webhooks deliver terminal results for `invoke-async` calls without requiring the client to poll.
+
+## Declaring webhooks
+
+In your pipeline or agent YAML:
+
+```yaml
+api:
+  webhooks:
+    on_complete:
+      url: https://webhooks.acme.com/deha/pipeline-done
+      signing_secret_ref: vault://deha/webhook_secret
+      timeout_seconds: 10
+    on_error:
+      url: https://webhooks.acme.com/deha/pipeline-failed
+      signing_secret_ref: vault://deha/webhook_secret
+      timeout_seconds: 10
+```
+
+## Delivery guarantees
+
+- **Retries** — up to 3 attempts with exponential backoff (1 s → 3 s → 9 s, each with ±25 % jitter).
+- **Retryable conditions** — 5xx responses, 408, 429, and transport/timeout errors.
+- **Non-retryable** — any other 4xx / 3xx status. The message is dead-lettered.
+- **Dead letter** — permanent failures land in the `stream:bff:webhook_dlq` Redis stream.
+- **SSRF guard** — URLs are re-validated on every send (private/loopback/metadata ranges are refused even if DNS is spoofed).
+
+## Request headers
+
+| Header | Meaning |
+|--------|---------|
+| `Content-Type` | `application/json` |
+| `X-Deha-Event` | `invocation.completed` or `invocation.failed` |
+| `X-Deha-Trace-Id` | Correlates with the original invocation |
+| `X-Deha-Delivery-Id` | Unique per delivery attempt — use it for replay protection |
+| `X-Deha-Signature` | `sha256=<hex>` HMAC of the raw body (if a signing secret is configured) |
+| `X-Deha-Timestamp` | Unix seconds at signing time (if signed) |
+
+## Payload shape
+
+```json
+{
+  "event": "invocation.completed",
+  "trace_id": "trc-1745190000-...",
+  "user_id": "acme_corp",
+  "payload": {
+    "status": "completed",
+    "result": { /* terminal result or error details */ },
+    "duration_ms": 2180
+  }
+}
+```
+
+## Verifying the signature
+
+<CodeGroup>
+```python Python
+import hmac, hashlib
+
+def verify(secret: str, body: bytes, sig_header: str) -> bool:
+    expected = "sha256=" + hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, sig_header)
+```
+
+```javascript Node.js
+import { createHmac, timingSafeEqual } from "node:crypto";
+
+export function verify(secret, body, sigHeader) {
+  const expected = "sha256=" + createHmac("sha256", secret).update(body).digest("hex");
+  const a = Buffer.from(expected);
+  const b = Buffer.from(sigHeader);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+```
+</CodeGroup>
+
+Always verify before acting on a payload — rejecting unsigned or mis-signed calls keeps an attacker from replaying arbitrary invocation results into your system.
+
+## Idempotency
+
+Use `X-Deha-Delivery-Id` as the dedup key. The same `trace_id` can be delivered up to three times across retries; deliveries within the same DLQ cycle will always carry a new `delivery_id`.

@@ -1,0 +1,210 @@
+---
+title: "Scheduling"
+sidebarTitle: "Scheduling"
+description: "Run automations on a schedule -- daily reports, hourly syncs, weekly checks, or one-time tasks at a specific date and time."
+icon: "clock"
+---
+
+Not every automation needs to be triggered by a message. You can schedule automations to run at specific times -- daily, hourly, weekly, or even just once at a particular moment.
+
+---
+
+## Trigger types
+
+DEHA ONE supports eight trigger types. Pick the one that matches how your work actually starts.
+
+<CardGroup cols={2}>
+  <Card title="Cron" icon="arrows-repeat">
+    Runs on a repeating pattern using a cron expression. Perfect for daily reports, hourly checks, or weekly syncs.
+  </Card>
+  <Card title="Interval" icon="stopwatch">
+    Runs at a fixed interval (e.g., every 30 minutes). Good for frequent polling or health checks.
+  </Card>
+  <Card title="One-time (date)" icon="calendar-day">
+    Runs once at a specific date and time. Ideal for reminders, one-off tasks, or scheduled deployments.
+  </Card>
+  <Card title="Event" icon="bolt">
+    Listens to a Redis Stream (any CloudEvent) and fires when a matching event arrives. JMESPath filtering supported.
+  </Card>
+  <Card title="Data change" icon="wave-square">
+    Polls a SQL query and fires when the result changes (hash, row count, or percentage delta).
+  </Card>
+  <Card title="Threshold" icon="gauge">
+    Polls a SQL query and fires when a numeric value crosses a threshold (gt / lt / eq / gte / lte / neq).
+  </Card>
+  <Card title="Webhook" icon="webhook">
+    External system POSTs to a signed URL — HMAC-SHA256 verification, optional IP allow-list, sliding-window rate limiting.
+  </Card>
+  <Card title="Composite" icon="diagram-project">
+    AND / OR / SEQUENCE of multiple sub-triggers with a configurable timeout window.
+  </Card>
+</CardGroup>
+
+---
+
+## Common schedules
+
+Here are the most frequently used schedule patterns:
+
+| Schedule | Pattern | Description |
+| --- | --- | --- |
+| Every day at 9 AM | `0 9 * * *` | Morning report, daily summary |
+| Every weekday at 9 AM | `0 9 * * MON-FRI` | Business-day reports |
+| Every hour | `0 * * * *` | Frequent data sync |
+| Every 30 minutes | Interval: `1800` seconds | Regular polling |
+| Every Monday at 8 AM | `0 8 * * MON` | Weekly review |
+| First day of month at midnight | `0 0 1 * *` | Monthly report |
+| A specific date and time | `2026-04-01T10:00:00` | One-time task |
+
+<Tip>
+You do not need to memorize cron syntax. When creating schedules in the dashboard or through DEHA, you can choose from common patterns or describe the schedule in plain language (e.g., "every weekday at 9 AM").
+</Tip>
+
+---
+
+## Creating a scheduled automation
+
+### From the dashboard
+
+<Steps>
+  <Step title="Go to Automations">
+    Navigate to **Automations** in the sidebar.
+  </Step>
+  <Step title="Create or edit an automation">
+    Create a new automation or open an existing one.
+  </Step>
+  <Step title="Set the trigger to Schedule">
+    Under the trigger settings, choose **Schedule** and select your pattern.
+  </Step>
+  <Step title="Choose your schedule">
+    Pick a common pattern (daily, weekly, etc.) or enter a custom cron expression. Set your timezone.
+  </Step>
+  <Step title="Save and activate">
+    Save the automation. It will run automatically at the scheduled times.
+  </Step>
+</Steps>
+
+### Using DEHA
+
+Tell DEHA what you want:
+
+> "Create an automation that runs every weekday at 9 AM Istanbul time. It should pull sales data from the CRM, generate a summary report with the analytics agent, and send it to the dashboard."
+
+DEHA will set up the schedule, steps, and configuration for you.
+
+---
+
+## Adding conditions to schedules
+
+Sometimes you want a scheduled automation to run only when certain conditions are met. For example, only generate a report if there is new data since the last run.
+
+**Available condition types:**
+
+| Condition | What it checks |
+| --- | --- |
+| **Always** | Runs every time the schedule triggers (default) |
+| **SQL** | Runs a query and proceeds only if the boolean / numeric result is truthy |
+| **Threshold** | Runs a query and proceeds only if the value crosses a limit |
+| **LLM** | Asks an LLM yes/no whether to proceed, with the current data as context |
+| **Composite** | AND / OR / NOT of multiple sub-conditions, recursively |
+| **Data changed** | Hash-based change detection — proceeds only if the underlying data changed since the last run |
+| **Time window** | Only fires during configured hours / weekdays (with timezone) |
+
+### Example: Only run if there is new data
+
+A daily report automation that skips the run if no new orders were placed:
+
+> Schedule: Every day at 9 AM
+>
+> Condition: Only run if there are orders from yesterday
+>
+> Steps: Pull order data, generate summary, send to dashboard
+
+### Example: AI-powered condition
+
+A weekly reorder check where an AI decides whether to proceed:
+
+> Schedule: Every Monday at 8 AM
+>
+> Condition: Ask the AI "Should we place a reorder based on current inventory levels?" with live inventory data as context
+>
+> Steps: Run procurement agent, notify the team
+
+---
+
+## One-time scheduled tasks
+
+You can schedule a task to run once at a future date and time. This is useful for:
+
+- Sending a reminder before a meeting
+- Running a data migration at a planned maintenance window
+- Triggering a follow-up action after a delay
+
+One-time tasks are automatically cleaned up after they run.
+
+### Creating a one-time task
+
+From the dashboard, choose **One-Time** as the schedule type and pick a date and time. Or ask DEHA:
+
+> "Schedule a reminder for April 1st at 10 AM: Send a message to the team channel saying 'Sprint review in 15 minutes.'"
+
+---
+
+## Managing scheduled automations
+
+### Viewing your schedules
+
+The **Automations** page in the dashboard shows all scheduled automations along with:
+
+- The next scheduled run time
+- The last run time and whether it succeeded
+- Run history and success rate
+
+### Pausing and resuming
+
+You can temporarily pause a scheduled automation without deleting it. Toggle the **Enabled** switch off in the dashboard. Toggle it back on when you are ready to resume.
+
+### Editing a schedule
+
+Change the schedule pattern, conditions, or timezone at any time from the dashboard. Changes take effect immediately -- no restart required.
+
+### Monitoring run history
+
+Each scheduled automation tracks its execution history:
+
+- **Total runs** -- how many times it has executed
+- **Successes and failures** -- how many runs completed vs. failed
+- **Last run time** -- when it last executed
+- **Consecutive failures** -- how many times in a row it has failed (useful for spotting issues)
+
+---
+
+## Timezone support
+
+All schedules support timezone configuration. If not specified, schedules default to UTC.
+
+Common timezone examples:
+- `Europe/Istanbul`
+- `America/New_York`
+- `Asia/Tokyo`
+- `UTC`
+
+<Info>
+Daylight saving time transitions are handled automatically. Your "9 AM" schedule will always run at 9 AM local time, even when clocks change.
+</Info>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Automations" icon="plus" href="/automations/creating-automations">
+    Build your first automation.
+  </Card>
+  <Card title="Step Types" icon="list-check" href="/automations/step-types">
+    Explore all available step types.
+  </Card>
+  <Card title="Human Review" icon="user-check" href="/automations/human-review">
+    Add approval gates to scheduled workflows.
+  </Card>
+</CardGroup>

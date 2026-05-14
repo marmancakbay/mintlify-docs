@@ -1,0 +1,117 @@
+---
+title: "Custom Integrations"
+sidebarTitle: "Custom Integrations"
+description: "Connect your business tools -- CRMs, helpdesks, weather APIs, and more -- so your agents can take real actions."
+icon: "plug"
+---
+
+## What You Will Set Up
+
+Connect external APIs and tools to DEHA ONE so your AI agents can look up customer records, create support tickets, check inventory, fetch weather data, or interact with any system your business uses.
+
+<Info>
+Before you begin, make sure you have:
+- A DEHA ONE workspace with at least one [agent configured](/guides/first-agent)
+- An external API you want to connect (with API credentials)
+</Info>
+
+---
+
+<Steps>
+
+### How Integrations Work
+
+When you connect an external API, it becomes a **tool** your agent can use during conversations. For example:
+
+- A customer asks "What is my order status?" -- the agent calls your order management API to look it up.
+- A customer asks "Create a support ticket for my issue" -- the agent creates a ticket in your helpdesk.
+- A customer asks "What is the weather in Istanbul?" -- the agent calls a weather API and reports back.
+
+### Add an Integration with DEHA
+
+The easiest way to add an integration is to describe it to the DEHA AI Assistant:
+
+> "Add a weather API integration. The base URL is https://api.weatherapi.com/v1, it uses an API key in the query parameter 'key', and I want a tool called get_current_weather that calls /current.json with a city name parameter."
+
+> "Connect our CRM API at https://api.mycrm.com/v2 with Bearer token authentication. Add tools to look up customers by email and create support tickets."
+
+DEHA generates the integration configuration for you.
+
+### Add an Integration from the Dashboard
+
+1. Go to **Settings > Integrations** in the dashboard.
+2. Click **Add Integration**.
+3. Fill in:
+   - **Name** -- A label for this integration (e.g., "CRM API")
+   - **Base URL** -- The API's root URL
+   - **Authentication** -- How to authenticate (see below)
+4. Add **tools** -- each tool maps to an API endpoint your agent can call:
+   - **Tool name** -- What the agent sees (e.g., `get_customer`)
+   - **Description** -- When to use this tool (the agent reads this to decide)
+   - **Method and path** -- The HTTP method and endpoint path
+   - **Parameters** -- What inputs the tool accepts
+
+### Authentication Options
+
+| Method | When to Use |
+|--------|------------|
+| **API Key** | Simple key-based APIs (in header or query parameter) |
+| **Bearer Token** | Token-based authentication |
+| **Basic Auth** | Username/password authentication |
+| **OAuth2** | Enterprise services like Salesforce, Google Workspace, HubSpot |
+
+Store all credentials securely in the vault (**Settings > Vault**). Never put credentials directly in the integration configuration.
+
+### Connect an MCP Server
+
+If you have tools exposed via the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), you can connect them directly:
+
+1. Go to **Settings > Integrations > MCP Servers**.
+2. Click **Add MCP Server**.
+3. Enter the server URL and authentication.
+4. DEHA ONE automatically discovers the available tools from the server.
+
+All discovered tools become available to your agents immediately.
+
+### Test Your Integration
+
+After adding an integration:
+
+1. Open the **Chat** panel in the dashboard.
+2. Select an agent that has the integration's tools enabled.
+3. Ask a question that requires the integration:
+   - "What is the weather in New York?"
+   - "Look up customer john@example.com in the CRM."
+4. Verify the agent calls the external API and returns accurate results.
+
+<Check>
+Ask your agent a question that requires the integration. Verify it calls the external API and returns the correct data.
+</Check>
+
+### Expose Your Agent as an API
+
+You can also make your DEHA ONE agents available as API endpoints for other systems to call. Go to **Settings > Integrations > MCP Server** and enable the agent endpoint. Other systems can then call your agent just like any other API.
+
+</Steps>
+
+---
+
+## Tips for Great Integrations
+
+- **Write clear tool descriptions.** The agent uses the description to decide when to call each tool, so be specific about what it does and when to use it.
+- **Keep tools focused.** One tool per API action works better than one tool that does many things.
+- **Test with edge cases.** What happens when the API returns an error or no results? Make sure your agent handles these gracefully.
+- **Use vault references for all credentials.** Never hardcode API keys or tokens.
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Access" icon="key" href="/guides/api-access">
+    Generate API keys for programmatic access to DEHA ONE.
+  </Card>
+  <Card title="Build a Knowledge Base" icon="book" href="/guides/build-knowledge-base">
+    Add document-based search alongside your API integrations.
+  </Card>
+</CardGroup>

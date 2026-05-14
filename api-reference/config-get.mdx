@@ -1,0 +1,125 @@
+---
+title: "Get Config"
+api: "GET /api/v1/config/{user_id}/{config_type}"
+description: "Retrieve the current version of a specific configuration."
+---
+
+Returns the current (latest) version of a configuration by type, including the full YAML content, version metadata, and commit message.
+
+## Authentication
+
+Requires JWT with `read` permission. Your user must match the `{user_id}` in the URL.
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="config_type" type="string" required>
+  The configuration type to retrieve. Examples:
+  - `user` -- Main user configuration
+  - `channels` -- Channel configurations (WhatsApp, Telegram, Web)
+  - `routes` -- Routing rules
+  - `data` -- Data refinery configuration
+  - `agent:support_agent` -- A specific agent configuration
+  - `pipeline:sentiment_routing` -- A specific pipeline configuration
+</ParamField>
+
+## Response
+
+<ResponseField name="version_id" type="string">
+  Unique version identifier (UUID).
+</ResponseField>
+<ResponseField name="user_id" type="string">
+  User identifier.
+</ResponseField>
+<ResponseField name="config_type" type="string">
+  Configuration type.
+</ResponseField>
+<ResponseField name="version_number" type="integer">
+  Monotonic version counter. Increments with each new version.
+</ResponseField>
+<ResponseField name="content_hash" type="string">
+  SHA-256 hash of the YAML content. Used for deduplication.
+</ResponseField>
+<ResponseField name="yaml_content" type="string">
+  The full YAML configuration content.
+</ResponseField>
+<ResponseField name="diff_from_previous" type="string">
+  Unified diff from the previous version (null for the first version).
+</ResponseField>
+<ResponseField name="created_by" type="string">
+  User ID of the person who created this version.
+</ResponseField>
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when this version was created.
+</ResponseField>
+<ResponseField name="commit_message" type="string">
+  Description of the change (null if not provided).
+</ResponseField>
+<ResponseField name="parent_version_id" type="string">
+  Version ID of the previous version (null for the first version).
+</ResponseField>
+<ResponseField name="status" type="string">
+  Version status: `current` (active) or `archived` (superseded).
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Missing or invalid credentials |
+| `403` | Insufficient permissions or user mismatch |
+| `404` | Configuration type not found |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/user" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/user",
+    headers={"Authorization": f"Bearer {jwt_token}"}
+)
+config = response.json()
+print(config["yaml_content"])
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/user",
+  { headers: { "Authorization": `Bearer ${jwtToken}` } }
+);
+const config = await response.json();
+console.log(config.yaml_content);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "version_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user_id": "acme_corp",
+  "config_type": "user",
+  "version_number": 12,
+  "content_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "yaml_content": "name: ACME Corp\nplan: growth\nsession_lifecycle:\n  idle_timeout: 1800\n  max_duration: 7200\n",
+  "diff_from_previous": "--- v11\n+++ v12\n@@ -1,3 +1,3 @@\n name: ACME Corp\n-plan: starter\n+plan: growth\n",
+  "created_by": "auth0|user123",
+  "created_at": "2026-03-15T10:00:00Z",
+  "commit_message": "Upgraded to growth plan",
+  "parent_version_id": "f6e5d4c3-b2a1-0987-fedc-ba0987654321",
+  "status": "current"
+}
+```
+
+## Version History
+
+To retrieve previous versions, use the history endpoint:
+
+`GET /api/v1/config/{user_id}/{config_type}/history?offset=0&limit=20`
+
+This returns a paginated list of all versions for the given configuration type, sorted newest first.

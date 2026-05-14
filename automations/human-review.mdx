@@ -1,0 +1,188 @@
+---
+title: "Human Review"
+sidebarTitle: "Human Review"
+description: "Add approval gates to your automations so a team member or AI judge reviews important outputs before they reach customers or take effect."
+icon: "user-check"
+---
+
+Human Review (also called Human-in-the-Loop) lets you add checkpoints to your automations where someone on your team -- or an AI quality judge -- reviews the output before the automation continues. This is essential for maintaining quality, catching errors, and ensuring sensitive operations get the oversight they need.
+
+---
+
+## Why add human review?
+
+<CardGroup cols={2}>
+  <Card title="Quality Control" icon="shield-check">
+    Review AI-generated responses before they reach customers. Catch inaccurate, incomplete, or off-brand replies.
+  </Card>
+  <Card title="Sensitive Operations" icon="lock">
+    Require explicit approval before data is written to external systems, configurations are changed, or high-value actions are taken.
+  </Card>
+  <Card title="Compliance" icon="clipboard-check">
+    Meet regulatory or internal policy requirements that mandate human oversight for certain decisions.
+  </Card>
+  <Card title="Continuous Improvement" icon="chart-line">
+    Monitor what your AI agents produce and use the review data to improve their performance over time.
+  </Card>
+</CardGroup>
+
+---
+
+## Review modes
+
+DEHA ONE offers two review modes, each suited to different situations.
+
+<Tabs>
+  <Tab title="AI Judge">
+    An AI judge automatically evaluates the output and assigns a quality score. Based on the score, the automation either continues, requests a revision, or escalates to a human.
+
+    **Best for:** High-volume workflows where reviewing every item manually is not practical, but quality still matters.
+
+    ### How it works
+
+    <Steps>
+      <Step title="An agent produces output">
+        A preceding step (usually an AI agent) generates a response, report, or data result.
+      </Step>
+      <Step title="The AI judge evaluates">
+        A specialized judge reviews the output against quality criteria -- accuracy, completeness, tone, policy compliance -- and assigns a score from 0 to 1.
+      </Step>
+      <Step title="The score determines the action">
+        Based on thresholds you set, the automation takes one of three actions.
+      </Step>
+    </Steps>
+
+    | Score | Action | What happens |
+    | --- | --- | --- |
+    | **High** (e.g., 0.7 and above) | Approved | The automation continues. The output is good to go. |
+    | **Medium** (e.g., 0.4 to 0.7) | Revision needed | The automation loops back to the agent with feedback to improve the response. |
+    | **Low** (e.g., below 0.4) | Escalated to human | A team member is notified and reviews manually in the dashboard. |
+
+    You control both thresholds. Start with an approval threshold of 0.7 and a handoff threshold of 0.4, then adjust based on your quality standards.
+
+    <Tip>
+    AI Judge mode dramatically reduces the review burden on your team. In most workflows, 80-90% of outputs pass automatically, and only the questionable ones need human attention.
+    </Tip>
+  </Tab>
+
+  <Tab title="Manual Approval">
+    The automation pauses and sends a review request to your dashboard. A team member reviews the content and explicitly approves or rejects it.
+
+    **Best for:** Sensitive operations where automated approval is not acceptable -- data writes, configuration changes, high-stakes customer communications.
+
+    ### How it works
+
+    <Steps>
+      <Step title="The automation pauses">
+        When the review step is reached, the automation stops and waits.
+      </Step>
+      <Step title="A notification appears in your dashboard">
+        Your team sees a review request with the content to approve, along with context about what triggered it.
+      </Step>
+      <Step title="A team member takes action">
+        The reviewer can approve (automation continues), reject (automation follows the rejection path), or request changes.
+      </Step>
+      <Step title="The automation resumes">
+        Based on the decision, the automation picks up where it left off.
+      </Step>
+    </Steps>
+
+    **Optional features:**
+    - **Show a diff** -- display a before/after comparison for data changes
+    - **Auto-approve after timeout** -- automatically approve if no one responds within a set time (useful for low-risk items with a "silence means consent" policy)
+  </Tab>
+</Tabs>
+
+---
+
+## Reviewing in the dashboard
+
+When a review is needed, here is what your team sees:
+
+<AccordionGroup>
+  <Accordion title="1. Review notification appears">
+    A new item appears in the review queue on your dashboard with the automation name, timestamp, and a summary of what needs review.
+  </Accordion>
+  <Accordion title="2. Reviewer opens the item">
+    The reviewer sees the full context: the original input (e.g., customer message), the AI-generated output (e.g., proposed response), the quality score (if AI Judge mode), and optionally a diff view.
+  </Accordion>
+  <Accordion title="3. Reviewer takes action">
+    Three options are available:
+    - **Approve** -- the automation continues with the current output
+    - **Reject** -- the automation follows the rejection path (e.g., archive without sending)
+    - **Request revision** -- send feedback to the agent and ask it to try again
+  </Accordion>
+  <Accordion title="4. Automation continues">
+    The automation picks up from where it paused and proceeds based on the reviewer's decision.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Timeouts and auto-escalation
+
+Every review step should have a timeout to prevent automations from waiting indefinitely.
+
+| Strategy | Description | When to use |
+| --- | --- | --- |
+| **Fixed timeout** | The review expires after a set time (e.g., 5 minutes). The automation either stops or follows a fallback path. | Time-sensitive workflows like customer support |
+| **Auto-approve** | If no one responds within a set time (e.g., 24 hours), the output is automatically approved. | Low-risk reviews where silence means consent |
+| **Notification escalation** | If the initial reviewer does not respond, alerts are sent via email or messaging channels. | Critical reviews that must not be missed |
+
+<Warning>
+Always set a timeout for production automations. Without one, a review step waiting for a response will eventually be cleaned up automatically, but your workflow will be delayed.
+</Warning>
+
+---
+
+## Common use cases
+
+<AccordionGroup>
+  <Accordion title="Customer response quality">
+    Before sending an AI-generated reply to a customer, an AI judge scores it for accuracy, empathy, and brand alignment. High-quality responses go straight through. Borderline ones get revised. Low-quality ones are escalated to a human agent.
+  </Accordion>
+  <Accordion title="Data change approval">
+    Before writing cleaned data back to your CRM, the automation pauses and shows a diff of the proposed changes. A team member reviews and approves the update.
+  </Accordion>
+  <Accordion title="Content moderation">
+    User-generated content passes through an AI judge that checks for policy violations. Flagged content is queued for human review before being published.
+  </Accordion>
+  <Accordion title="Report sign-off">
+    A weekly analytics report is generated by an AI agent. Before it is distributed, a manager reviews the findings and approves the report.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Start with AI Judge, add manual review for edge cases">
+    Use AI Judge mode for initial screening to handle the majority of reviews automatically. Only escalate to humans for borderline or low-scoring items. This keeps your team focused on the cases that actually need attention.
+  </Accordion>
+  <Accordion title="Tune your thresholds over time">
+    Start with default thresholds (approve at 0.7, escalate below 0.4) and adjust based on your team's experience. If too many items are being escalated, lower the handoff threshold. If quality issues are slipping through, raise the approval threshold.
+  </Accordion>
+  <Accordion title="Always set a timeout">
+    Every review step in a production automation should have either a fixed timeout or an auto-approve policy. Do not let automations wait indefinitely.
+  </Accordion>
+  <Accordion title="Keep revision loops short">
+    One revision attempt is usually enough. If the agent consistently scores low, improve the agent's instructions rather than adding multiple revision loops.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Automations" icon="plus" href="/automations/creating-automations">
+    Build your first automation with a review step.
+  </Card>
+  <Card title="Step Types" icon="list-check" href="/automations/step-types">
+    Explore all available step types.
+  </Card>
+  <Card title="AI Agents" icon="robot" href="/agents/overview">
+    Learn about the AI agents that produce the output your review steps evaluate.
+  </Card>
+</CardGroup>

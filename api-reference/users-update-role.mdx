@@ -1,0 +1,88 @@
+---
+title: "Update User Role"
+api: "PUT https://api.deha.one/api/v1/users/{user_id}/{user_id}/role"
+description: "Change a user's role within your user."
+---
+
+Updates a user's role within your user. Requires `admin` or `owner` role. Changing the role automatically updates the user's default configuration permissions.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="user_id" type="string" required>
+  The user identifier to update.
+</ParamField>
+
+## Request Body
+
+<ParamField body="role" type="string" required>
+  New role: `owner`, `admin`, `supervisor`, `agent`, or `viewer`.
+</ParamField>
+
+## Role Permissions
+
+| Role | Default Permissions |
+|------|-------------------|
+| `owner` | read, write, deploy, test |
+| `admin` | read, write, deploy, test |
+| `supervisor` | read, write |
+| `agent` | read |
+| `viewer` | read |
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid role |
+| 401 | Missing or invalid authentication |
+| 403 | Admin or owner role required |
+| 404 | User not found |
+
+<CodeGroup>
+```bash cURL
+curl -X PUT "https://api.deha.one/api/v1/users/acme_corp/auth0%7Cxyz789/role" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{"role": "supervisor"}'
+```
+
+```python Python
+import httpx
+
+response = httpx.put(
+    "https://api.deha.one/api/v1/users/acme_corp/auth0|xyz789/role",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={"role": "supervisor"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/users/acme_corp/auth0%7Cxyz789/role",
+  {
+    method: "PUT",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ role: "supervisor" })
+  }
+);
+```
+</CodeGroup>

@@ -1,0 +1,131 @@
+---
+title: "Privacy & PII"
+sidebarTitle: "Privacy & PII"
+description: "Detect and anonymize personal information across your data — with built-in recognizers for Turkish identifiers."
+icon: "shield-halved"
+---
+
+Privacy regulation (GDPR, KVKK, CCPA) requires you to **know** where personal information lives in your data and **control** how it flows. DEHA ONE includes a managed PII pipeline you can plug into any workflow.
+
+<Info>
+  PII handling runs entirely inside your user. Detection models and rules execute against your data without sending it to any external service.
+</Info>
+
+---
+
+## What gets detected
+
+PII detection is powered by Microsoft Presidio with platform-managed augmentations.
+
+| Entity | Detected as |
+|---|---|
+| **Email addresses** | Out of the box |
+| **Phone numbers** | International + region-specific (e.g. TR formats) |
+| **Credit card numbers** | Luhn-validated PAN |
+| **IBAN / bank accounts** | Per-country format validation |
+| **National identifiers** | Turkish TCKN, US SSN, UK NIN, and more |
+| **Tax IDs** | Turkish VKN |
+| **Passport numbers** | Pattern + checksum (where applicable) |
+| **Driver's license** | Country-specific patterns |
+| **Person names** | NER model + custom dictionaries |
+| **Locations** | Cities, addresses, postcodes |
+| **IP addresses** | IPv4 and IPv6 |
+| **Dates of birth** | Combined date + age context |
+| **Medical identifiers** | Hospital IDs, prescription numbers |
+| **Custom patterns** | Bring your own regex or dictionary |
+
+The Turkish recognizers (TCKN, VKN, BSN, phone formats) are tuned for the Turkish market — the same approach extends to any locale.
+
+---
+
+## Anonymization operations
+
+Once detected, choose how to handle each entity:
+
+| Operation | Behavior |
+|---|---|
+| **Replace** | Substitute with a fixed token (e.g. `[REDACTED]`) |
+| **Redact** | Remove entirely |
+| **Hash** | One-way hash (SHA-256) — same input always hashes to same output |
+| **Mask** | Show partial (e.g. `0532***45 67`) |
+| **Encrypt** | Two-way symmetric encryption with the user's vault key (reversible) |
+| **Pseudonymize** | Replace with a stable fake (same person → same fake name everywhere) |
+| **Tokenize** | Replace with a vault-stored token that can be detokenized when authorized |
+
+You can mix operations per column — e.g., mask phone numbers visible to support agents but encrypt them for the warehouse.
+
+---
+
+## Where you can plug it in
+
+| Stage | Use |
+|---|---|
+| **At ingest** | Strip PII before it ever lands in your warehouse |
+| **In transit** | Scrub responses returned from agents to non-authorized users |
+| **In logs** | Auto-redact PII from log lines and audit trails |
+| **In archives** | Anonymize event archives older than N days for retention compliance |
+| **In analytics** | Anonymize before sending data to ML training |
+| **In exports** | Anonymize compliant data extracts for customer self-service |
+
+---
+
+## DSR — Data Subject Requests
+
+For GDPR / KVKK access, rectification, and deletion requests:
+
+- **Access**: produce a compliant extract of everything tied to a subject ID across all tables
+- **Rectification**: update fields with audit trail of who changed what when
+- **Deletion (right to be forgotten)**: cascade-delete with tombstones, preserving audit but removing personal data
+- **Portability**: export the access bundle in a structured format the subject can import elsewhere
+
+These flows are pipeline-driven, so you can fully automate them — including the customer-facing email confirmation.
+
+---
+
+## Audit and evidence
+
+Every PII operation produces audit evidence:
+
+- Which entities were detected
+- Which anonymization operation was applied
+- Who ran the pipeline
+- When it ran and over what data
+- A hash of the input and output for tamper detection
+
+You can pull this audit at any time for a compliance review.
+
+---
+
+## Example: scrub PII from a CRM export
+
+```yaml
+pipeline: anonymize-crm-export
+steps:
+  - type: connector_extract
+    connector: crm-prod
+    table: leads
+
+  - type: pii_detect
+    columns: auto             # detect across all string columns
+    entities:
+      - email
+      - phone
+      - tckn
+      - person_name
+      - location
+
+  - type: pii_anonymize
+    operations:
+      email:        { op: hash }
+      phone:        { op: mask, keep_last: 2 }
+      tckn:         { op: encrypt }
+      person_name:  { op: pseudonymize }
+      location:     { op: replace, with: "[CITY]" }
+
+  - type: data_export
+    target: s3
+    bucket: anonymized-extracts
+    format: parquet
+```
+
+Run on demand or on a schedule. The output is safe to share with your data science team, an external auditor, or your offshore support partner.

@@ -1,0 +1,111 @@
+---
+title: "Ask Questions About Your Data"
+sidebarTitle: "Natural Language Queries"
+description: "Ask business questions in plain language and get instant answers from your data."
+icon: "magnifying-glass"
+---
+
+## What You Will Learn
+
+Use natural language to ask questions about your business data and get instant, accurate answers -- no SQL knowledge required.
+
+<Info>
+Before you begin, make sure you have:
+- Data loaded into your workspace (see [Connect a Data Source](/guides/connect-data-source))
+- At least one table available for querying
+</Info>
+
+---
+
+<Steps>
+
+### Ask a Question
+
+You can ask questions about your data in two ways:
+
+**Through your agent (any channel):**
+
+Just ask your agent a data question in natural language through chat, WhatsApp, Telegram, or any connected channel:
+
+> "What are our top 10 customers by total order value?"
+
+> "How many support tickets were opened last month?"
+
+> "Show me the revenue trend for the past 6 months."
+
+The agent automatically converts your question to a database query, runs it, and explains the results conversationally.
+
+**Through the dashboard:**
+
+1. Go to **Data > Query** in the dashboard.
+2. Type your question in the search bar.
+3. View the results as a table, chart, or summary.
+
+### Improve Accuracy with Training
+
+Help the system understand your business terminology by providing examples and definitions. Go to **Data > Query > Training** in the dashboard.
+
+**Add business definitions:**
+
+Teach the system what your terms mean:
+
+> "An active customer is one who has placed at least one order in the last 90 days."
+
+> "Churn rate is the percentage of customers who were active 90 days ago but are no longer active."
+
+**Add example questions:**
+
+Provide sample questions with the correct answers to improve accuracy for common queries your team asks.
+
+<Tip>
+The more training examples you provide, the more accurate the results become. Start with 5-10 common questions your team asks regularly.
+</Tip>
+
+### Choose a Result Format
+
+When querying through the dashboard or API, you can choose how results are displayed:
+
+| Format | Description |
+|--------|-------------|
+| **Table** | Structured rows and columns |
+| **Summary** | A natural language explanation of the results |
+| **JSON** | Raw data for programmatic use |
+
+### Run Direct SQL (Advanced)
+
+If you know SQL, you can run queries directly in the dashboard under **Data > Query > SQL Editor**. Only `SELECT` statements are allowed for security.
+
+<Check>
+Ask your agent a question about your data and verify you get an accurate answer. Try the same question in the dashboard query tool to compare results.
+</Check>
+
+</Steps>
+
+---
+
+## Tips for Better Results
+
+- **Be specific.** "What were total sales last quarter?" works better than "Tell me about sales."
+- **Use your business terms.** If you have added training definitions, the system understands terms like "active customer" or "churn rate."
+- **Start simple.** Begin with straightforward questions and build up to complex ones.
+- **Check the generated query.** In the dashboard, you can see the SQL that was generated from your question. This helps you verify accuracy.
+
+## Safety and Security
+
+- All queries are **read-only** -- your source data cannot be modified through DEHA ONE.
+- Each workspace can only query its own data -- there is no cross-workspace access.
+- Query complexity is monitored to prevent expensive operations.
+- Row limits are enforced (default: 10,000 rows) to keep results manageable.
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Run Analytics" icon="chart-line" href="/guides/run-analytics">
+    Go beyond queries with ML-powered analysis.
+  </Card>
+  <Card title="Build a Knowledge Base" icon="book" href="/guides/build-knowledge-base">
+    Add document-based search alongside your structured data.
+  </Card>
+</CardGroup>

@@ -1,0 +1,104 @@
+---
+title: "Set Up Telegram"
+sidebarTitle: "Telegram"
+description: "Connect a Telegram bot to DEHA ONE so your AI agent can chat with customers on Telegram."
+icon: "telegram"
+---
+
+## What You Will Set Up
+
+Create a Telegram bot and connect it to DEHA ONE so incoming Telegram messages are handled by your AI agent.
+
+<Info>
+Before you begin, you need:
+- A Telegram account
+- A DEHA ONE workspace with at least one [agent configured](/guides/first-agent)
+</Info>
+
+---
+
+<Steps>
+
+### Create a Telegram Bot
+
+1. Open Telegram and search for **@BotFather**.
+2. Send `/newbot` and follow the prompts.
+3. Choose a display name (e.g., "My Company Support") and a username (e.g., `mycompany_support_bot`).
+4. BotFather will give you a **Bot Token** -- save it securely.
+
+<Warning>
+Never share your bot token publicly. Anyone with the token can control your bot.
+</Warning>
+
+### Add the Bot Token to DEHA ONE
+
+1. In the DEHA ONE dashboard, go to **Settings > Vault**.
+2. Add a new secret with key `telegram_bot_token` and paste your token as the value.
+3. Add another secret with key `telegram_webhook_secret` -- this can be any random string you choose (it secures the connection).
+
+### Enable the Telegram Channel
+
+1. Go to **Settings > Channels** in the dashboard.
+2. Enable **Telegram**.
+3. Set the **default agent** to the agent you want handling Telegram messages.
+4. Optionally set a **welcome message**.
+5. Click **Save**.
+
+### Publish and Test
+
+1. Go to **Settings > Configuration** and click **Publish**. DEHA ONE automatically registers the webhook with Telegram.
+2. Open Telegram and search for your bot by username.
+3. Send `/start` or any message.
+4. Your AI agent should respond through the bot.
+
+<Check>
+Verify the bot responds to messages. Check the **Timeline** in the dashboard to see the full conversation flow.
+</Check>
+
+</Steps>
+
+---
+
+## Customize Your Bot
+
+You can personalize your Telegram bot through BotFather:
+
+- `/setdescription` -- Bot description shown in the profile
+- `/setabouttext` -- Short info shown in the bot's profile
+- `/setuserpic` -- Bot profile picture
+- `/setcommands` -- Bot command menu
+
+## Supported Message Types
+
+| Type | Description |
+|------|-------------|
+| Text | Plain text messages |
+| Photo | Images sent as photos |
+| Document | Files and documents |
+| Voice | Voice messages |
+| Location | Shared locations |
+| Callback | Inline keyboard button presses |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Bot does not respond">
+    Make sure your configuration is published. Check that the bot token in the vault is correct. You can verify the webhook is set up by visiting `https://api.telegram.org/bot{YOUR_TOKEN}/getWebhookInfo` in your browser.
+  </Accordion>
+  <Accordion title="Webhook errors">
+    Ensure the webhook secret in the vault matches what was used during setup. Try re-publishing your configuration to re-register the webhook.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Set Up Email" icon="envelope" href="/guides/setup-email">
+    Add email as a communication channel.
+  </Card>
+  <Card title="Set Up WhatsApp" icon="whatsapp" href="/guides/setup-whatsapp">
+    Connect WhatsApp Business for messaging.
+  </Card>
+</CardGroup>

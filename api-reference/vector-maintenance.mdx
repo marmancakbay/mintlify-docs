@@ -1,0 +1,197 @@
+---
+title: "Maintenance"
+api: "POST /api/v1/admin/reset"
+description: "Reset collections and perform re-indexing operations."
+---
+
+Administrative endpoints for knowledge base maintenance, including resetting collections (deleting all vectors) and re-indexing with a new embedding model using zero-downtime Blue-Green deployment.
+
+## Authentication
+
+Requires JWT authentication via the proxy endpoint. These operations require admin-level access.
+
+---
+
+## Reset Collection
+
+`POST /api/v1/admin/reset`
+
+Permanently deletes a user's default collection and all its vectors. Use this to start fresh with a clean knowledge base.
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="confirm" type="boolean" required>
+  Must be `true` to confirm the destructive operation.
+</ParamField>
+
+<Warning>
+This operation is irreversible. All vectors in the collection will be permanently deleted. Make sure you have backups or can re-ingest your documents before proceeding.
+</Warning>
+
+### Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400` | `confirm` is not set to `true` |
+| `401` | Missing or invalid credentials |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/proxy/acme_corp/vector/api/v1/admin/reset" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": "acme_corp", "confirm": true}'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/proxy/acme_corp/vector/api/v1/admin/reset",
+    headers={"Authorization": f"Bearer {jwt_token}"},
+    json={"user_id": "acme_corp", "confirm": True}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/vector/api/v1/admin/reset",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ user_id: "acme_corp", confirm: true })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "user_id": "acme_corp",
+  "deleted": true
+}
+```
+
+---
+
+## Re-Index Collection
+
+`POST /api/v1/admin/reindex`
+
+Performs a zero-downtime re-indexing operation using Blue-Green deployment. This is used when you want to migrate to a new embedding model without any search downtime. The process:
+
+1. **Backup** -- Creates a backup of your current collection
+2. **Shadow collection** -- Creates a new collection with the new model's dimensions
+3. **Re-embed** -- Re-embeds all existing documents using the new model
+4. **Atomic swap** -- Switches the active collection to the new one
+5. **Cleanup** -- Removes the old collection
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="new_embedding_config" type="object" required>
+  Configuration for the new embedding model.
+  - `provider` (string, required) -- Embedding provider: `openai`, `gemini`, `huggingface`
+  - `model_name` (string, required) -- Model identifier (e.g., `text-embedding-3-large`)
+  - `dimension` (integer) -- Vector dimension for the new model (auto-detected if omitted)
+  - `api_key_ref` (string) -- Reference to your API key stored in the vault
+</ParamField>
+<ParamField body="batch_size" type="integer" default="50">
+  Number of documents to process per batch. Lower values use less memory but take longer.
+</ParamField>
+
+### Response
+
+<ResponseField name="status" type="string">
+  Operation result (`success` or `failed`).
+</ResponseField>
+<ResponseField name="processed_documents" type="integer">
+  Total number of documents re-embedded.
+</ResponseField>
+<ResponseField name="duration" type="number">
+  Total operation duration in seconds.
+</ResponseField>
+<ResponseField name="new_dimension" type="integer">
+  Vector dimension of the new collection.
+</ResponseField>
+<ResponseField name="active_collection" type="string">
+  Name of the new active collection after the swap.
+</ResponseField>
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/proxy/acme_corp/vector/api/v1/admin/reindex" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "new_embedding_config": {
+      "provider": "openai",
+      "model_name": "text-embedding-3-large",
+      "api_key_ref": "OPENAI_KEY"
+    },
+    "batch_size": 50
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/proxy/acme_corp/vector/api/v1/admin/reindex",
+    headers={"Authorization": f"Bearer {jwt_token}"},
+    json={
+        "user_id": "acme_corp",
+        "new_embedding_config": {
+            "provider": "openai",
+            "model_name": "text-embedding-3-large",
+            "api_key_ref": "OPENAI_KEY"
+        },
+        "batch_size": 50
+    },
+    timeout=300  # Re-indexing can take several minutes for large collections
+)
+result = response.json()
+print(f"Re-indexed {result['processed_documents']} documents in {result['duration']:.1f}s")
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/vector/api/v1/admin/reindex",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      new_embedding_config: {
+        provider: "openai",
+        model_name: "text-embedding-3-large",
+        api_key_ref: "OPENAI_KEY"
+      },
+      batch_size: 50
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "status": "success",
+  "processed_documents": 1500,
+  "duration": 45.2,
+  "new_dimension": 3072,
+  "active_collection": "acme_corp_knowledge_v1710504000"
+}
+```
+
+<Tip>
+Re-indexing duration depends on the number of documents and the embedding model speed. For large collections (10,000+ documents), consider running this during off-peak hours. Search remains fully functional throughout the process.
+</Tip>

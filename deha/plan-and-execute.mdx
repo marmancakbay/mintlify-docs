@@ -1,0 +1,196 @@
+---
+title: "How DEHA Works"
+sidebarTitle: "How DEHA Works"
+description: "DEHA plans before it builds, tests everything automatically, and fixes issues on its own. Here's what happens behind the scenes when you ask DEHA to create something."
+icon: "list-check"
+---
+
+When you ask DEHA to build something, it does not just create it and hope for the best. DEHA follows a structured process: it makes a plan, gets your approval, builds the solution, tests it, and fixes any issues automatically. This page walks you through each stage so you know exactly what to expect.
+
+---
+
+## The process at a glance
+
+<Steps>
+  <Step title="You describe what you need">
+    Tell DEHA what you want in plain language. DEHA analyzes your request, reviews your current setup, and determines what needs to be built or changed.
+  </Step>
+  <Step title="DEHA shows you a plan">
+    Before making any changes, DEHA presents a clear plan that includes what will be created or modified, the risk level, and how to undo the changes if needed.
+  </Step>
+  <Step title="You approve, adjust, or reject">
+    Review the plan at your own pace. You can approve it as-is, ask DEHA to modify it, or reject it entirely. Nothing happens until you say go.
+  </Step>
+  <Step title="DEHA builds and validates">
+    Each step of the plan is executed in order. Every component is validated to make sure it is structurally correct and compatible with your existing setup.
+  </Step>
+  <Step title="DEHA tests automatically">
+    Once built, DEHA runs automated tests against your new solution. For agents, it simulates a conversation. For pipelines, it runs a test execution.
+  </Step>
+  <Step title="DEHA fixes issues if needed">
+    If a test reveals a problem, DEHA diagnoses the issue and attempts to fix it automatically. This self-healing process can run multiple times until the solution passes all tests.
+  </Step>
+</Steps>
+
+---
+
+## Understanding the plan
+
+Every plan DEHA creates includes these elements:
+
+| Element | What it tells you |
+|---|---|
+| **Summary** | A plain-language description of what DEHA will do |
+| **Steps** | The ordered list of actions (create, update, or remove) |
+| **Risk level** | How impactful the changes are: low, medium, or high |
+| **Affected areas** | Which parts of your setup will be changed |
+| **Rollback strategy** | How to undo the changes if something goes wrong |
+
+### Risk levels explained
+
+<CardGroup cols={3}>
+  <Card title="Low risk" icon="circle-check">
+    Creating new components that do not affect anything already running. Most new agent and integration requests fall here.
+  </Card>
+  <Card title="Medium risk" icon="triangle-exclamation">
+    Modifying existing components. Your current setup will be changed, but a rollback is straightforward.
+  </Card>
+  <Card title="High risk" icon="circle-exclamation">
+    Changes that affect live systems with active users. DEHA will highlight these and recommend careful review.
+  </Card>
+</CardGroup>
+
+### Multi-step plans
+
+Complex requests may produce plans with multiple steps that depend on each other. For example, creating a support system might involve:
+
+1. Set up the Shopify integration (independent)
+2. Create the support agent with Shopify tools (depends on step 1)
+3. Connect the agent to WhatsApp (depends on step 2)
+
+If an early step fails, DEHA automatically skips steps that depend on it to prevent cascading issues.
+
+---
+
+## How DEHA tests your solution
+
+After building a component, DEHA tests it to make sure it works correctly.
+
+### What gets tested
+
+| Component | How DEHA tests it |
+|---|---|
+| **Agents** | Sends a sample conversation message and evaluates whether the agent responds appropriately |
+| **Integrations** | Verifies the connection is active and endpoints are reachable |
+| **Pipelines** | Runs a test execution of the pipeline steps |
+
+### How testing works
+
+DEHA uses an AI evaluator to assess test results. The evaluator checks whether:
+
+- The agent responded to the test message appropriately
+- Tools were used correctly when they should have been
+- The response matched the intended behavior described in your original request
+- No errors occurred during execution
+
+The evaluator provides a **pass** or **fail** verdict with a clear explanation of its reasoning.
+
+<Info>
+  Test results are shared with you after execution. If all tests pass, you get a summary confirmation. If any test fails, DEHA explains what went wrong and what it is doing to fix it.
+</Info>
+
+---
+
+## Self-healing: the Smart Healer
+
+When a test fails or a validation error is detected, DEHA's **Smart Healer** kicks in. It owns its own LLM call and has its own playbook of repair strategies — not just "try again," but actual structural fixes informed by what went wrong.
+
+### Seven repair strategies
+
+| Strategy | When it's used |
+|---|---|
+| **Rephrase prompts** | Agent gave a generic / off-topic response — prompt was too vague |
+| **Adjust tool bindings** | Agent picked the wrong tool — narrow the tool whitelist |
+| **Split into smaller steps** | A pipeline step did too much — break it into smaller, validatable steps |
+| **Add a condition gate** | A step ran when it should not have — insert a precondition |
+| **Retry with backoff** | A transient failure — add a retry policy with jitter |
+| **Adjust timeouts** | A step took longer than expected — increase the timeout |
+| **Insert an error-recovery node** | An uncaught failure — wrap with `node_error_recovery` |
+
+### Healing memory
+
+Every successful fix is stored as a `(symptom → fix)` pair in a user-scoped memory. The next time a similar failure happens, the Healer tries the proven fix first. Over time, your platform "learns" what tends to fix what.
+
+### The judge
+
+Before any fix is applied, the **Judge** scores it on six dimensions: relevance, safety, accuracy, compliance, performance, and bias. A fix that scores below threshold on any dimension is rejected and the Healer tries another strategy.
+
+### What happens if self-healing fails?
+
+If DEHA cannot fix an issue after several attempts, it will:
+
+1. Report the problem to you with a clear explanation of what was tried
+2. Show you the failed test output and the judge's scores
+3. Suggest next steps or alternative approaches
+4. Offer to roll back any changes that were partially made
+
+You are never left with a broken setup. Failed changes are rolled back automatically.
+
+---
+
+## Version history and rollback
+
+Every change DEHA makes is versioned. This gives you a complete history of modifications and the ability to go back to any previous state.
+
+### How versioning works
+
+- Each change creates a new version with a unique identifier
+- Previous versions are preserved and can be restored at any time
+- A complete history of what changed, when, and why is maintained
+
+### Rolling back changes
+
+If you are not happy with a change -- even if it passed all tests -- you can ask DEHA to roll it back:
+
+> **You:** "Roll back the changes to the support agent. The previous version was better."
+>
+> **DEHA:** "I've restored the support agent to its previous version. The recent changes have been undone."
+
+For new components that did not exist before, rolling back simply removes them. For modified components, rolling back restores the previous version.
+
+---
+
+## Safety guardrails
+
+DEHA includes several safeguards to protect your platform:
+
+<AccordionGroup>
+  <Accordion title="No changes without approval">
+    Every plan requires your explicit approval before execution begins. You always have the final say.
+  </Accordion>
+  <Accordion title="Deletion requires double confirmation">
+    Removing agents, pipelines, or integrations always requires your explicit confirmation -- even if you have auto-execution enabled. This prevents accidental data loss.
+  </Accordion>
+  <Accordion title="Smart updates preserve your setup">
+    When DEHA updates an existing component, it only changes the parts that need to change. Everything else is preserved exactly as it was.
+  </Accordion>
+  <Accordion title="Dependency-aware execution">
+    If a step fails, all steps that depend on it are automatically skipped. This prevents partial or broken configurations from going live.
+  </Accordion>
+  <Accordion title="Automatic rollback on failure">
+    If a plan cannot be completed successfully (even after self-healing), all changes are rolled back to their previous state.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Creating with DEHA" icon="comment" href="/deha/natural-language-config">
+    See examples of everything you can build through conversation.
+  </Card>
+  <Card title="AI Agents" icon="robot" href="/agents/overview">
+    Learn about the different types of agents you can create.
+  </Card>
+</CardGroup>

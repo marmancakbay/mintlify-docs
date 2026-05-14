@@ -1,0 +1,122 @@
+---
+title: "Detect Schema"
+api: "POST https://api.deha.one/connectors/detect-schema"
+description: "Discover the schema of a connected data source."
+---
+
+Detects the schema (field names, types, and sample data) of a configured data source. Use this to preview a connector's data structure before running a full extraction.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="connector_name" type="string" required>
+  Name of the connector to detect schema from.
+</ParamField>
+<ParamField body="target_entity" type="string">
+  Specific table or endpoint to discover. If omitted for database connectors, returns schemas for all available tables.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether schema detection completed successfully.
+</ResponseField>
+<ResponseField name="data.status" type="string">
+  Detection status: `success` or `error`.
+</ResponseField>
+<ResponseField name="data.schema" type="object">
+  Schema information containing `entity_name`, `fields` (array of name/type/nullable objects), and `sample_data` (sample records).
+</ResponseField>
+<ResponseField name="data.duration_ms" type="number">
+  Schema detection duration in milliseconds.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Connector not found |
+| 401 | Missing or invalid authentication |
+| 500 | Schema detection error |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/connectors/detect-schema" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "connector_name": "erp_api",
+    "target_entity": "orders"
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/connectors/detect-schema",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "connector_name": "erp_api",
+        "target_entity": "orders"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/connectors/detect-schema",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      connector_name: "erp_api",
+      target_entity: "orders"
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "status": "success",
+    "schema": {
+      "entity_name": "orders",
+      "fields": [
+        {"name": "id", "data_type": "integer", "nullable": false},
+        {"name": "total", "data_type": "float", "nullable": true},
+        {"name": "status", "data_type": "string", "nullable": false}
+      ],
+      "sample_data": [
+        {"id": 1, "total": 99.9, "status": "active"}
+      ]
+    },
+    "duration_ms": 120.5
+  }
+}
+```

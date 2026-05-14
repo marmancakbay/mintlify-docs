@@ -1,0 +1,194 @@
+---
+title: "Ingest Document"
+api: "POST /api/v1/ingest"
+description: "Upload and ingest a document into the knowledge base."
+---
+
+Uploads a document for asynchronous processing into your knowledge base. The document is parsed, chunked, embedded using your configured embedding model, and stored in the vector database. Returns a job ID for tracking ingestion progress.
+
+**Supported formats:** PDF, TXT, MD, CSV, JSON, YAML, DOCX, LOG
+
+## Authentication
+
+Requires JWT authentication via the proxy endpoint.
+
+## Request (multipart/form-data)
+
+<ParamField body="file" type="file" required>
+  The document file to ingest.
+</ParamField>
+<ParamField body="request_config" type="string" required>
+  JSON string containing the ingestion configuration. See fields below.
+</ParamField>
+
+### request_config Fields
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="source_name" type="string" required>
+  Label for the upload source (e.g., `manual_upload`, `connector_sync`, `api_import`). Used for tracking and filtering.
+</ParamField>
+<ParamField body="metadata" type="object">
+  Custom key-value metadata merged into each chunk. Use this to tag documents for filtering during search (e.g., `{"department": "legal", "language": "en"}`).
+</ParamField>
+<ParamField body="embedding_config" type="object">
+  Override the default embedding model settings. If omitted, uses your user's configured embedding model.
+  - `provider` (string) -- Embedding provider: `openai`, `gemini`, `huggingface`
+  - `model_name` (string) -- Model identifier (e.g., `text-embedding-3-small`)
+  - `dimension` (integer) -- Vector dimension (e.g., 1536)
+</ParamField>
+<ParamField body="chunking_config" type="object">
+  Override the default chunking settings. If omitted, uses recursive splitting with 512 characters and 50-character overlap.
+  - `strategy` (string) -- `recursive` or `character` (default: `recursive`)
+  - `size` (integer) -- Chunk size in characters (default: 512)
+  - `overlap` (integer) -- Overlap between chunks in characters (default: 50)
+</ParamField>
+
+## Response
+
+<ResponseField name="message" type="string">
+  Status message confirming the job was queued.
+</ResponseField>
+<ResponseField name="job_id" type="string">
+  Unique job identifier (UUID). Use this to poll for ingestion status.
+</ResponseField>
+<ResponseField name="status" type="string">
+  Initial job status (`PENDING`).
+</ResponseField>
+<ResponseField name="user_id" type="string">
+  Your user identifier.
+</ResponseField>
+<ResponseField name="check_status_url" type="string">
+  Relative URL for polling job status.
+</ResponseField>
+
+## Job Status Polling
+
+After submitting a document, poll the job status endpoint:
+
+`GET /api/v1/jobs/{job_id}?user_id={user_id}`
+
+### Job Statuses
+
+| Status | Description |
+|--------|-------------|
+| `PENDING` | Job queued, waiting to be processed |
+| `PROCESSING` | Document is being parsed, chunked, and embedded |
+| `COMPLETED` | Ingestion finished successfully |
+| `FAILED` | Ingestion failed (check error details) |
+
+### Job Progress
+
+The `progress` field shows completion percentage:
+- **10%** -- Parsing document
+- **30%** -- Chunking text
+- **50%** -- Generating embeddings
+- **80%** -- Storing vectors
+- **100%** -- Complete
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Missing or invalid credentials |
+| `404` | Job not found (when polling status) |
+| `500` | Failed to queue ingestion job |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/proxy/acme_corp/vector/api/v1/ingest" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -F "file=@policy.pdf" \
+  -F 'request_config={"user_id":"acme_corp","source_name":"manual_upload","metadata":{"department":"legal","language":"en"}}'
+```
+
+```python Python
+import httpx
+import json
+
+config = {
+    "user_id": "acme_corp",
+    "source_name": "manual_upload",
+    "metadata": {"department": "legal", "language": "en"},
+    "chunking_config": {"strategy": "recursive", "size": 512, "overlap": 50}
+}
+
+with open("policy.pdf", "rb") as f:
+    response = httpx.post(
+        "https://api.deha.one/proxy/acme_corp/vector/api/v1/ingest",
+        headers={"Authorization": f"Bearer {jwt_token}"},
+        files={"file": ("policy.pdf", f, "application/pdf")},
+        data={"request_config": json.dumps(config)}
+    )
+
+result = response.json()
+job_id = result["job_id"]
+print(f"Job queued: {job_id}")
+
+# Poll for status
+import time
+while True:
+    status_response = httpx.get(
+        f"https://api.deha.one/proxy/acme_corp/vector/api/v1/jobs/{job_id}",
+        headers={"Authorization": f"Bearer {jwt_token}"},
+        params={"user_id": "acme_corp"}
+    )
+    job = status_response.json()
+    print(f"Status: {job['status']} ({job.get('progress', 0)}%)")
+    if job["status"] in ("COMPLETED", "FAILED"):
+        break
+    time.sleep(2)
+```
+
+```javascript Node.js
+const formData = new FormData();
+formData.append("file", fileBlob, "policy.pdf");
+formData.append("request_config", JSON.stringify({
+  user_id: "acme_corp",
+  source_name: "manual_upload",
+  metadata: { department: "legal", language: "en" }
+}));
+
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/vector/api/v1/ingest",
+  {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${jwtToken}` },
+    body: formData
+  }
+);
+
+const result = await response.json();
+console.log(`Job queued: ${result.job_id}`);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "message": "Ingest job queued successfully",
+  "job_id": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "PENDING",
+  "user_id": "acme_corp",
+  "check_status_url": "/api/v1/jobs/550e8400-e29b-41d4-a716-446655440000?user_id=acme_corp"
+}
+```
+
+```json Job Status Response (Polling)
+{
+  "job_id": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "PROCESSING",
+  "progress": 50,
+  "message": "Generating embeddings...",
+  "user_id": "acme_corp",
+  "filename": "policy.pdf"
+}
+```
+
+<Note>
+Re-uploading the same file updates existing vectors instead of creating duplicates. Documents are deduplicated using a deterministic ID based on user, filename, and chunk position.
+</Note>
+
+<Tip>
+For best search results, choose chunk sizes appropriate to your content. Shorter chunks (256-512 characters) work well for FAQs and structured content. Longer chunks (1000-2000 characters) are better for narrative documents.
+</Tip>

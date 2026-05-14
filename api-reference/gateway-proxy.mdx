@@ -1,0 +1,88 @@
+---
+title: "Dynamic Proxy"
+api: "GET /proxy/{user_id}/{path}"
+description: "Authenticated proxy to user services via configured routes."
+---
+
+Proxies authenticated requests to upstream services defined in your user's route configuration. This endpoint is the primary access point for interacting with DEHA ONE platform services such as the Config Service, Knowledge Base, Data Engine, and more.
+
+Supports all HTTP methods: GET, POST, PUT, DELETE, PATCH, HEAD, and OPTIONS.
+
+## Authentication
+
+Requires a valid JWT token (Auth0) in the `Authorization` header. The JWT's `deha_one_user_id` claim must match the URL `{user_id}`, unless the user has the `admin` role.
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="path" type="string" required>
+  The service path to route to (e.g., `config/api/v1/config/{user_id}/list`).
+</ParamField>
+
+## How Routing Works
+
+Routes are matched using Longest Prefix Match against your user's route definitions. The matched route determines which service handles the request.
+
+Common route prefixes:
+
+| Route Prefix | Service |
+|-------------|---------|
+| `config/` | Configuration Management |
+| `vector/` | Knowledge Base (Vector Search) |
+| `bff/` | Backend for Frontend |
+| `metering/` | Usage and Billing |
+
+## Forwarded Identity Headers
+
+Your identity is automatically forwarded to the upstream service:
+
+| Header | Description |
+|--------|-------------|
+| `X-User-Id` | Your user identifier |
+| `X-User-Id` | Your user identifier |
+| `X-User-Email` | Your email address |
+| `X-User-Role` | Your role (`owner`, `admin`, `supervisor`, `agent`, `viewer`) |
+
+## Rate Limiting
+
+Rate limiting is applied per user and route. The limit is configured per route in your user configuration.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Missing or invalid JWT token |
+| `403` | User mismatch (non-admin accessing another user's routes) |
+| `404` | No matching route found for the given path |
+| `405` | HTTP method not allowed for the matched route |
+| `429` | Rate limit exceeded |
+| `502` | Upstream service temporarily unreachable |
+| `503` | Service temporarily unavailable |
+| `504` | Request timed out |
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/list" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/list",
+    headers={"Authorization": f"Bearer {jwt_token}"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/list",
+  {
+    headers: { "Authorization": `Bearer ${jwtToken}` }
+  }
+);
+```
+</CodeGroup>

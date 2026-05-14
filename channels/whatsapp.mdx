@@ -1,0 +1,97 @@
+---
+title: "WhatsApp"
+description: "Connect your AI agents to WhatsApp Business and start responding to customers automatically."
+icon: "whatsapp"
+---
+
+Connect your DEHA ONE agents to WhatsApp so your customers can get instant, intelligent responses through the messaging app they already use every day.
+
+## What You Need
+
+Before you start, make sure you have:
+
+1. A [Meta Business account](https://business.facebook.com/)
+2. A WhatsApp Business app created in the [Meta Developer Dashboard](https://developers.facebook.com/)
+3. A verified phone number for WhatsApp Business
+4. Your App Secret, Phone Number ID, and a System User access token from Meta
+
+<Info>
+  If you do not have a Meta Business account yet, follow [Meta's guide](https://www.facebook.com/business/help/1710077379203657) to create one. The process takes about 10 minutes.
+</Info>
+
+## Setup Guide
+
+<Steps>
+  <Step title="Open the DEHA ONE Dashboard">
+    Go to **Settings > Channels > WhatsApp** and click **Connect WhatsApp**.
+  </Step>
+  <Step title="Enter your Meta credentials">
+    You will need to provide:
+    - **Phone Number ID** -- Found in your Meta Developer Dashboard under WhatsApp > Getting Started
+    - **API Token** -- A System User access token with WhatsApp messaging permissions
+    - **App Secret** -- Found in your Meta App Dashboard under Settings > Basic
+    - **Verify Token** -- A custom token you create (any string you choose)
+  </Step>
+  <Step title="Configure the webhook in Meta">
+    In your Meta Developer Dashboard, go to **WhatsApp > Configuration** and set the webhook URL to:
+
+    ```
+    https://api.deha.one/webhook/{your_user_id}/whatsapp
+    ```
+
+    Enter the same **Verify Token** you provided in DEHA ONE. Subscribe to the **messages** webhook field.
+  </Step>
+  <Step title="Choose your agent">
+    Select which AI agent should handle WhatsApp conversations. You can also set an optional welcome message that greets new customers.
+  </Step>
+  <Step title="Send a test message">
+    Send a message to your WhatsApp Business number from your personal phone. You should receive an AI-generated response within seconds.
+  </Step>
+</Steps>
+
+## What Your Customers Can Send
+
+Your AI agent can receive and understand the following types of messages from WhatsApp users:
+
+| Message Type | Description |
+|---|---|
+| Text | Regular text messages |
+| Images | Photos with optional captions |
+| Documents | PDFs, spreadsheets, and other files |
+| Audio / Voice notes | Audio recordings |
+| Video | Video files |
+| Location | Shared GPS coordinates |
+| Button replies | When a customer taps a button from a template |
+| List selections | When a customer picks an item from a list |
+
+Your agent responds with text messages. Support for rich message templates (images, buttons, lists) in outbound messages is coming soon.
+
+## Tips and Best Practices
+
+<Tip>
+  WhatsApp users expect quick, conversational replies. Configure your agent's personality to be concise and friendly rather than formal or long-winded.
+</Tip>
+
+### Respond within 24 hours
+
+WhatsApp allows free-form messaging only within 24 hours of the customer's last message. After that window closes, you can only send pre-approved message templates. Since DEHA ONE responds instantly, this is usually not an issue.
+
+### Keep your quality rating high
+
+Meta monitors how customers interact with your business. If too many users block or report your number, Meta may reduce your messaging limits. To maintain a good rating:
+
+- Make sure your agent provides helpful, relevant responses
+- Do not send unsolicited messages
+- Let customers know they are chatting with an AI assistant
+
+### Phone number formatting
+
+DEHA ONE automatically handles phone number formatting. Whether a customer's number comes in as `+90 532 123 4567` or `90-532-123-4567`, the platform normalizes it correctly.
+
+### Messaging limits
+
+New WhatsApp Business accounts start with a limit of 1,000 unique users per 24 hours. As your quality rating improves, Meta automatically increases this limit. Most active businesses reach unlimited messaging within a few weeks.
+
+<Warning>
+  Keep your API credentials secure. Never share your App Secret or API Token publicly. DEHA ONE stores all credentials in an encrypted vault.
+</Warning>

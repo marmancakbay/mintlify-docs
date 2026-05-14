@@ -1,0 +1,117 @@
+---
+title: "Data Transformations"
+sidebarTitle: "Transformations"
+description: "Clean, reshape, validate, and enrich your data with built-in transformation tools and AI-powered mapping."
+icon: "wand-magic-sparkles"
+---
+
+DEHA ONE provides tools to clean, reshape, and validate your data before or after importing it. Whether you need to standardize phone numbers, extract values from complex records, or use AI to classify text, the transformation engine handles it.
+
+---
+
+## Available operations
+
+### Extract and reshape
+
+| Operation | What it does | Example |
+|-----------|-------------|---------|
+| **Regex** | Extract or replace values using patterns | Extract area codes from phone numbers |
+| **Template** | Create new fields by combining existing ones | Merge first and last name into full name |
+| **Copy** | Copy a value from one field to another | Copy creation date to import date |
+| **Split** | Break a string into parts | Split "New York, NY" into city and state |
+| **Join** | Combine list items into a single string | Join tags into a comma-separated list |
+
+### Clean and standardize
+
+| Operation | What it does | Example |
+|-----------|-------------|---------|
+| **Trim** | Remove extra spaces | Clean up messy text fields |
+| **Lowercase / Uppercase** | Normalize text case | Standardize email addresses |
+| **Date format** | Parse and reformat dates | Convert "03/23/2026" to "2026-03-23" |
+| **Phone standardization** | Normalize phone numbers | Convert various formats to "+1-555-123-4567" |
+| **Null handling** | Fill or remove empty values | Replace missing ages with the average |
+
+### AI-powered transforms
+
+| Operation | What it does | Example |
+|-----------|-------------|---------|
+| **AI classification** | Use AI to categorize text | Classify product descriptions into categories |
+| **AI extraction** | Use AI to pull structured data from text | Extract company names from free-text notes |
+| **AI mapping** | Use AI to map values between systems | Map product names to standard SKUs |
+
+<Tip>
+  AI-powered transforms are great for tasks that are hard to express as rules, such as categorizing free-text descriptions or extracting entities from unstructured data.
+</Tip>
+
+---
+
+## Chaining operations
+
+You can apply multiple operations in sequence. Each step can use the output of previous steps. For example:
+
+1. Extract a phone number from a text field using regex
+2. Standardize it to international format
+3. Create a formatted label combining name and phone number
+
+---
+
+## Data schemas
+
+Schemas define the expected structure of your data. They act as a contract that ensures your data meets quality standards before it is stored or used.
+
+### What schemas enforce
+
+- **Required fields** -- Certain fields must always have a value
+- **Data types** -- Fields must contain the right type (text, number, date, etc.)
+- **Allowed values** -- Categorical fields can be restricted to a set of valid options (e.g., status must be "active", "inactive", or "suspended")
+- **Value ranges** -- Numeric fields can have minimum and maximum bounds
+
+### Example
+
+A customer schema might enforce:
+
+| Field | Type | Rules |
+|-------|------|-------|
+| email | Text | Required, must match email format |
+| age | Number | Must be between 0 and 150 |
+| status | Text | Must be "active", "inactive", or "suspended" |
+| name | Text | Required |
+
+When data is imported or transformed, it is validated against the schema. Records that violate the rules are flagged so you can review and fix them.
+
+---
+
+## Smart field mapping
+
+When you connect a new data source, the field names in your source may not match your target schema. DEHA ONE can automatically suggest mappings:
+
+- `cust_name` maps to `name`
+- `cust_email` maps to `email`
+- `phone_num` maps to `phone`
+- `signup_dt` maps to `created_at`
+
+The mapping engine understands common naming conventions, abbreviations, and variations, so it works even when field names differ significantly between systems.
+
+---
+
+## Using transforms with agents
+
+Your AI agents can apply transformations as part of their workflow. For example:
+
+- An agent receiving data from a webhook can clean and standardize it before storing
+- A data pipeline can transform API responses into the format your analytics expect
+- An agent can validate incoming data against a schema and flag records that need attention
+
+---
+
+## Validation and quality
+
+After transformations, you can run quality checks to verify your data meets standards:
+
+- **Completeness** -- Are all required fields filled?
+- **Uniqueness** -- Are there duplicate records?
+- **Freshness** -- Is the data recent enough?
+- **Consistency** -- Do values fall within expected ranges?
+- **Format** -- Do values match expected patterns (emails, phone numbers, etc.)?
+
+The platform generates a quality score and a detailed report showing any issues found.

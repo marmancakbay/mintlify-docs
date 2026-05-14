@@ -1,0 +1,112 @@
+---
+title: "Run Analytics"
+sidebarTitle: "Run Analytics"
+description: "Get AI-powered insights from your data with built-in classification, forecasting, anomaly detection, and more."
+icon: "chart-line"
+---
+
+## What You Will Learn
+
+Use DEHA ONE's built-in analytics to understand your data better -- find patterns, predict trends, detect anomalies, and segment your customers. No data science expertise required.
+
+<Info>
+Before you begin, make sure you have:
+- Data loaded into your workspace (see [Connect a Data Source](/guides/connect-data-source))
+- At least one table with structured data for analysis
+</Info>
+
+---
+
+<Steps>
+
+### Choose an Analysis Type
+
+| Analysis | What It Does | Example Use Case |
+|----------|-------------|-----------------|
+| **Profiling** | Assess data quality and statistics | "Understand my data before doing anything else" |
+| **Classification** | Predict categories | "Which customers are likely to churn?" |
+| **Forecasting** | Predict future values | "What will revenue look like next month?" |
+| **Anomaly detection** | Find unusual patterns | "Are there any suspicious transactions?" |
+| **Clustering** | Group similar records | "Segment our customers by behavior" |
+| **Trend analysis** | Identify directional patterns | "Is our growth accelerating or slowing?" |
+| **Correlation** | Find relationships between variables | "What factors most affect customer satisfaction?" |
+
+### Run an Analysis from the Dashboard
+
+1. Go to **Data > Analytics** in the dashboard.
+2. Select the table you want to analyze.
+3. Choose an analysis type.
+4. Configure the options:
+   - **Target column** -- The column you want to predict or analyze (for classification and forecasting)
+   - **Feature columns** -- The columns to use as inputs (optional; the system can auto-select)
+   - **Date column** -- For time-based analysis like forecasting
+5. Click **Run Analysis**.
+
+The system automatically selects the best algorithm for your dataset size and generates a report with visualizations.
+
+### Ask Your Agent to Run Analysis
+
+You can also ask your agent to run analysis through any channel:
+
+> "Analyze our customer data for churn risk."
+
+> "What are the anomalies in our daily sales data?"
+
+> "Forecast our revenue for the next 30 days."
+
+> "Segment our customers into groups based on their purchase behavior."
+
+The agent runs the analysis and explains the results in plain language.
+
+### Understand Your Results
+
+Every analysis returns:
+- **A natural language report** explaining what was found
+- **Key metrics** (accuracy, confidence, etc.)
+- **Visualizations** ready to display in the dashboard
+- **Feature importance** showing which factors matter most
+
+**Example classification result:**
+
+> "Analysis of 1,200 customers shows that the strongest predictor of churn is days since last order (42% importance), followed by number of support tickets (28%). The model achieves 87% accuracy."
+
+### Start with Profiling
+
+If you are not sure where to begin, start with a **profiling** analysis. It gives you a complete picture of your data quality, including:
+- Missing values and duplicates
+- Statistical summaries for each column
+- Outlier detection
+- Data type recommendations
+
+<Check>
+Run a profiling analysis on one of your tables and review the data quality report. This will help you identify any data issues before running more advanced analyses.
+</Check>
+
+</Steps>
+
+---
+
+## How the System Picks the Right Algorithm
+
+DEHA ONE automatically selects the best approach based on your data:
+
+| Dataset Size | Algorithm Used | Why |
+|-------------|---------------|-----|
+| Up to ~10,000 rows | TabPFN | Zero-shot, no training needed, fast results |
+| Larger datasets | LightGBM | Handles large data efficiently |
+| Statistical tasks | SciPy-based | Best for trend analysis and correlations |
+
+You do not need to choose an algorithm -- the system handles this for you.
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Build a Knowledge Base" icon="book" href="/guides/build-knowledge-base">
+    Add document-based search alongside structured data analysis.
+  </Card>
+  <Card title="Scheduled Automations" icon="clock" href="/guides/scheduled-automations">
+    Run analytics automatically on a schedule.
+  </Card>
+</CardGroup>

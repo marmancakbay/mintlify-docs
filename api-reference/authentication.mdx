@@ -1,0 +1,166 @@
+---
+title: "Authentication"
+description: "JWT and API key authentication methods for the DEHA ONE API."
+---
+
+DEHA ONE supports two authentication methods: **JWT tokens** for interactive dashboard sessions and **API keys** for programmatic access.
+
+## JWT Authentication (Auth0)
+
+JWT authentication is used by the dashboard and web applications. Tokens are issued by Auth0 and verified using JWKS (JSON Web Key Set).
+
+### How It Works
+
+1. Authenticate with Auth0 using your DEHA ONE credentials to obtain a JWT token.
+2. Include the token in the `Authorization` header of every request.
+3. The token signature, audience, and issuer are verified automatically.
+4. User and user identity are extracted from JWT claims.
+
+### Request Format
+
+```bash
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### JWT Claims
+
+| Claim | Description |
+|-------|-------------|
+| `sub` | User identifier (required) |
+| `deha_one_user_id` | User identifier |
+| `deha_one_role` | User role (`owner`, `admin`, `supervisor`, `agent`, `viewer`) |
+| `email` | User email address |
+| `name` | Display name |
+
+### User Roles and Permissions
+
+| Role | Permissions |
+|------|------------|
+| `owner` | Full access including billing and user deletion |
+| `admin` | User management, config deployment, all operations |
+| `supervisor` | Config read/write, agent management |
+| `agent` | Operational access, limited config read |
+| `viewer` | Read-only access |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/list" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."
+```
+
+```python Python
+import httpx
+
+client = httpx.Client(
+    base_url="https://api.deha.one",
+    headers={"Authorization": f"Bearer {jwt_token}"}
+)
+response = client.get("/proxy/acme_corp/config/api/v1/config/acme_corp/list")
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/list",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`
+    }
+  }
+);
+```
+</CodeGroup>
+
+## API Key Authentication
+
+API keys are used for programmatic access from external systems such as automation tools, custom backends, and CI/CD pipelines.
+
+### Key Format
+
+API keys follow the format:
+
+```
+dh_live_{32 hex characters}
+```
+
+Example: `dh_live_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4`
+
+### How It Works
+
+1. Create an API key via the Dashboard or the [API Keys endpoint](/api-reference/bff-api-keys).
+2. Include the key in the `Authorization` header with the `Bearer` prefix.
+3. The key is validated and the associated user is resolved automatically.
+
+### Request Format
+
+```bash
+Authorization: Bearer dh_live_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4
+```
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/api/v1/agent/acme_corp/support_agent/invoke" \
+  -H "Authorization: Bearer dh_live_a1b2c3d4e5f6..." \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is the status of order 12345?"}'
+```
+
+```python Python
+import httpx
+
+client = httpx.Client(
+    base_url="https://api.deha.one",
+    headers={"Authorization": "Bearer dh_live_a1b2c3d4e5f6..."}
+)
+response = client.post(
+    "/api/v1/agent/acme_corp/support_agent/invoke",
+    json={"message": "What is the status of order 12345?"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/agent/acme_corp/support_agent/invoke",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer dh_live_a1b2c3d4e5f6...",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: "What is the status of order 12345?" })
+  }
+);
+```
+</CodeGroup>
+
+### Rate Limits
+
+Each API key has a configurable rate limit (default: 60 requests per minute). The rate limit is set during key creation and can be adjusted by user administrators.
+
+### Security Best Practices
+
+<Warning>
+API keys grant full access to the user's resources. Treat them like passwords.
+</Warning>
+
+- Store API keys in environment variables or secret managers -- never in source code.
+- Rotate keys regularly using the [key rotation endpoint](/api-reference/bff-api-keys).
+- Use IP whitelisting for additional security.
+- Each key is shown in plaintext only once at creation. If lost, rotate the key to generate a new one.
+- Restrict API key access to specific IP addresses when possible.
+
+## IP Whitelisting
+
+Optionally, users can configure IP whitelists for additional security. When a whitelist is active, requests from non-whitelisted IPs are rejected with `403 Forbidden`, regardless of valid authentication.
+
+Both exact IP addresses and CIDR ranges are supported. IP whitelists are managed through the user configuration in the Dashboard.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Missing or invalid authentication token/key |
+| `403` | Valid credentials but insufficient permissions, user mismatch, or IP not whitelisted |

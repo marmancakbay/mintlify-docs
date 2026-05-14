@@ -1,0 +1,125 @@
+---
+title: "Export Data"
+api: "POST https://api.deha.one/data/export"
+description: "Export a table to CSV, Parquet, JSON, JSONL, or Excel format."
+---
+
+Exports data from a table in your data warehouse to a specified file format. Supports column selection and key-value filtering to narrow the export scope.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="table_name" type="string" required>
+  Name of the table to export.
+</ParamField>
+<ParamField body="format" type="string" default="csv">
+  Export format: `csv`, `parquet`, `json`, `jsonl`, or `excel`.
+</ParamField>
+<ParamField body="columns" type="array">
+  Specific columns to include in the export. Exports all columns if omitted.
+</ParamField>
+<ParamField body="filters" type="object">
+  Key-value filters to apply before export. Each key is a column name and the value is the filter criterion.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the export completed successfully.
+</ResponseField>
+<ResponseField name="data.format" type="string">
+  The export format used.
+</ResponseField>
+<ResponseField name="data.record_count" type="integer">
+  Number of records exported.
+</ResponseField>
+<ResponseField name="data.file_size_bytes" type="integer">
+  Size of the exported file in bytes.
+</ResponseField>
+<ResponseField name="data.duration_ms" type="number">
+  Export duration in milliseconds.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid format or table not found |
+| 401 | Missing or invalid authentication |
+| 500 | Export execution error |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/data/export" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "table_name": "customers",
+    "format": "csv",
+    "columns": ["id", "name", "email"]
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/data/export",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "table_name": "customers",
+        "format": "csv",
+        "columns": ["id", "name", "email"]
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/data/export",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      table_name: "customers",
+      format: "csv",
+      columns: ["id", "name", "email"]
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "format": "csv",
+    "record_count": 500,
+    "file_size_bytes": 24680,
+    "duration_ms": 10.2
+  }
+}
+```

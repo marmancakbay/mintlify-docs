@@ -1,0 +1,105 @@
+---
+title: "Integrations"
+sidebarTitle: "Overview"
+description: "Connect external services, APIs, and tools to your AI agents."
+icon: "puzzle-piece"
+---
+
+DEHA ONE agents can interact with the outside world. Connect your CRM, send Slack messages, call custom APIs, or run sandboxed Python code -- all from within your agent workflows. You define what your agents can access, and the platform handles authentication, execution, retries, and error handling.
+
+<Info>
+  **Pipeline-First architecture**: every integration becomes a **pipeline endpoint** -- not a raw tool binding. This means each integration has its own input/output schema, API key, rate limit, and timeout. Agents call pipelines (which call integrations); your own apps can call those same pipelines directly via REST API. Same tool, every caller.
+</Info>
+
+---
+
+## Three types of integrations
+
+<CardGroup cols={3}>
+  <Card title="REST API Tools" icon="globe" href="/integrations/rest-api-tools">
+    Connect any REST API as a tool for your agents. Define the endpoints, and your agents can call them during conversations.
+  </Card>
+  <Card title="Code Execution" icon="code" href="/integrations/code-execution">
+    Let your agents write and run Python code for calculations, data processing, and custom logic -- all in a secure, isolated environment.
+  </Card>
+  <Card title="MCP Protocol" icon="plug" href="/integrations/mcp-protocol">
+    Connect to MCP-compatible tool servers for standardized tool access across AI platforms.
+  </Card>
+</CardGroup>
+
+---
+
+## How integrations work
+
+When your agent needs to use an external service, the process is fully automated:
+
+<Steps>
+  <Step title="Agent decides to use a tool">
+    During a conversation or pipeline, the AI agent determines it needs external data or functionality -- for example, looking up a customer in your CRM.
+  </Step>
+  <Step title="Authentication is handled">
+    DEHA ONE securely retrieves the right credentials from your encrypted vault. You never have to worry about tokens or API keys during execution.
+  </Step>
+  <Step title="Request is executed">
+    The platform makes the API call, runs the code, or invokes the MCP tool on behalf of your agent.
+  </Step>
+  <Step title="Results are returned">
+    The response is formatted and returned to the agent, which continues the conversation with the new information.
+  </Step>
+</Steps>
+
+---
+
+## Authentication options
+
+DEHA ONE supports multiple authentication methods for connecting to external services:
+
+| Method | How it works | Best for |
+|--------|-------------|----------|
+| **API Key** | A secret key sent with each request | Most REST APIs |
+| **Bearer Token** | A token in the Authorization header | Services with static tokens |
+| **OAuth2** | Automatic token management with refresh | SaaS platforms (Salesforce, HubSpot, Google) |
+| **Basic Auth** | Username and password | Legacy APIs and internal services |
+
+All credentials are stored securely in your encrypted vault and never appear in configuration files.
+
+---
+
+## Built-in vs. custom integrations
+
+### Built-in integrations
+
+DEHA ONE includes pre-configured integrations for popular services (HubSpot, Slack, Stripe, Shopify, Salesforce, Google Workspace, and many more). These are ready to use -- just add your credentials via OAuth or vault entry.
+
+### Custom integrations
+
+Connect any REST API or MCP server by defining the connection in your configuration. Specify the base URL, endpoints, parameters, and authentication, and your agents can start using it immediately. DEHA can write the configuration for you from a sentence like *"add my CRM API at api.acme.com/v2 with a bearer token from the vault, and expose endpoints for contact lookup and ticket creation."*
+
+---
+
+## Per-agent MCP endpoints
+
+Beyond consuming external tools, DEHA ONE can **expose your agents and pipelines as MCP tools** for any Model Context Protocol client (Claude Desktop, Cursor, custom LLM apps, etc.).
+
+Each user gets endpoints at:
+
+- `POST /api/v1/agent/{user_id}/mcp` — exposes any pipeline as an MCP tool
+- `POST /api/v1/agent/{user_id}/deha/mcp` — exposes DEHA itself as an MCP tool
+
+Authentication is via per-user API key. Per-agent endpoints with their own API keys are supported too. See [MCP protocol](/integrations/mcp-protocol) for the full setup.
+
+---
+
+## What's next
+
+<CardGroup cols={2}>
+  <Card title="REST API Tools" icon="globe" href="/integrations/rest-api-tools">
+    Learn how to connect any REST API as a tool for your agents.
+  </Card>
+  <Card title="Code Execution" icon="code" href="/integrations/code-execution">
+    Run custom Python code from your agents in a secure sandbox.
+  </Card>
+  <Card title="MCP Protocol" icon="plug" href="/integrations/mcp-protocol">
+    Connect to MCP-compatible tools for standardized access.
+  </Card>
+</CardGroup>

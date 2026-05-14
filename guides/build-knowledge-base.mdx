@@ -1,0 +1,140 @@
+---
+title: "Build a Knowledge Base"
+sidebarTitle: "Knowledge Base"
+description: "Upload your company documents so your AI agent can answer questions with accurate, up-to-date information."
+icon: "book"
+---
+
+## What You Will Build
+
+Create a knowledge base by uploading your company documents. Your AI agent will search this knowledge base to give accurate, company-specific answers instead of relying on general knowledge.
+
+<Info>
+Before you begin, make sure you have:
+- A DEHA ONE workspace with at least one [agent configured](/guides/first-agent)
+- Documents to upload (PDF, Word, text files, spreadsheets, etc.)
+</Info>
+
+---
+
+<Steps>
+
+### How It Works
+
+When a customer asks your agent a question, the agent searches your knowledge base for relevant information before answering. This is called **Retrieval-Augmented Generation (RAG)** -- your agent retrieves real company information and uses it to generate accurate responses.
+
+```
+Customer asks: "What is your return policy?"
+        |
+  Agent searches your uploaded documents
+        |
+  Finds the relevant section about returns
+        |
+  Agent answers: "Our return policy allows returns within 30 days..."
+```
+
+### Create a Collection
+
+Organize your documents into collections (like folders). For example, you might have separate collections for "Product Documentation," "Company Policies," and "FAQ."
+
+1. Go to **Knowledge Base** in the dashboard.
+2. Click **Create Collection**.
+3. Name your collection (e.g., "Company Knowledge").
+4. Choose an embedding model:
+   - **Default (HuggingFace)** -- Free, good for general use
+   - **OpenAI** -- Higher quality, requires an OpenAI API key
+   - **Google** -- Good quality with Google Cloud integration
+
+### Upload Documents
+
+1. Open your collection.
+2. Click **Upload Documents**.
+3. Drag and drop files or click to browse.
+4. DEHA ONE automatically processes your documents -- splitting them into searchable chunks and indexing them.
+
+**Supported file formats:**
+
+| Format | Extensions |
+|--------|-----------|
+| PDF | `.pdf` |
+| Plain text | `.txt` |
+| Markdown | `.md` |
+| CSV | `.csv` |
+| JSON | `.json` |
+| YAML | `.yaml`, `.yml` |
+
+<Tip>
+You can also add knowledge by typing or pasting text directly. This is useful for FAQ entries, policy summaries, or any content that is not in a file.
+</Tip>
+
+### Add Metadata Tags
+
+When uploading, you can tag documents with metadata (like category, department, or topic) to help organize and filter search results.
+
+For example, tag a document with `category: policies` and `department: hr` so the agent can find it more easily when answering HR policy questions.
+
+### Test Your Knowledge Base
+
+Before connecting it to your agent, test that search works correctly:
+
+1. Go to your collection in the dashboard.
+2. Use the **Search** box to try a question.
+3. Check that relevant document chunks appear in the results.
+4. Verify the relevance scores -- higher scores mean better matches.
+
+**Example searches to try:**
+- "What is the return policy?"
+- "How do I reset my password?"
+- "What are the business hours?"
+
+### Connect to Your Agent
+
+Once your knowledge base is populated, make sure your agent is set up to use it:
+
+1. Go to **Agents** and select your agent.
+2. In the agent settings, make sure the **Knowledge Search** tool is enabled.
+3. In the system prompt, instruct the agent to search the knowledge base:
+
+```
+Always search the knowledge base before answering questions about
+company policies, products, or procedures. If you cannot find relevant
+information, let the customer know honestly.
+```
+
+4. **Publish** your configuration.
+
+<Check>
+Ask your agent a question that can be answered from your uploaded documents. Verify that it searches the knowledge base and returns accurate information from your content.
+</Check>
+
+### Keep Your Knowledge Base Updated
+
+As your company information changes, keep your knowledge base current:
+
+- **Upload new documents** when policies or products change.
+- **Remove outdated content** from collections.
+- **Re-upload updated versions** of existing documents -- the system handles deduplication automatically.
+
+</Steps>
+
+---
+
+## Tips for a Great Knowledge Base
+
+- **Cover common questions first.** Upload the documents that answer your most frequent customer questions.
+- **Use clear, well-structured documents.** Documents with headings and organized sections produce better search results.
+- **Keep documents focused.** Several focused documents work better than one massive document covering everything.
+- **Test with real customer questions.** Search for the actual questions your customers ask to verify coverage.
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Ask Questions About Your Data" icon="magnifying-glass" href="/guides/text-to-sql">
+    Query structured data alongside your document knowledge base.
+  </Card>
+  <Card title="Custom Integrations" icon="plug" href="/guides/custom-integrations">
+    Connect external APIs so your agent can take actions.
+  </Card>
+</CardGroup>

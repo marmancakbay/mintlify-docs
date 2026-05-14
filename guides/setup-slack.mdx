@@ -1,0 +1,124 @@
+---
+title: "Set up Slack"
+sidebarTitle: "Set up Slack"
+description: "Connect your Slack workspace, route agent conversations and pipeline notifications, and verify it end-to-end."
+icon: "slack"
+---
+
+This guide walks you through connecting Slack to DEHA ONE. You can let DEHA do most of this for you with a single sentence -- but here is the manual walkthrough if you want full control.
+
+---
+
+## Prerequisites
+
+- Slack workspace admin permissions (you will install an app)
+- A DEHA ONE user with at least one deployed agent
+
+---
+
+## 1. Create a Slack app
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps) → **Create New App** → **From scratch**
+2. Name the app (e.g., "DEHA Assistant") and pick your workspace
+3. On the **Basic Information** page, copy the **Signing Secret** -- you will need it shortly
+
+---
+
+## 2. Configure OAuth scopes
+
+In the app settings, open **OAuth & Permissions** and add these **Bot Token Scopes**:
+
+| Scope | Why |
+|---|---|
+| `chat:write` | Send messages to channels and DMs |
+| `app_mentions:read` | Receive `@mention` events |
+| `im:history` | Read DMs sent to the bot |
+| `im:write` | Reply to DMs |
+| `channels:history` | Read messages in public channels the bot is in |
+| `groups:history` | Read messages in private channels the bot is in |
+| `files:write` | Attach images / PDFs / dashboards |
+| `commands` | Receive slash commands (optional) |
+
+Click **Install to Workspace** at the top of the page. After approving, copy the **Bot User OAuth Token** (starts with `xoxb-`).
+
+---
+
+## 3. Vault the credentials
+
+In the DEHA ONE dashboard:
+
+1. **Channels** → **Slack** → **Connect**
+2. Paste the **Bot Token** and **Signing Secret**
+3. DEHA stores both in your encrypted vault and never reads them in plain text again
+
+Or ask DEHA to do it:
+
+> "Vault these Slack creds: bot token `xoxb-...`, signing secret `abc...`."
+
+---
+
+## 4. Configure event subscriptions
+
+Back in your Slack app:
+
+1. Open **Event Subscriptions** → enable
+2. **Request URL**: `https://<your-deha-domain>/webhook/{user_id}/slack` -- paste the URL from the dashboard
+3. Slack will send a verification challenge; DEHA ONE responds automatically
+4. Subscribe to bot events: `app_mention`, `message.im`, `message.channels` (and any others you want)
+5. **Save Changes** -- and you may need to **Reinstall to Workspace** to apply the new scopes
+
+---
+
+## 5. Assign an agent
+
+In the DEHA ONE dashboard:
+
+1. **Channels** → **Slack** → **Routing**
+2. Pick which agent handles each routing rule:
+   - All DMs → support agent
+   - Mentions in `#engineering-oncall` → on-call agent
+   - `/forecast` slash command → analyst agent
+
+Routing rules live in your `routes.yaml`. Hot-reload picks them up instantly.
+
+---
+
+## 6. Test it
+
+- DM the bot from Slack: it should reply within a few seconds
+- `@mention` it in a channel where you have invited it
+- Run a `/forecast` slash command if you wired one up
+
+If you don't see a reply:
+
+- Check the dashboard's **Channels → Slack → Health** status
+- Look at the **Logs** tab for that channel; signature verification errors will be obvious
+- Make sure the bot was invited to the channel where you `@mention`d it
+
+---
+
+## 7. Add pipeline notifications
+
+Now you can use Slack as a notification target from any pipeline. For example, post a daily report:
+
+```yaml
+- type: publish
+  channel: slack
+  target: "#daily-ops"
+  text: "*Daily report*: yesterday's revenue was up 12% week-over-week."
+  attachments:
+    - chart_id: revenue-week-over-week
+      format: png
+```
+
+Pair this with a cron trigger and you have a daily, fully-automated Slack digest with charts.
+
+---
+
+## Common patterns
+
+- **Single bot, single agent** — simplest setup, all DMs and mentions go to one agent
+- **Channel-scoped agents** — `#support` → support agent, `#engineering` → on-call agent
+- **Slash-command-scoped** — `/ask` → general, `/forecast` → analyst, `/incident` → on-call
+- **Alerts only** — no bot conversations, just inbound notifications from pipelines
+- **HITL approvals in Slack** — agent posts an interactive block; reviewer clicks approve/reject; the agent resumes with the decision

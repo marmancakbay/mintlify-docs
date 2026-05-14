@@ -1,0 +1,104 @@
+---
+title: "Telegram"
+description: "Create a Telegram bot and connect it to your DEHA ONE agents for automated customer conversations."
+icon: "telegram"
+---
+
+Connect a Telegram bot to DEHA ONE so your customers can chat with your AI agents directly in Telegram -- one of the most popular messaging apps worldwide.
+
+## What You Need
+
+1. A Telegram account
+2. A bot created through Telegram's BotFather (we will walk you through this below)
+
+That is it -- no business accounts or developer dashboards required.
+
+## Setup Guide
+
+<Steps>
+  <Step title="Create a bot with BotFather">
+    Open Telegram and search for [@BotFather](https://t.me/BotFather). Send the command `/newbot` and follow the prompts:
+    - Choose a **display name** for your bot (e.g., "Acme Support")
+    - Choose a **username** ending in `bot` (e.g., `acme_support_bot`)
+
+    BotFather will give you a **Bot Token** -- copy this, you will need it in the next step.
+  </Step>
+  <Step title="Connect to DEHA ONE">
+    In your DEHA ONE dashboard, go to **Settings > Channels > Telegram** and click **Connect Telegram**. Paste your Bot Token and save.
+  </Step>
+  <Step title="Choose your agent">
+    Select which AI agent should handle Telegram conversations. You can also set a welcome message for when users first interact with your bot.
+  </Step>
+  <Step title="Test your bot">
+    Open Telegram, search for your bot by its username, and send a message. You should receive an AI-generated response within seconds.
+  </Step>
+</Steps>
+
+<Info>
+  DEHA ONE automatically configures the webhook with Telegram, so you do not need to set up any URLs manually.
+</Info>
+
+## Supported Features
+
+### What your customers can send
+
+| Message Type | Description |
+|---|---|
+| Text | Regular text messages |
+| Photos | Images with optional captions |
+| Documents | Files of any type (PDF, spreadsheets, etc.) |
+| Audio | Audio files and voice notes |
+| Video | Video files and video notes (circular videos) |
+| Stickers | Animated and static stickers |
+| Location | Shared GPS coordinates |
+| Contacts | Shared contact cards |
+| Inline button taps | When a user taps a button your bot sent |
+
+### How your bot responds
+
+Your bot sends text responses with Markdown formatting -- bold text, links, lists, and other formatting are fully supported.
+
+## Setting Up Bot Commands
+
+Telegram lets you define a command menu that appears when users type `/` in the chat. This makes it easy for customers to discover what your bot can do.
+
+To set up commands:
+
+1. Open a chat with [@BotFather](https://t.me/BotFather)
+2. Send `/setcommands`
+3. Select your bot
+4. Send your command list, for example:
+
+```
+start - Start a conversation
+help - Get help with common questions
+status - Check your order status
+```
+
+Your AI agent will receive these commands as regular text messages (e.g., `/help`) and can respond accordingly.
+
+## Group Chats
+
+Your bot can also work in Telegram group chats. To enable this:
+
+1. Add your bot to a group
+2. If you want the bot to see all messages (not just commands), disable **Privacy Mode** via BotFather using `/setprivacy`
+
+<Note>
+  In group chats, it is usually best to keep Privacy Mode enabled so the bot only responds when directly addressed with a `/command`. This prevents the bot from responding to every message in the group.
+</Note>
+
+## Tips and Best Practices
+
+<Tip>
+  Take advantage of Telegram's Markdown support. Configure your agent to use bold text, bullet points, and links to make responses more readable.
+</Tip>
+
+- **Set a profile photo** for your bot via BotFather (`/setuserpic`) to make it look professional
+- **Add a description** (`/setdescription`) so users know what the bot does before they start chatting
+- **Define commands** so users can discover features through the Telegram command menu
+- **Keep responses concise** -- Telegram users expect quick, chat-style interactions
+
+<Warning>
+  Keep your Bot Token secure. Anyone with your token can control your bot. DEHA ONE stores it in an encrypted vault automatically.
+</Warning>

@@ -1,0 +1,122 @@
+---
+title: "Web Chat"
+description: "Add a live AI chat to your website or use the built-in dashboard chat for real-time conversations."
+icon: "comments"
+---
+
+Web Chat gives you two ways to interact with your AI agents in real time: through the built-in chat in your DEHA ONE dashboard, and by embedding a chat widget on your own website or application.
+
+## Dashboard Chat
+
+The DEHA ONE dashboard includes a built-in chat panel where you and your team can interact with your AI agents directly. This is useful for:
+
+- **Testing your agents** before connecting them to customer-facing channels
+- **Internal use** -- let your team ask questions and get AI-powered answers
+- **Monitoring conversations** -- watch live conversations and step in when needed
+
+Simply open the chat panel in the dashboard, select an agent, and start typing. Responses appear in real time.
+
+## Human-in-the-Loop Review
+
+When an AI agent flags a response for human review, your team gets a notification in the dashboard. From there, you can:
+
+| Action | What It Does |
+|---|---|
+| **Approve** | Send the AI-generated response to the customer as-is |
+| **Revise** | Edit the response before sending |
+| **Reject** | Discard the response and ask the agent to try again |
+| **Take over** | Pause the AI and handle the conversation yourself |
+| **Release** | Hand the conversation back to the AI agent |
+
+This works across all channels -- whether the customer is on WhatsApp, Telegram, Email, or Web Chat, your team manages reviews from the same dashboard.
+
+## Embedding Chat on Your Website
+
+You can add AI-powered chat to your own website or web application using the DEHA ONE API. This lets your website visitors chat with your AI agents without leaving your site.
+
+### Using API Keys
+
+The simplest way to embed chat is through the Agent Invoke API. Create an API key in your dashboard, then call the API from your application:
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch(
+  "https://api.deha.one/api/v1/agent/{user_id}/{agent_name}/invoke",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer dh_live_your_api_key_here",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Hello, I need help with my account",
+      user_id: "visitor-123",
+      session_id: "session-abc"
+    })
+  }
+);
+
+const data = await response.json();
+// Display data.response in your chat UI
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/api/v1/agent/{user_id}/{agent_name}/invoke",
+    headers={
+        "Authorization": "Bearer dh_live_your_api_key_here",
+        "Content-Type": "application/json"
+    },
+    json={
+        "message": "Hello, I need help with my account",
+        "user_id": "visitor-123",
+        "session_id": "session-abc"
+    },
+    timeout=65.0
+)
+print(response.json())
+```
+</CodeGroup>
+
+<Info>
+  The Agent Invoke API returns a response synchronously (within 60 seconds), making it simple to integrate into any application. See [API Keys](/security/api-keys) for details on creating and managing API keys.
+</Info>
+
+### Maintaining Conversation Context
+
+To keep the conversation flowing naturally across multiple messages, use the same `session_id` for all messages in a conversation. This allows the agent to remember what was discussed earlier.
+
+```javascript
+// First message
+const session = "session-" + Date.now();
+
+await sendMessage(session, "What is your return policy?");
+// Agent responds with return policy details
+
+// Follow-up message -- agent remembers the context
+await sendMessage(session, "How long do I have?");
+// Agent knows you are asking about the return window
+```
+
+### Real-Time Responses
+
+For applications that need real-time message delivery (like a live chat widget), you can connect to the WebSocket endpoint instead of polling the API:
+
+```
+wss://api.deha.one/bff/ws/events?user_id={user_id}&token={jwt_token}
+```
+
+This gives you instant delivery of agent responses, typing indicators, and other live updates without any polling.
+
+## Tips and Best Practices
+
+<Tip>
+  Start with the dashboard chat to test and refine your agent before embedding it on your website. This lets you iterate quickly without affecting your customers.
+</Tip>
+
+- **Use consistent session IDs** to maintain conversation context across messages
+- **Handle timeouts gracefully** -- show a "still thinking" indicator if the response takes more than a few seconds
+- **Add reconnection logic** if using WebSocket connections, so the chat recovers smoothly from network interruptions
+- **Test on mobile** -- make sure your embedded chat works well on mobile devices, where most web traffic comes from

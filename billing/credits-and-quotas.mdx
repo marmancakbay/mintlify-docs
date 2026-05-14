@@ -1,0 +1,176 @@
+---
+title: "Credits & Quotas"
+sidebarTitle: "Credits & Quotas"
+description: "Set spending limits, configure usage alerts, and control what happens when your credit quota is reached."
+icon: "gauge-high"
+---
+
+Your DEHA ONE account comes with a monthly credit allowance. This page explains how to manage your credits, set up alerts, and control what happens when you approach or exceed your limit.
+
+---
+
+## Credit pricing overview
+
+Every platform action has a credit cost. Here is a simplified breakdown:
+
+| Category | Actions included | Cost range |
+| --- | --- | --- |
+| **AI Responses** | Agent conversations, content generation, analysis, text-to-SQL | Varies by model and length |
+| **Messaging** | WhatsApp, Telegram, Email outbound | 1 credit per message |
+| **Data Operations** | Data loading, validation, profiling, export | 1-3 credits |
+| **Data Queries** | SQL execution, text-to-SQL conversion | 1-4 credits |
+| **Analytics** | Anomaly detection, trend analysis, forecasting, clustering | 2-5 credits |
+| **Code Execution** | Python sandbox runs | 1-2 credits |
+| **Semantic Search** | Knowledge base and vector searches | 1 credit |
+| **API Integrations** | External API calls via connectors | 1-2 credits |
+
+<Info>
+AI response costs vary based on the model and conversation length. Simpler models (used for quick tasks) cost fewer credits than advanced reasoning models. Your agents are configured to use the most cost-effective model for each task.
+</Info>
+
+---
+
+## Setting spending limits
+
+You can control your spending with two types of limits:
+
+### Monthly limit
+
+Your primary spending cap. This is the total number of credits available per calendar month.
+
+| Plan | Default monthly limit |
+| --- | --- |
+| Startup | 50,000 credits |
+| Growth | 200,000 credits |
+| Enterprise | 500,000+ credits (customizable) |
+
+### Daily limit (optional)
+
+An additional cap that limits how many credits can be used in a single day. This prevents a sudden spike in usage from consuming your entire monthly allowance.
+
+---
+
+## Quota alerts and notifications
+
+Stay informed about your usage with automatic alerts.
+
+### Warning alert
+
+When your usage reaches a percentage of your monthly limit, you receive a warning. The default threshold is **80%**, but you can adjust it.
+
+| Threshold | Monthly limit | Alert triggers at |
+| --- | --- | --- |
+| 80% (default) | 50,000 credits | 40,000 credits used |
+| 80% (default) | 200,000 credits | 160,000 credits used |
+| 90% | 500,000 credits | 450,000 credits used |
+
+When the warning triggers:
+- A notification appears on your dashboard
+- An email alert is sent to your account contact
+- Only one warning is sent per day (no alert storms)
+
+### Limit reached alert
+
+When you hit 100% of your monthly limit, you receive a critical notification and the configured overage action takes effect.
+
+---
+
+## What happens when you reach your quota
+
+You choose what happens when your monthly credits run out. There are three options:
+
+<CardGroup cols={3}>
+  <Card title="Alert Only" icon="bell">
+    **Operations continue normally.** You receive notifications but nothing is blocked. Good for teams that need uninterrupted service and handle budgets externally.
+  </Card>
+  <Card title="Throttle" icon="gauge">
+    **Operations slow down.** New requests are rate-limited to reduce consumption. Work already in progress completes normally. This is the most popular choice.
+  </Card>
+  <Card title="Block" icon="hand">
+    **New operations are stopped.** No new requests are processed until the next billing cycle or until you add more credits. Existing conversations can finish their current action.
+  </Card>
+</CardGroup>
+
+<Warning>
+The **Block** option immediately prevents new operations, which will interrupt service for your end users. Most teams prefer **Throttle** or **Alert Only** for a smoother experience.
+</Warning>
+
+---
+
+## Upgrading your plan
+
+If you consistently approach or exceed your monthly limit, consider upgrading:
+
+| Plan | Monthly credits | Pricing benefit | Default overage action |
+| --- | --- | --- | --- |
+| **Startup** | 50,000 | -- | Block |
+| **Growth** | 200,000 | Standard pricing | Throttle |
+| **Enterprise** | 500,000+ | Volume discount (up to 20% off) | Alert Only |
+
+### How to upgrade
+
+- **From the dashboard:** Go to **Settings > Billing** and select your new plan.
+- **Ask DEHA:** Say "I want to upgrade to the Growth plan" and DEHA will guide you through the process.
+- **Contact sales:** For Enterprise plans with custom limits, reach out to your account representative.
+
+### Enterprise customization
+
+Enterprise plans offer full flexibility:
+
+- **Custom credit limits** -- set your monthly allowance to match your needs
+- **Volume discounts** -- reduced per-credit costs at higher volumes
+- **Custom overage actions** -- different actions for different thresholds
+- **Bring Your Own Keys** -- connect your own AI provider API keys for reduced AI costs
+
+---
+
+## Monitoring your spending
+
+Your dashboard provides several views to help you track and manage credits:
+
+| View | What it shows |
+| --- | --- |
+| **Usage overview** | Monthly progress bar with remaining credits and days left |
+| **Daily trend chart** | Day-by-day credit consumption over the current month |
+| **Category breakdown** | Which types of actions are using the most credits |
+| **Month-over-month** | Historical comparison to identify growth patterns |
+| **Alert status** | Whether warning or limit thresholds have been reached |
+
+<Tip>
+Check the **Category breakdown** regularly. If one category (like AI responses) is consuming a disproportionate share of credits, you may be able to optimize by adjusting model selection or agent configurations.
+</Tip>
+
+---
+
+## Tips for managing costs
+
+<AccordionGroup>
+  <Accordion title="Choose the right AI model for each task">
+    Not every task needs the most powerful model. Use fast, lightweight models for simple classification, routing, and templated responses. Reserve advanced models for complex reasoning and analysis.
+  </Accordion>
+  <Accordion title="Use the daily limit as a safety net">
+    Set a daily credit limit to prevent unexpected spikes. If a misconfigured automation runs in a loop, the daily limit will cap the damage.
+  </Accordion>
+  <Accordion title="Monitor the category breakdown">
+    If one category dominates your usage, investigate whether you can optimize. For example, caching frequent queries or reducing unnecessary API calls.
+  </Accordion>
+  <Accordion title="Bring your own API keys">
+    If you already pay for AI provider access, connecting your own keys reduces the credit cost of AI operations, stretching your monthly allowance further.
+  </Accordion>
+  <Accordion title="Set alert thresholds early">
+    Set your warning threshold to 70-80% so you have time to adjust before hitting the limit. You can change the threshold at any time from the dashboard.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Billing Overview" icon="receipt" href="/billing/overview">
+    Understand how billing works across the platform.
+  </Card>
+  <Card title="Automations" icon="wand-magic-sparkles" href="/automations/overview">
+    Build workflows that make the most of your credits.
+  </Card>
+</CardGroup>

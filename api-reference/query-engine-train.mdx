@@ -1,0 +1,113 @@
+---
+title: "Train Model"
+api: "POST https://api.deha.one/query/train"
+description: "Add training data to improve text-to-SQL accuracy."
+---
+
+Adds training data to improve the accuracy of the AI-powered text-to-SQL engine for your user. You can provide DDL definitions, business documentation, or question-SQL pairs to help the AI better understand your data schema and business context.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="ddl" type="string">
+  DDL statement to train on (e.g., `CREATE TABLE orders (...)`). Helps the AI understand your table schema.
+</ParamField>
+<ParamField body="documentation" type="string">
+  Business documentation text providing context for the AI model. For example, "Revenue is calculated as quantity * unit_price after discount."
+</ParamField>
+<ParamField body="question" type="string">
+  Example natural language question. Must be paired with `sql`.
+</ParamField>
+<ParamField body="sql" type="string">
+  Corresponding SQL answer for the question. Must be paired with `question`.
+</ParamField>
+
+<Note>
+At least one training data type must be provided. The `question` and `sql` fields must always be provided together as a pair.
+</Note>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the training data was accepted.
+</ResponseField>
+<ResponseField name="data.trained" type="array">
+  List of training data types that were accepted (e.g., `["question_sql"]`, `["ddl"]`, `["documentation"]`).
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | No training data provided, or `question` without `sql` |
+| 401 | Missing or invalid authentication |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/query/train" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "question": "What are the top selling products?",
+    "sql": "SELECT product_name, SUM(quantity) FROM orders GROUP BY product_name ORDER BY SUM(quantity) DESC"
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/query/train",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "question": "What are the top selling products?",
+        "sql": "SELECT product_name, SUM(quantity) FROM orders GROUP BY product_name ORDER BY SUM(quantity) DESC"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/query/train",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      question: "What are the top selling products?",
+      sql: "SELECT product_name, SUM(quantity) FROM orders GROUP BY product_name ORDER BY SUM(quantity) DESC"
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "trained": ["question_sql"]
+  }
+}
+```

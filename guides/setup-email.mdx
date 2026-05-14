@@ -1,0 +1,111 @@
+---
+title: "Set Up Email"
+sidebarTitle: "Email"
+description: "Connect your email to DEHA ONE so your AI agent can receive and reply to customer emails automatically."
+icon: "envelope"
+---
+
+## What You Will Set Up
+
+Connect your email to DEHA ONE so that incoming customer emails are handled by your AI agent, which drafts and sends replies automatically.
+
+<Info>
+Before you begin, you need:
+- An email service with SMTP credentials (e.g., SendGrid, AWS SES, or your own mail server)
+- A DEHA ONE workspace with at least one [agent configured](/guides/first-agent)
+- For inbound email: a domain with MX records you can configure, or a provider that supports webhook-based inbound parsing
+</Info>
+
+---
+
+<Steps>
+
+### Choose Your Email Provider
+
+DEHA ONE works with any SMTP-compatible email service for sending replies and supports webhook-based inbound email processing.
+
+| Provider | Recommended For |
+|----------|----------------|
+| **SendGrid** | Production use with inbound parse webhooks |
+| **AWS SES** | Teams already on AWS |
+| **Custom SMTP** | Any standard SMTP server |
+
+### Add Email Credentials to DEHA ONE
+
+1. In the DEHA ONE dashboard, go to **Settings > Vault**.
+2. Add the following secrets:
+
+| Secret Key | Example Value |
+|-----------|--------------|
+| `smtp_host` | `smtp.sendgrid.net` |
+| `smtp_port` | `587` |
+| `smtp_username` | `apikey` |
+| `smtp_password` | `SG.xxxxx` |
+| `smtp_from_email` | `support@yourcompany.com` |
+
+### Enable the Email Channel
+
+1. Go to **Settings > Channels** in the dashboard.
+2. Enable **Email**.
+3. Set the **default agent** for email conversations.
+4. Click **Save**.
+
+### Set Up Inbound Email
+
+Configure your email provider to forward incoming emails to DEHA ONE.
+
+**If using SendGrid Inbound Parse:**
+
+1. Go to **SendGrid Settings > Inbound Parse**.
+2. Add a new entry:
+   - **Hostname:** Your subdomain (e.g., `inbound.yourcompany.com`)
+   - **URL:** `https://api.deha.one/webhook/mail/{your_workspace_id}`
+3. Add an MX record for the subdomain pointing to `mx.sendgrid.net`.
+
+**If using another provider:**
+
+Point your inbound email webhook to:
+```
+https://api.deha.one/webhook/mail/{your_workspace_id}
+```
+
+### Publish and Test
+
+1. Go to **Settings > Configuration** and click **Publish**.
+2. Send a test email to your configured inbound address.
+3. Check the **Timeline** in the dashboard to see the email arrive and the agent's response.
+
+<Check>
+Send a test email and verify the agent processes it and sends a reply. Check both the dashboard timeline and your email inbox for the response.
+</Check>
+
+</Steps>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Outbound emails not being sent">
+    Verify your SMTP credentials are correct in the vault. Make sure your `smtp_from_email` address is verified with your email provider.
+  </Accordion>
+  <Accordion title="Inbound emails not arriving">
+    Confirm your MX records are configured correctly for your subdomain. Check that the webhook URL is accessible from the internet.
+  </Accordion>
+  <Accordion title="Emails marked as spam">
+    Set up SPF, DKIM, and DMARC records for your sending domain. Use a verified sender identity in your email provider.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Set Up Web Chat" icon="comments" href="/guides/setup-web-chat">
+    Add a chat widget to your website.
+  </Card>
+  <Card title="Set Up WhatsApp" icon="whatsapp" href="/guides/setup-whatsapp">
+    Connect WhatsApp Business for messaging.
+  </Card>
+</CardGroup>

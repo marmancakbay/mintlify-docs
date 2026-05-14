@@ -1,0 +1,99 @@
+---
+title: "Config Diff"
+api: "GET /api/v1/config/{user_id}/{config_type}/diff/{v1}/{v2}"
+description: "Compare two configuration versions side by side."
+---
+
+Returns the differences between two versions of a configuration, including a unified diff (git-style), a structural diff showing added, removed, and changed keys, and a human-readable summary.
+
+## Authentication
+
+Requires JWT with `read` permission. Your user must match the `{user_id}` in the URL.
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="config_type" type="string" required>
+  The configuration type (e.g., `user`, `agent:support_agent`).
+</ParamField>
+<ParamField path="v1" type="string" required>
+  First version identifier (UUID). Typically the older version.
+</ParamField>
+<ParamField path="v2" type="string" required>
+  Second version identifier (UUID). Typically the newer version.
+</ParamField>
+
+## Response
+
+<ResponseField name="unified_diff" type="string">
+  Git-style unified diff output showing line-by-line changes.
+</ResponseField>
+<ResponseField name="structural_diff" type="object">
+  Structured diff with three arrays:
+  - `added` (array of strings) -- Keys/paths that were added in v2
+  - `removed` (array of strings) -- Keys/paths that were removed in v2
+  - `changed` (array of strings) -- Keys/paths whose values changed
+</ResponseField>
+<ResponseField name="summary" type="string">
+  Human-readable summary of the changes (e.g., "2 changes: 1 added, 1 changed").
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Missing or invalid credentials |
+| `403` | Insufficient permissions or user mismatch |
+| `404` | One or both version IDs not found |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/user/diff/a1b2c3d4-e5f6-7890-abcd-111111111111/a1b2c3d4-e5f6-7890-abcd-222222222222" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."
+```
+
+```python Python
+import httpx
+
+v1_id = "a1b2c3d4-e5f6-7890-abcd-111111111111"
+v2_id = "a1b2c3d4-e5f6-7890-abcd-222222222222"
+
+response = httpx.get(
+    f"https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/user/diff/{v1_id}/{v2_id}",
+    headers={"Authorization": f"Bearer {jwt_token}"}
+)
+diff = response.json()
+print(diff["summary"])
+print(diff["unified_diff"])
+```
+
+```javascript Node.js
+const v1Id = "a1b2c3d4-e5f6-7890-abcd-111111111111";
+const v2Id = "a1b2c3d4-e5f6-7890-abcd-222222222222";
+
+const response = await fetch(
+  `https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/user/diff/${v1Id}/${v2Id}`,
+  { headers: { "Authorization": `Bearer ${jwtToken}` } }
+);
+const diff = await response.json();
+console.log(diff.summary);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "unified_diff": "--- v1\n+++ v2\n@@ -1,4 +1,5 @@\n name: ACME Corp\n-plan: starter\n+plan: growth\n session_lifecycle:\n   idle_timeout: 1800\n+  max_duration: 7200\n",
+  "structural_diff": {
+    "added": ["session_lifecycle.max_duration"],
+    "removed": [],
+    "changed": ["plan"]
+  },
+  "summary": "2 changes: 1 added, 1 changed"
+}
+```
+
+<Tip>
+Use the version history endpoint to find version IDs for comparison: `GET /api/v1/config/{user_id}/{config_type}/history`
+</Tip>

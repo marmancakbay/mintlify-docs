@@ -1,0 +1,118 @@
+---
+title: "Deploy Config"
+api: "POST /api/v1/config/{user_id}/deploy"
+description: "Compile and deploy user configurations to make them active."
+---
+
+Compiles your user's configurations through the full validation pipeline and deploys them for use across the platform. After successful deployment, all services are automatically notified and pick up the new configuration without downtime.
+
+<Warning>
+This is a production deployment operation. Use [Validate Config](/api-reference/config-validate) first to check for errors without deploying.
+</Warning>
+
+## Authentication
+
+Requires JWT with `deploy` permission. Your user must match the `{user_id}` in the URL.
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="user_id" type="string">
+  Your user identifier.
+</ResponseField>
+<ResponseField name="is_valid" type="boolean">
+  Whether the compilation succeeded without errors.
+</ResponseField>
+<ResponseField name="config_types" type="array">
+  List of configuration types that were compiled (e.g., `["user", "channels", "agents"]`).
+</ResponseField>
+<ResponseField name="redis_keys_written" type="integer">
+  Number of configuration keys written during deployment.
+</ResponseField>
+<ResponseField name="errors" type="array">
+  List of validation or compilation errors. Empty if deployment succeeded.
+</ResponseField>
+<ResponseField name="warnings" type="array">
+  List of non-blocking warnings. Deployment succeeds even with warnings.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400` | Compilation failed with errors. Check the `errors` array in the response for details. |
+| `401` | Missing or invalid credentials |
+| `403` | Insufficient permissions (requires `deploy` permission) or user mismatch |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/deploy" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/deploy",
+    headers={"Authorization": f"Bearer {jwt_token}"}
+)
+result = response.json()
+
+if result["is_valid"]:
+    print(f"Deployed successfully. {result['redis_keys_written']} keys written.")
+else:
+    print(f"Deployment failed: {result['errors']}")
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/deploy",
+  {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${jwtToken}` }
+  }
+);
+const result = await response.json();
+
+if (result.is_valid) {
+  console.log(`Deployed successfully. ${result.redis_keys_written} keys written.`);
+} else {
+  console.error("Deployment failed:", result.errors);
+}
+```
+</CodeGroup>
+
+```json Example Response (Success)
+{
+  "user_id": "acme_corp",
+  "is_valid": true,
+  "config_types": ["user", "channels", "agent:support_agent", "agent:data_analyst"],
+  "redis_keys_written": 24,
+  "errors": [],
+  "warnings": ["Agent 'legacy_bot' references deprecated node type"]
+}
+```
+
+```json Example Response (Failure)
+{
+  "user_id": "acme_corp",
+  "is_valid": false,
+  "config_types": ["user", "agent:support_agent"],
+  "redis_keys_written": 0,
+  "errors": [
+    "Agent 'support_agent' references unknown tool 'order_lookup'",
+    "Invalid node type 'custom_node' in agent 'support_agent'"
+  ],
+  "warnings": []
+}
+```
+
+<Tip>
+Best practice: always validate your configurations first using the [Validate endpoint](/api-reference/config-validate), then deploy once validation passes. This prevents deploying broken configurations.
+</Tip>

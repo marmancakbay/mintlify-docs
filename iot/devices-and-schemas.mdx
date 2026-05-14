@@ -1,0 +1,111 @@
+---
+title: "Devices & Schemas"
+sidebarTitle: "Devices & Schemas"
+description: "Declare devices, define what fields they emit, and control how strictly DEHA ONE validates incoming telemetry."
+icon: "microchip"
+---
+
+Every device under a connection has an identity, a schema, and a few operational settings. This page covers what you can configure.
+
+---
+
+## Device identity
+
+| Field | What it is |
+|---|---|
+| **Device ID** | Stable string used as the device's unique key in DEHA ONE (e.g. `cnc-line-3-sensor-1`). Stays the same across reconnects. |
+| **Display name** | Human-friendly label shown in the dashboard. |
+| **Tags** | Optional key/value labels used for filtering and reporting (e.g. `factory: izmir`, `line: a3`). |
+| **User** | Resolved from the YAML directory the device is defined in -- enforced at every step. |
+
+---
+
+## Schema
+
+A schema declares the fields the device is expected to emit, their types, and which are required. The Gateway validates every incoming frame against this schema.
+
+Supported field types:
+
+- `boolean`
+- `integer`
+- `float`
+- `string`
+- `datetime` (ISO 8601 / Unix epoch)
+- `object` (nested struct)
+- `array` (homogeneous list)
+
+For each field you can configure:
+
+- Whether it is **required**
+- A **default** value used if absent
+- Range / regex / enum **constraints**
+- A **rename** to map the device's wire format to the platform's expected field name
+
+<Info>
+  Validation is **graceful by default**: if a frame fails schema checks, it is logged, tagged, and routed to the per-device DLQ -- but the connection keeps running. You can opt into strict mode where a failed frame disconnects the device.
+</Info>
+
+---
+
+## Rate limiting
+
+Each device has its own rate limit, expressed as **events per second**. The Gateway enforces it with a sliding window per `(user, device)` pair.
+
+If a device exceeds the limit:
+
+- Excess frames are dropped (counted in metrics)
+- A warning is emitted to the logs
+- The device's quota state is reported in the dashboard
+
+Rate limits protect the platform from misbehaving firmware and from billing surprises.
+
+---
+
+## Heartbeat and offline detection
+
+If a device has not produced any traffic for a configurable interval (default 120 seconds), the Gateway marks it **offline** and emits an event on `stream:iot:events`. When traffic resumes, it is marked **online** again.
+
+You can:
+
+- Trigger pipelines off `device.offline` and `device.online` events (e.g. page on-call when a critical sensor goes silent)
+- View per-device online/offline state in the dashboard
+- Adjust the heartbeat interval per device
+
+---
+
+## Tying it together (mental model)
+
+```yaml
+# Conceptual shape -- DEHA generates this for you from natural language
+connection:
+  name: "factory-floor-mqtt"
+  protocol: mqtt
+  broker: "mqtts://broker.example.com:8883"
+  auth: $vault:factory_mqtt_creds
+
+devices:
+  - id: "cnc-line-3-sensor-1"
+    display_name: "CNC Line 3 - Spindle Vibration"
+    tags: { factory: izmir, line: a3 }
+    rate_limit_per_sec: 50
+    heartbeat_seconds: 90
+    schema:
+      vibration_rms: { type: float, required: true }
+      temperature_c:  { type: float, required: true }
+      timestamp:      { type: datetime, required: true }
+      spindle_rpm:    { type: integer }
+```
+
+Once deployed, this device is online. Telemetry flows into `stream:iot:telemetry` as CloudEvents and any pipeline whose trigger matches will fire.
+
+---
+
+## Hot reload
+
+Edit your IoT YAML, deploy via DEHA or the dashboard, and the platform applies changes live:
+
+- New connections start
+- Removed connections stop (with graceful shutdown)
+- Reconfigured devices update their schemas, rate limits, and heartbeat windows without dropping the underlying connection where possible
+
+No restart. No downtime. No lost telemetry.

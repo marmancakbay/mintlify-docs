@@ -1,0 +1,14 @@
+/* Override navbar logo size */
+nav img[alt*="logo"],
+nav img[alt*="Logo"],
+nav img[src*="deha_docs"],
+header img[alt*="logo"],
+header img[alt*="Logo"],
+header img[src*="deha_docs"],
+.navbar-logo img,
+[class*="Logo"] img,
+[class*="logo"] img {
+  max-height: 40px !important;
+  height: 40px !important;
+  width: auto !important;
+}

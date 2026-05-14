@@ -1,0 +1,119 @@
+---
+title: "Connect a Data Source"
+sidebarTitle: "Connect Data Source"
+description: "Bring your business data into DEHA ONE by connecting APIs, databases, or uploading files."
+icon: "database"
+---
+
+## What You Will Set Up
+
+Connect your existing data sources to DEHA ONE so your agents can answer questions about your business data, and your automations can process it.
+
+<Info>
+Before you begin, you need:
+- A DEHA ONE workspace
+- Access credentials for the data source you want to connect (API key, database connection string, etc.)
+</Info>
+
+---
+
+<Steps>
+
+### Choose How to Bring in Data
+
+| Method | Best For |
+|--------|---------|
+| **REST API** | Pulling data from SaaS tools, CRMs, or any web API |
+| **Database** | Connecting directly to PostgreSQL or MySQL |
+| **File upload** | One-time imports of CSV, Excel, JSON, or Parquet files |
+| **Webhook** | Receiving data pushed from other systems in real time |
+
+### Connect a REST API
+
+1. Go to **Data > Connectors** in the dashboard.
+2. Click **Add Connector** and choose **REST API**.
+3. Fill in the connection details:
+   - **Name** -- A label for this connector (e.g., "CRM Customers")
+   - **URL** -- The API endpoint to pull data from
+   - **Authentication** -- Choose your auth type (API key, Bearer token, Basic Auth, or OAuth2) and enter or link your credentials from the vault
+   - **Target table** -- Where to store the data in your workspace database
+4. Click **Test Connection** to verify it works.
+5. Click **Run** to pull the data.
+
+<Tip>
+DEHA ONE automatically detects pagination in common API patterns. For custom pagination, you can configure the pagination type (offset, cursor, page, or link-based) in the connector settings.
+</Tip>
+
+### Connect a Database
+
+1. Go to **Data > Connectors** and choose **Database**.
+2. Enter your connection details:
+   - **Driver** -- PostgreSQL or MySQL
+   - **Connection string** -- Store this in the vault for security
+   - **Query** -- The SQL query to extract data (read-only queries only)
+   - **Target table** -- Where to store the results
+3. Test and run the connector.
+
+<Warning>
+Database connectors run read-only queries only. Your connection string is stored encrypted in the vault and never exposed in plain text.
+</Warning>
+
+### Upload a File
+
+1. Go to **Data > Connectors** and choose **File Upload**.
+2. Drag and drop your file or click to browse.
+3. Choose a target table name.
+4. DEHA ONE auto-detects the schema and loads the data.
+
+**Supported file formats:**
+
+| Format | Extensions |
+|--------|-----------|
+| CSV | `.csv` |
+| Excel | `.xlsx`, `.xls` |
+| JSON | `.json` |
+| Parquet | `.parquet` |
+
+### Verify Your Data
+
+After importing, check that your data loaded correctly:
+
+1. Go to **Data > Tables** in the dashboard.
+2. Find your table and preview the data.
+3. Check the row count and column types.
+
+You can also ask your agent directly:
+
+> "How many records are in the customers table?"
+
+<Check>
+Verify that your data appears in the **Tables** view with the correct number of rows and columns.
+</Check>
+
+### Set Up Automatic Syncing
+
+To keep your data fresh, set up a sync schedule:
+
+1. In the connector settings, choose a **sync mode**:
+   - **Full** -- Replace all data each time
+   - **Incremental** -- Only fetch records changed since the last sync
+   - **Append** -- Add new records without modifying existing ones
+2. Set a **schedule** (e.g., every hour, daily at midnight).
+3. Save and publish.
+
+See [Scheduled Automations](/guides/scheduled-automations) for more scheduling options.
+
+</Steps>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Ask Questions About Your Data" icon="magnifying-glass" href="/guides/text-to-sql">
+    Query your data using natural language.
+  </Card>
+  <Card title="Run Analytics" icon="chart-line" href="/guides/run-analytics">
+    Analyze your data with built-in ML models.
+  </Card>
+</CardGroup>

@@ -1,0 +1,142 @@
+---
+title: "Create User"
+api: "POST https://api.deha.one/api/v1/users/{user_id}"
+description: "Create a new user profile for your user."
+---
+
+Creates a new user profile for your user. Requires `admin` or `owner` role. The user's default configuration permissions are determined by their assigned role.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Unique user identifier (e.g., Auth0 `sub` claim like `auth0|xyz789`).
+</ParamField>
+<ParamField body="email" type="string" required>
+  User email address.
+</ParamField>
+<ParamField body="role" type="string" required>
+  User role: `owner`, `admin`, `supervisor`, `agent`, or `viewer`.
+</ParamField>
+<ParamField body="display_name" type="string">
+  Display name.
+</ParamField>
+<ParamField body="phone" type="string">
+  Phone number.
+</ParamField>
+<ParamField body="company" type="string">
+  Company name.
+</ParamField>
+<ParamField body="title" type="string">
+  Job title.
+</ParamField>
+<ParamField body="allowed_agents" type="array">
+  List of agent names the user can access. Omit for all agents.
+</ParamField>
+<ParamField body="allowed_channels" type="array">
+  List of channels the user can access. Omit for all channels.
+</ParamField>
+<ParamField body="config_permissions" type="array">
+  Configuration permissions: `read`, `write`, `deploy`, `test`. Defaults based on role if omitted.
+</ParamField>
+
+## Default Permissions by Role
+
+| Role | Default Permissions |
+|------|-------------------|
+| `owner` | read, write, deploy, test |
+| `admin` | read, write, deploy, test |
+| `supervisor` | read, write |
+| `agent` | read |
+| `viewer` | read |
+
+## Response
+
+Returns the created user profile with HTTP status `201`.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid role or missing required fields |
+| 401 | Missing or invalid authentication |
+| 403 | Admin or owner role required |
+| 409 | User already exists |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/api/v1/users/acme_corp" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "auth0|xyz789",
+    "email": "bob@acme.com",
+    "role": "agent",
+    "display_name": "Bob Agent"
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/api/v1/users/acme_corp",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "auth0|xyz789",
+        "email": "bob@acme.com",
+        "role": "agent",
+        "display_name": "Bob Agent"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/users/acme_corp",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "auth0|xyz789",
+      email: "bob@acme.com",
+      role: "agent",
+      display_name: "Bob Agent"
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response (201)
+{
+  "user_id": "auth0|xyz789",
+  "email": "bob@acme.com",
+  "display_name": "Bob Agent",
+  "role": "agent",
+  "config_permissions": ["read"],
+  "created_at": "2026-03-15T10:00:00Z"
+}
+```

@@ -1,0 +1,161 @@
+---
+title: "Set Up Web Chat"
+sidebarTitle: "Web Chat"
+description: "Add a real-time AI chat widget to your website or use the built-in dashboard chat."
+icon: "comments"
+---
+
+## What You Will Set Up
+
+Add a live chat widget to your website so visitors can talk to your AI agent in real time. You can also use the built-in chat in the DEHA ONE dashboard for internal testing or team use.
+
+<Info>
+Before you begin, you need:
+- A DEHA ONE workspace with at least one [agent configured](/guides/first-agent)
+- Access to your website's HTML (for embedding the widget)
+</Info>
+
+---
+
+<Steps>
+
+### Enable the Web Chat Channel
+
+1. Go to **Settings > Channels** in the dashboard.
+2. Enable **Web Chat**.
+3. Set the **default agent** for web chat conversations.
+4. Configure a **welcome message** (e.g., "Hello! How can I help you today?").
+5. Set the **session timeout** (how long before an idle conversation ends).
+6. Click **Save** and **Publish** your configuration.
+
+### Option A: Use the Dashboard Chat
+
+The DEHA ONE dashboard includes a built-in chat interface. No additional setup is needed.
+
+1. Log in to the [dashboard](https://app.deha.one).
+2. Open the **Chat** panel.
+3. Start a conversation with your agent.
+
+This is great for testing, internal use, and customer support teams who work directly in the dashboard.
+
+### Option B: Embed the Chat Widget on Your Website
+
+Add the chat widget to your website with a simple code snippet. Paste it before the closing `</body>` tag in your HTML:
+
+```html
+<script>
+  window.DEHA_CONFIG = {
+    apiUrl: "https://api.deha.one",
+    userId: "your_workspace_id",
+    agentId: "support_agent",
+    theme: "light",
+    position: "bottom-right",
+    welcomeMessage: "Hello! How can I help you today?"
+  };
+</script>
+<script src="https://cdn.deha.one/widget.js" async></script>
+```
+
+Customize the configuration:
+
+| Option | Description | Values |
+|--------|-------------|--------|
+| `theme` | Widget color scheme | `"light"` or `"dark"` |
+| `position` | Where the widget appears | `"bottom-right"` or `"bottom-left"` |
+| `welcomeMessage` | First message shown to visitors | Any text |
+
+### Option C: Build a Custom Integration
+
+For full control over the chat experience, connect directly to the DEHA ONE WebSocket API.
+
+<CodeGroup>
+
+```javascript JavaScript
+const ws = new WebSocket(
+  "wss://api.deha.one/ws/chat?user_id=your_workspace_id&token=YOUR_TOKEN"
+);
+
+ws.onopen = () => {
+  // Send a message
+  ws.send(JSON.stringify({
+    type: "message",
+    content: "Hello, I need help with my order."
+  }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  if (data.type === "message") {
+    console.log("Agent:", data.content);
+  }
+};
+```
+
+```python Python
+import asyncio, json, websockets
+
+async def chat():
+    uri = "wss://api.deha.one/ws/chat?user_id=your_workspace_id&token=YOUR_TOKEN"
+    async with websockets.connect(uri) as ws:
+        await ws.send(json.dumps({
+            "type": "message",
+            "content": "Hello, I need help."
+        }))
+        async for message in ws:
+            data = json.loads(message)
+            if data["type"] == "message":
+                print(f"Agent: {data['content']}")
+
+asyncio.run(chat())
+```
+
+</CodeGroup>
+
+### Test It
+
+<Check>
+Open your website with the embedded widget (or the dashboard chat) and send a message. Your agent should respond in real time.
+</Check>
+
+</Steps>
+
+---
+
+## Real-Time Events
+
+When using the WebSocket API or widget, you will receive these event types:
+
+| Event | What It Means |
+|-------|-------------|
+| `message` | A response from the agent or a team member |
+| `typing` | The agent is processing your message |
+| `session.start` | A new conversation has started |
+| `session.end` | The conversation has ended |
+| `hitl.transfer` | The conversation was transferred to a human agent |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Widget does not appear on my website">
+    Make sure the script tag is placed before `&lt;/body&gt;` and that `userId` matches your workspace ID. Check the browser console for errors.
+  </Accordion>
+  <Accordion title="Messages sent but no response">
+    Verify your web chat channel has a default agent assigned and that your configuration is published.
+  </Accordion>
+  <Accordion title="Session ends too quickly">
+    Increase the session timeout value in your channel settings. The default is 30 minutes.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Build a Knowledge Base" icon="book" href="/guides/build-knowledge-base">
+    Upload documents for accurate, company-specific answers.
+  </Card>
+  <Card title="Human Review Gates" icon="user-check" href="/guides/human-review-gates">
+    Add human approval steps to your agent conversations.
+  </Card>
+</CardGroup>

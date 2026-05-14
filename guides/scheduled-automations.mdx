@@ -1,0 +1,119 @@
+---
+title: "Scheduled Automations"
+sidebarTitle: "Scheduled Automations"
+description: "Run your automations automatically on a schedule -- daily syncs, weekly reports, hourly checks, and more."
+icon: "clock"
+---
+
+## What You Will Set Up
+
+Schedule your automations to run automatically at specific times or intervals, so your data stays fresh, reports go out on time, and monitoring runs without manual effort.
+
+<Info>
+Before you begin, make sure you have:
+- A DEHA ONE workspace
+- At least one [automation configured](/guides/first-automation)
+</Info>
+
+---
+
+<Steps>
+
+### Create a Schedule from the Dashboard
+
+1. Go to **Automations** in the dashboard.
+2. Select the automation you want to schedule (or create a new one).
+3. In the automation settings, change the trigger to **Scheduled**.
+4. Choose a schedule type:
+
+| Schedule Type | Use Case | Example |
+|--------------|----------|---------|
+| **Recurring (cron)** | Regular intervals | "Every day at 8 AM" |
+| **Fixed interval** | Frequent repeats | "Every 30 minutes" |
+| **One-time** | Single future run | "April 1, 2026 at midnight" |
+
+5. Set your timezone.
+6. Click **Save** and **Publish**.
+
+### Common Schedule Examples
+
+| Schedule | When It Runs |
+|----------|-------------|
+| Every day at 8:00 AM | `0 8 * * *` |
+| Every 6 hours | `0 */6 * * *` |
+| Every Monday at 9:00 AM | `0 9 * * 1` |
+| First day of every month | `0 0 1 * *` |
+| Every 15 minutes | `*/15 * * * *` |
+
+<Tip>
+You do not need to know cron syntax. The dashboard provides a visual schedule builder where you can pick days, times, and intervals with simple dropdowns.
+</Tip>
+
+### Add Conditions (Run Only When Needed)
+
+Sometimes you only want an automation to run if a certain condition is met. For example:
+- Only run a data cleanup if there are more than 100 stale records
+- Only send an alert if credit usage exceeds 80%
+
+**Using DEHA:**
+
+> "Schedule my data cleanup automation to run daily at 2 AM, but only if there are more than 100 stale records in the database."
+
+**From the dashboard:**
+
+1. In the schedule settings, enable **Conditions**.
+2. Choose a condition type:
+   - **Data query** -- Run a query and check the result against a threshold
+   - **Metric threshold** -- Compare a system metric to a value
+3. If the condition is not met, the scheduled run is skipped.
+
+### Monitor Scheduled Runs
+
+Track your scheduled automations in the dashboard:
+
+1. Go to **Automations > Schedules**.
+2. See all active schedules, their next run time, and last run status.
+3. Click into any schedule to see its run history.
+
+### Run a Scheduled Automation Manually
+
+Need to trigger a scheduled automation right now?
+
+1. Go to **Automations > Schedules**.
+2. Find the schedule and click **Run Now**.
+
+This runs the automation immediately without affecting the regular schedule.
+
+### Pause or Disable a Schedule
+
+1. Go to **Automations > Schedules**.
+2. Toggle the schedule off to pause it, or delete it to remove it entirely.
+3. Paused schedules keep their configuration and can be re-enabled at any time.
+
+<Check>
+Create a schedule and verify it runs at the expected time. Check the run history to confirm successful completion.
+</Check>
+
+</Steps>
+
+---
+
+## Schedule Best Practices
+
+- **Stagger your schedules.** Avoid running many automations at the exact same time.
+- **Start with longer intervals.** Begin with daily schedules and increase frequency only if needed.
+- **Use conditions.** Save resources by skipping runs when there is nothing to process.
+- **Monitor failures.** Check the run history regularly and set up notifications for failed runs.
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Access" icon="key" href="/guides/api-access">
+    Trigger automations programmatically via the API.
+  </Card>
+  <Card title="Connect a Data Source" icon="database" href="/guides/connect-data-source">
+    Set up data connectors to feed your automations.
+  </Card>
+</CardGroup>

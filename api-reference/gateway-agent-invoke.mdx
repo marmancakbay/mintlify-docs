@@ -1,0 +1,142 @@
+---
+title: "Invoke Agent"
+api: "POST /api/v1/agent/{user_id}/{agent_name}/invoke"
+description: "Synchronously invoke an AI agent and receive a response."
+---
+
+Invokes an AI agent by name and returns the response synchronously. This is the primary endpoint for programmatic interaction with your configured AI agents.
+
+The request has a **65-second timeout**. For long-running tasks, consider using pipelines or asynchronous patterns via WebSocket.
+
+## Authentication
+
+Requires an API key in the `Authorization` header with the `Bearer` prefix. The key's user must match the URL `{user_id}`.
+
+<Note>
+This endpoint is designed for API key authentication. For interactive sessions, use the [WebSocket endpoint](/api-reference/bff-websocket) instead.
+</Note>
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="agent_name" type="string" required>
+  The name of the agent to invoke (as defined in your agent configuration).
+</ParamField>
+
+## Request Body
+
+<ParamField body="message" type="string" required>
+  The message to send to the agent.
+</ParamField>
+<ParamField body="session_id" type="string">
+  Optional session identifier for conversation continuity. If omitted, a new session is created automatically. Use the same `session_id` across requests to maintain conversation context.
+</ParamField>
+<ParamField body="context" type="object">
+  Optional key-value context to pass to the agent. This data is available to the agent during processing and can include customer information, metadata, or any structured data relevant to the request.
+</ParamField>
+
+## Response
+
+<ResponseField name="reply" type="string">
+  The agent's response text.
+</ResponseField>
+<ResponseField name="session_id" type="string">
+  The session identifier used for this interaction. Use this value in subsequent requests to continue the conversation.
+</ResponseField>
+<ResponseField name="trace_id" type="string">
+  Trace identifier for debugging and support inquiries.
+</ResponseField>
+<ResponseField name="model" type="string">
+  The LLM model used for generation.
+</ResponseField>
+<ResponseField name="usage" type="object">
+  Token usage information.
+  - `prompt_tokens` (integer) -- Number of tokens in the prompt
+  - `completion_tokens` (integer) -- Number of tokens in the response
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Invalid or missing API key |
+| `403` | API key user does not match URL user |
+| `404` | Agent not found |
+| `429` | Rate limit exceeded |
+| `504` | Agent did not respond within the 65-second timeout |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/api/v1/agent/acme_corp/support_agent/invoke" \
+  -H "Authorization: Bearer dh_live_a1b2c3d4e5f6..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "What is the status of order 12345?",
+    "session_id": "session-001",
+    "context": {
+      "customer_id": "cust-789",
+      "channel": "api"
+    }
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/api/v1/agent/acme_corp/support_agent/invoke",
+    headers={"Authorization": "Bearer dh_live_a1b2c3d4e5f6..."},
+    json={
+        "message": "What is the status of order 12345?",
+        "session_id": "session-001",
+        "context": {
+            "customer_id": "cust-789",
+            "channel": "api"
+        }
+    },
+    timeout=65
+)
+print(response.json())
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/agent/acme_corp/support_agent/invoke",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer dh_live_a1b2c3d4e5f6...",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "What is the status of order 12345?",
+      session_id: "session-001",
+      context: {
+        customer_id: "cust-789",
+        channel: "api"
+      }
+    })
+  }
+);
+const data = await response.json();
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "reply": "Order 12345 is currently being shipped and is expected to arrive on March 18th.",
+  "session_id": "session-001",
+  "trace_id": "trc-1710000000-a1b2c3",
+  "model": "gpt-4o",
+  "usage": {
+    "prompt_tokens": 150,
+    "completion_tokens": 35
+  }
+}
+```
+
+<Tip>
+To maintain conversation context across multiple interactions, store the `session_id` from the first response and include it in all subsequent requests.
+</Tip>

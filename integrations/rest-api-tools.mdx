@@ -1,0 +1,213 @@
+---
+title: "REST API Tools"
+sidebarTitle: "REST API Tools"
+description: "Connect any REST API as a callable tool for your AI agents."
+icon: "globe"
+---
+
+REST API tools let your agents call any HTTP API as part of their reasoning process. You define the API connection in your configuration, and DEHA ONE handles URL construction, authentication, and response parsing automatically.
+
+---
+
+## What you need
+
+To connect a REST API, you need:
+
+1. The **base URL** of the API (e.g., `https://api.mycrm.com`)
+2. The **endpoints** you want your agents to use (e.g., list contacts, create a lead)
+3. **Credentials** for authentication (API key, token, or OAuth2 credentials)
+
+---
+
+## Setting up a REST API tool
+
+Define your API connection in YAML. Here is an example connecting a weather API:
+
+```yaml
+definitions:
+  weather_api:
+    type: rest
+    base_url: https://api.weather.com
+    auth:
+      type: api_key
+      secret_ref: WEATHER_API_KEY
+      header_key: X-API-Key
+    timeout: 15
+    endpoints:
+      get_forecast:
+        method: GET
+        path: /v1/forecast/{city}
+        description: "Get weather forecast for a city"
+        input_schema:
+          type: object
+          properties:
+            city:
+              type: string
+              description: "City name"
+          required:
+            - city
+```
+
+Once configured, your agents can call this tool by name. When an agent asks for the weather in Berlin, DEHA ONE automatically:
+
+1. Builds the URL: `https://api.weather.com/v1/forecast/Berlin`
+2. Adds authentication headers
+3. Makes the request
+4. Returns the response to the agent
+
+---
+
+## Authentication options
+
+<Tabs>
+  <Tab title="API Key">
+    The simplest option. Your API key is sent as a header with every request.
+
+    ```yaml
+    auth:
+      type: api_key
+      secret_ref: MY_API_KEY
+      header_key: X-API-Key
+    ```
+  </Tab>
+  <Tab title="Bearer Token">
+    Common for APIs that use static tokens or service accounts.
+
+    ```yaml
+    auth:
+      type: bearer
+      secret_ref: MY_API_TOKEN
+    ```
+  </Tab>
+  <Tab title="OAuth2">
+    For services that require OAuth2 (Salesforce, HubSpot, Google, etc.). DEHA ONE manages token refresh automatically.
+
+    ```yaml
+    auth:
+      type: oauth2
+      token_url: https://auth.example.com/oauth/token
+      client_id_ref: OAUTH_CLIENT_ID
+      secret_ref: OAUTH_CLIENT_SECRET
+      scope: data.read data.write
+    ```
+  </Tab>
+  <Tab title="Basic Auth">
+    For APIs that use username and password authentication.
+
+    ```yaml
+    auth:
+      type: basic
+      username_ref: SERVICE_USERNAME
+      secret_ref: SERVICE_PASSWORD
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+  Never put API keys or tokens directly in your YAML files. Always use `secret_ref` to reference secrets stored in your encrypted vault.
+</Warning>
+
+---
+
+## Example: connecting a CRM
+
+Here is a complete example connecting a CRM with multiple endpoints:
+
+```yaml
+definitions:
+  crm_api:
+    type: rest
+    base_url: https://api.mycrm.com
+    auth:
+      type: bearer
+      secret_ref: CRM_API_TOKEN
+    timeout: 20
+    endpoints:
+      list_contacts:
+        method: GET
+        path: /v2/contacts
+        description: "List all contacts with optional search"
+        input_schema:
+          type: object
+          properties:
+            search:
+              type: string
+              description: "Search by name or email"
+            limit:
+              type: integer
+              description: "Results per page (max 100)"
+
+      get_contact:
+        method: GET
+        path: /v2/contacts/{contact_id}
+        description: "Get a single contact by ID"
+        input_schema:
+          type: object
+          properties:
+            contact_id:
+              type: string
+              description: "Contact unique identifier"
+          required:
+            - contact_id
+
+      create_contact:
+        method: POST
+        path: /v2/contacts
+        description: "Create a new contact"
+        input_schema:
+          type: object
+          properties:
+            email:
+              type: string
+              description: "Contact email address"
+            first_name:
+              type: string
+              description: "First name"
+            last_name:
+              type: string
+              description: "Last name"
+            company:
+              type: string
+              description: "Company name"
+          required:
+            - email
+```
+
+This creates three tools your agents can use: `crm_api__list_contacts`, `crm_api__get_contact`, and `crm_api__create_contact`.
+
+---
+
+## How parameters work
+
+DEHA ONE automatically handles parameters based on the HTTP method:
+
+| Method | Path parameters | Other parameters |
+|--------|----------------|-----------------|
+| **GET** | Filled into the URL | Sent as query string |
+| **POST / PUT / PATCH** | Filled into the URL | Sent as JSON body |
+| **DELETE** | Filled into the URL | Sent as query string |
+
+For example, with `path: /v2/contacts/{contact_id}` and an argument of `{"contact_id": "abc123"}`, the final URL becomes `https://api.mycrm.com/v2/contacts/abc123`.
+
+---
+
+## Endpoint descriptions matter
+
+The `description` field on each endpoint helps the AI agent choose the right tool. Write clear, specific descriptions of what each endpoint does:
+
+- Good: "Get weather forecast for a specific city by name"
+- Poor: "Get data"
+
+Better descriptions lead to more accurate tool selection by your agents.
+
+---
+
+## Error handling
+
+DEHA ONE handles errors gracefully:
+
+- **HTTP errors** (4xx, 5xx) are captured and reported to the agent
+- **Timeouts** are caught and reported with the configured timeout duration
+- **Connection failures** are caught and reported with diagnostic details
+
+The agent receives the error information and can decide how to respond -- for example, by telling the user the service is temporarily unavailable.

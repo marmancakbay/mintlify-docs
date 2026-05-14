@@ -1,0 +1,94 @@
+---
+title: "Agents — Dynamic API"
+api: "POST /api/v1/agents/{user_id}/{name}/{invoke|invoke-async|stream}"
+description: "Invoke a compiled LangGraph agent in sync, async, or streaming mode."
+---
+
+Agent endpoints share the same envelope and semantics as pipeline endpoints — only the target kind differs.
+
+## Authentication
+
+```
+Authorization: Bearer <api_key>
+X-User-Id:   <user_id>
+```
+
+## Path parameters
+
+<ParamField path="user_id" type="string" required>
+  User identifier.
+</ParamField>
+<ParamField path="name" type="string" required>
+  Compiled agent name (matches the file name under `configs/users/{user}/agents/`).
+</ParamField>
+
+## Request body
+
+Validated against the agent's `api.input.json_schema`. Typical shape:
+
+```json
+{
+  "message": "Summarise Q1 customer feedback",
+  "session_id": "optional-pin",
+  "context": { "channel": "web" }
+}
+```
+
+## Sync invocation
+
+```bash
+curl -X POST "$BASE/api/v1/agents/acme_corp/customer_support/invoke" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"What is my order status?"}'
+```
+
+Response:
+
+```json
+{
+  "status": "completed",
+  "trace_id": "trc-1745190000-...",
+  "result": {
+    "reply": "Your order #4572 is in transit...",
+    "tool_calls": [{"name":"orders.lookup","status":"ok"}]
+  },
+  "duration_ms": 2180
+}
+```
+
+## Streaming invocation
+
+Streams token-level and node-level lifecycle events:
+
+```
+event: token
+data: {"text":"Your"}
+
+event: token
+data: {"text":" order"}
+
+event: tool.called
+data: {"name":"orders.lookup","args":{"order_id":4572}}
+
+event: final
+data: {"status":"completed","result":{...}}
+```
+
+## Session continuity
+
+Pass `X-Session-Id` (or `session_id` in the body) to pin a conversation across multiple invocations. The agent's conversation memory, tool state, and HITL checkpoints are keyed by this identifier.
+
+```bash
+curl -X POST "$BASE/api/v1/agents/acme_corp/customer_support/invoke" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "X-User-Id: acme_corp" \
+  -H "X-Session-Id: sess-user-123" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"follow up on my last question"}'
+```
+
+## Errors
+
+See the [pipeline error table](/api-reference/dynamic-api-pipeline) — agent endpoints return the same codes with the `BFF-AGENT-*` namespace instead of `BFF-PIPELINE-*`.

@@ -1,0 +1,65 @@
+---
+title: "Dynamic API Overview"
+description: "Schema-driven pipeline & agent endpoints with sync, async, and streaming invocation modes."
+---
+
+The **Dynamic API** exposes every compiled pipeline and agent as a first-class HTTP endpoint. Endpoints are generated from your user configuration at compile time — no code changes required to add or evolve them.
+
+## Endpoint shape
+
+Every endpoint follows the same URL shape:
+
+```
+/api/v1/{kind}/{user_id}/{name}/{mode}
+```
+
+- `kind` — `pipelines` or `agents`
+- `user_id` — your user identifier
+- `name` — the pipeline or agent name
+- `mode` — one of `invoke` (sync), `invoke-async`, `stream`
+
+A result polling endpoint is available for async invocations:
+
+```
+GET /api/v1/{kind}/{user_id}/{name}/result/{trace_id}
+```
+
+## Invocation modes
+
+| Mode | Path suffix | Semantics |
+|------|-------------|-----------|
+| **Sync** | `/invoke` | Blocks until completion; returns the terminal result in the declared output format (JSON, NDJSON, file, etc.). |
+| **Async** | `/invoke-async` | Returns `202 Accepted` with a `trace_id`; result is stored for 1 hour and can be polled via `/result/{trace_id}` or delivered via webhook. |
+| **Stream** | `/stream` | Long-lived response; incremental chunks over Server-Sent Events (`text/event-stream`) or NDJSON (`application/x-ndjson`). |
+
+The set of allowed modes is declared per endpoint in the pipeline/agent YAML `api.invocation.modes` field.
+
+## Content negotiation
+
+- **Request** — `Content-Type` must match one of the declared `api.input.content_type` values. Built-in codecs: `application/json`, `multipart/form-data`, `text/plain`.
+- **Response** — `Accept` header selects one of the declared `api.output.content_type` values. Built-in formatters: `application/json`, `text/event-stream`, `application/x-ndjson`, `application/octet-stream` (file streaming).
+
+## Standard headers
+
+| Header | Purpose |
+|--------|---------|
+| `Authorization: Bearer <api_key>` | Authentication |
+| `X-User-Id` | Must match the `{user_id}` in the URL |
+| `X-Trace-Id` | Optional correlation id; one is generated if omitted |
+| `X-Session-Id` | Optional session pinning; auto-generated otherwise |
+| `X-Idempotency-Key` | Dedupes duplicate requests within the configured TTL |
+
+## User-level OpenAPI
+
+Every user gets a live OpenAPI 3.1 document compiled from the currently deployed configuration:
+
+```
+GET /api/v1/openapi/{user_id}.json
+GET /api/v1/openapi/{user_id}/{kind}/{name}.json
+```
+
+Use the first URL to explore all pipelines and agents in Swagger UI or a code generator. Use the second URL to scope to a single endpoint.
+
+<Card title="Swagger UI in the dashboard" icon="book-open">
+Open **Developer → API Docs** in the DEHA dashboard to browse the live, user-scoped OpenAPI with a built-in try-it-out console.
+</Card>

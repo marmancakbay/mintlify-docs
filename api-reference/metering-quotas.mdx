@@ -1,0 +1,123 @@
+---
+title: "Quota Status"
+api: "GET https://api.deha.one/metering/quota"
+description: "Get your user's current quota status and enforcement state."
+---
+
+Returns your user's current quota status including credit limit, usage percentage, remaining credits, and the current enforcement action. Use this to monitor your usage and anticipate quota limits.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="user_id" type="string">
+  Your user identifier.
+</ResponseField>
+<ResponseField name="allowed" type="boolean">
+  Whether your user can continue operations. `false` when quota is exceeded and overage action is `throttle` or `block`.
+</ResponseField>
+<ResponseField name="current_usage" type="number">
+  Total credits consumed this month.
+</ResponseField>
+<ResponseField name="limit" type="integer">
+  Monthly credit limit for your plan.
+</ResponseField>
+<ResponseField name="usage_percent" type="number">
+  Current usage as a percentage of the monthly limit.
+</ResponseField>
+<ResponseField name="remaining" type="number">
+  Credits remaining until the monthly limit is reached.
+</ResponseField>
+<ResponseField name="action" type="string">
+  Current enforcement action: `none` (normal), `alert_only` (notification sent), `throttle` (rate limited), or `block` (requests rejected).
+</ResponseField>
+<ResponseField name="alert_triggered" type="boolean">
+  Whether usage has crossed the alert threshold (default 80% of limit).
+</ResponseField>
+<ResponseField name="exceeded" type="boolean">
+  Whether usage has exceeded the monthly limit.
+</ResponseField>
+<ResponseField name="plan" type="string">
+  Your billing plan name.
+</ResponseField>
+<ResponseField name="overage_action" type="string">
+  Configured action when the limit is exceeded: `alert_only`, `throttle`, or `block`.
+</ResponseField>
+
+## Quota States
+
+| State | `allowed` | `action` | Description |
+|-------|-----------|----------|-------------|
+| Normal | `true` | `none` | Usage within limits |
+| Alert threshold | `true` | `alert_only` | Usage above 80% of limit |
+| Exceeded (alert_only) | `true` | `alert_only` | Limit exceeded, operations continue |
+| Exceeded (throttle) | `false` | `throttle` | Limit exceeded, requests rate-limited |
+| Exceeded (block) | `false` | `block` | Limit exceeded, new requests rejected |
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing or invalid authentication |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/metering/quota?user_id=acme_corp" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/metering/quota",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    params={"user_id": "acme_corp"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/metering/quota?user_id=acme_corp",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "user_id": "acme_corp",
+  "allowed": true,
+  "current_usage": 35000.0,
+  "limit": 50000,
+  "usage_percent": 70.0,
+  "remaining": 15000.0,
+  "action": "none",
+  "alert_triggered": false,
+  "exceeded": false,
+  "plan": "growth",
+  "overage_action": "throttle"
+}
+```

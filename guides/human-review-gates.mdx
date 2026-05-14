@@ -1,0 +1,116 @@
+---
+title: "Human Review Gates"
+sidebarTitle: "Human Review"
+description: "Add human approval steps so your team can review AI responses before they reach customers."
+icon: "user-check"
+---
+
+## What You Will Set Up
+
+Add checkpoints where a team member reviews and approves AI-generated content before it is sent to customers or published. This is essential for high-stakes communications like financial advice, medical information, or public-facing content.
+
+<Info>
+Before you begin, make sure you have:
+- A DEHA ONE workspace with at least one [agent configured](/guides/first-agent)
+- Team members with access to the [DEHA ONE dashboard](https://app.deha.one) for reviewing requests
+</Info>
+
+---
+
+<Steps>
+
+### When to Use Human Review
+
+Human review gates are valuable when:
+
+- AI responses involve **sensitive topics** (financial, legal, medical)
+- You need **quality assurance** before customer-facing content goes live
+- Regulatory requirements mandate **human oversight**
+- You are **building trust** in a new AI agent and want to monitor quality
+- An automation produces content that needs **editorial approval**
+
+### Add Human Review to an Automation
+
+When building an automation, add a **Human Review** step at any point where you want a person to check the output.
+
+**Using DEHA:**
+
+> "Create an automation that generates a weekly customer report using AI, then pauses for my team to review it before sending it by email."
+
+**From the dashboard:**
+
+1. Go to **Automations** and create or edit an automation.
+2. Add a step with type **Human Review**.
+3. Configure:
+   - **Review prompt** -- What should the reviewer check? (e.g., "Review this report for accuracy and brand alignment.")
+   - **Reviewer role** -- Who should review? (e.g., supervisor, editor)
+   - **Timeout** -- How long to wait for a review before the automation times out (e.g., 24 hours)
+
+### Review Requests in the Dashboard
+
+When an automation reaches a human review step:
+
+1. The automation **pauses** and waits.
+2. A notification appears in the dashboard under **Reviews**.
+3. The assigned reviewer sees the AI-generated content.
+4. The reviewer can:
+
+| Action | What Happens |
+|--------|-------------|
+| **Approve** | The automation continues with the original content |
+| **Edit** | The reviewer modifies the content, then the automation continues with the edited version |
+| **Reject** | The automation stops |
+
+### Set Up AI Quality Scoring
+
+For high-volume workflows, you can add an AI quality gate that automatically scores responses and only escalates low-quality ones to humans.
+
+**Using DEHA:**
+
+> "Add a quality check to my support agent. If a response scores below 70% on accuracy and completeness, pause it for human review. Otherwise, send it automatically."
+
+The AI quality gate evaluates responses on criteria like:
+- **Accuracy** -- Is the information factually correct?
+- **Completeness** -- Does it address the full question?
+- **Tone** -- Is it appropriately professional?
+- **Safety** -- Does it avoid harmful or misleading content?
+
+High-scoring responses pass through automatically, while low-scoring ones go to your team for review.
+
+### Monitor Review Activity
+
+Track your team's review activity in the dashboard:
+
+1. Go to **Reviews** to see pending, approved, and rejected items.
+2. See average review times and approval rates.
+3. Use this data to improve your agent's prompts -- if certain types of responses are consistently rejected, adjust the agent's instructions.
+
+<Check>
+Create an automation with a human review step, run it, and verify that it pauses for review. Approve the request in the dashboard and confirm the automation completes.
+</Check>
+
+</Steps>
+
+---
+
+## Review Decisions
+
+| Decision | Effect |
+|----------|--------|
+| **Approve** | Content passes unchanged, automation continues |
+| **Edit** | Reviewer modifies the content, automation continues with the edited version |
+| **Reject** | Content is blocked, automation stops |
+| **Revise** | Content is sent back to the AI agent for a new attempt |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Scheduled Automations" icon="clock" href="/guides/scheduled-automations">
+    Run your review workflows on a regular schedule.
+  </Card>
+  <Card title="Multi-Agent Workflows" icon="sitemap" href="/guides/multi-agent-workflow">
+    Set up a team of specialized agents.
+  </Card>
+</CardGroup>

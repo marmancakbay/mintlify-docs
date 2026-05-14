@@ -1,0 +1,224 @@
+---
+title: "Creating Agents"
+sidebarTitle: "Creating Agents"
+description: "How to create and configure AI agents using DEHA or the dashboard. Set up your agent's personality, tools, knowledge, and behavior."
+icon: "plus"
+---
+
+There are two ways to create agents in DEHA ONE: through a natural language conversation with DEHA, or through the dashboard UI. Both produce the same result -- a fully configured agent ready to deploy.
+
+---
+
+## Creating agents with DEHA
+
+The fastest way to create an agent is to describe what you want to DEHA. Here are some examples:
+
+<Tabs>
+  <Tab title="Simple support bot">
+    > **You:** Create a customer support agent that answers questions about our products and shipping policies. It should be friendly and professional.
+    >
+    > **DEHA:** I'll create a support agent with a friendly, professional personality. It will handle product and shipping questions. Here's the plan...
+
+    DEHA creates the agent, sets up the personality, and deploys it. You can start testing immediately.
+  </Tab>
+  <Tab title="Agent with tools">
+    > **You:** Build a support agent that can look up order status using our Shopify integration and search our FAQ knowledge base for answers.
+    >
+    > **DEHA:** I'll create a support agent connected to your Shopify integration for order lookups and your FAQ collection for knowledge search. Here's the plan...
+
+    DEHA wires up the integrations and knowledge base automatically.
+  </Tab>
+  <Tab title="Complex agent">
+    > **You:** I need a customer service agent for WhatsApp that can: check order status, process returns through Shopify, search our help docs, and escalate to a human when the customer is upset. Use GPT-4o for the AI model.
+    >
+    > **DEHA:** I'll create a full-featured service agent with order management, knowledge search, sentiment-based escalation, and GPT-4o. Here's the plan...
+
+    DEHA handles all the complexity -- tools, knowledge, escalation rules, channel connection, and model selection.
+  </Tab>
+</Tabs>
+
+### Refining with DEHA
+
+After creating an agent, continue the conversation to refine it:
+
+> **You:** "Add the ability to check inventory levels too."
+>
+> **You:** "Make the tone more casual -- we're a lifestyle brand."
+>
+> **You:** "Add a human approval step before any refund responses are sent."
+
+DEHA updates the agent incrementally, preserving everything you have already set up.
+
+---
+
+## Creating agents from the dashboard
+
+The dashboard provides a visual editor where you can configure every aspect of your agent:
+
+### Step 1: Basic information
+
+| Setting | Description |
+|---|---|
+| **Name** | A unique name for your agent (e.g., "customer_support", "sales_assistant") |
+| **Description** | What this agent does -- helps you and your team identify it |
+| **Type** | Conversation (for chat), Processor (for tasks), or Judge (for quality review) |
+
+### Step 2: AI model and personality
+
+| Setting | Description |
+|---|---|
+| **AI model** | Which language model to use (e.g., GPT-4o, Claude, Gemini, or a fast/cost-effective option) |
+| **System prompt** | Instructions that define your agent's personality, knowledge, and behavior rules |
+| **Temperature** | How creative the agent should be (lower = more consistent, higher = more varied) |
+| **Max response length** | Maximum length of the agent's responses |
+
+<Tip>
+  Write your system prompt as if you are briefing a new employee. Describe the role, tone, what they should and should not do, and how to handle edge cases.
+</Tip>
+
+### Step 3: Tools and knowledge
+
+Connect the resources your agent needs:
+
+- **API integrations** -- REST APIs for looking up data, creating records, or triggering actions
+- **Knowledge base** -- Document collections the agent can search for accurate answers
+- **Code execution** -- Ability to run Python code for calculations and data processing
+- **Data queries** -- Access to your databases for analytics and reporting
+- **Other agents** -- Delegate specialized tasks to other agents
+
+See [Tools & Integrations](/agents/tools-and-integrations) for detailed information.
+
+### Step 4: Behavior settings
+
+| Setting | Description |
+|---|---|
+| **Channels** | Which messaging channels this agent serves (WhatsApp, Telegram, Email, Web) |
+| **Human escalation** | When and how to transfer conversations to human team members |
+| **Quality review** | Whether responses should be reviewed before sending (automatic or manual) |
+| **Conversation memory** | Whether the agent remembers previous messages in the session |
+| **Data retention** | How long to keep conversation data (default: 7 days) |
+
+### Step 5: Test your agent
+
+Before going live, test your agent:
+
+1. Send test messages through the dashboard's built-in chat
+2. Verify it uses tools correctly
+3. Check that knowledge search returns relevant results
+4. Test edge cases and escalation scenarios
+
+---
+
+## Agent configuration at a glance
+
+Here is a summary of the key settings available for every agent:
+
+| Category | Settings |
+|---|---|
+| **Identity** | Name, description, version, type |
+| **AI model** | Model selection, temperature, response limits, fallback models |
+| **Personality** | System prompt with instructions, tone, rules, and guidelines |
+| **Tools** | API integrations, code execution, data queries, delegate agents |
+| **Knowledge** | Document collections for RAG search, similarity thresholds |
+| **Channels** | WhatsApp, Telegram, Email, Web deployment |
+| **Quality** | Human-in-the-loop review, judge-based scoring, approval thresholds |
+| **Routing** | Conditional logic, intent-based routing, multi-agent delegation |
+| **Data** | State variables, conversation memory, retention policies |
+| **Security** | API key authentication, rate limits, credential management |
+
+---
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Start simple, then add complexity">
+    Begin with a basic agent that handles the most common scenario. Once it works well, add tools, knowledge, and edge case handling incrementally.
+  </Accordion>
+  <Accordion title="Write clear system prompts">
+    The system prompt is the most important part of your agent. Be specific about:
+    - What the agent's role is
+    - What tone to use
+    - What it should and should not do
+    - How to handle errors and edge cases
+    - When to escalate to a human
+  </Accordion>
+  <Accordion title="Test with real scenarios">
+    Test your agent with messages that your actual customers would send. Include tricky cases, ambiguous questions, and out-of-scope requests.
+  </Accordion>
+  <Accordion title="Use the right model for the job">
+    Powerful models (like GPT-4o or Claude) are great for complex reasoning but cost more. Faster models work well for simple Q&A and routing. Match the model to the task.
+  </Accordion>
+  <Accordion title="Set up human escalation">
+    Always give your agent a way to escalate to a human. No agent can handle every situation, and customers appreciate being connected to a person when needed.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+<Accordion title="Advanced: YAML configuration reference">
+  For advanced users who want direct control, agents are defined as YAML files. Here is a complete example:
+
+  ```yaml
+  name: "support_agent"
+  description: "Customer support agent with tools and escalation."
+  version: "1.0.0"
+  type: "agent_conversational"
+
+  persistence_enabled: true
+  retention_days: 7
+
+  event_routing:
+    execute_types: ["message.inbound", "agent.request", "text"]
+    resume_suffixes: [".result", ".error"]
+
+  prompts:
+    system_main: |
+      You are a friendly customer support assistant.
+      Be professional, concise, and helpful.
+      If you cannot resolve an issue, offer to connect the customer with a human agent.
+
+  nodes:
+    - id: "main_llm"
+      type: "node_llm"
+      parameters:
+        model: "gpt-4o"
+        provider: "litellm"
+        temperature: 0.3
+        max_tokens: 2048
+        prompt_ref: "system_main"
+        bind_all_tools: true
+
+    - id: "tool_executor"
+      type: "node_tool"
+      parameters:
+        allowed_tools: []
+
+  edges:
+    - source: "__start__"
+      target: "main_llm"
+    - source: "main_llm"
+      target: "tool_executor"
+      condition: "state.context.has_tool_call == True"
+      priority: 1
+    - source: "tool_executor"
+      target: "main_llm"
+    - source: "main_llm"
+      target: "__end__"
+      priority: 10
+  ```
+
+  For the complete YAML schema, see [Node Types](/agents/node-types) for all available node configurations.
+</Accordion>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Tools & Integrations" icon="plug" href="/agents/tools-and-integrations">
+    Connect APIs, databases, and other tools to your agent.
+  </Card>
+  <Card title="Multi-Agent Orchestration" icon="sitemap" href="/agents/multi-agent-orchestration">
+    Build teams of agents that work together.
+  </Card>
+</CardGroup>

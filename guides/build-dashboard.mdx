@@ -1,0 +1,174 @@
+---
+title: "Build a dashboard"
+sidebarTitle: "Build a dashboard"
+description: "Compose a multi-widget dashboard from your data, embed it, and schedule PDF snapshots."
+icon: "table-cells-large"
+---
+
+This guide walks you through building a real dashboard in DEHA ONE -- from data source to embeddable view to scheduled PDF report.
+
+---
+
+## What you will build
+
+A "Daily Ops" dashboard with:
+
+- A KPI row (today's revenue, orders, open tickets, support response time)
+- A line chart of revenue over the last 30 days
+- A bar chart of orders by region
+- A table of the top 10 customers this week
+- A heatmap of agent quality scores
+
+Embedded in Confluence, exported to PDF every Monday morning, and emailed to the leadership team.
+
+---
+
+## Step 1 — Decide your widgets
+
+Sketch the layout first. The platform supports up to 48 widgets per dashboard, with widget types:
+
+- **KPI / big number** — single value with optional delta vs prior period
+- **Chart** — bar, line, area, scatter, pie, heatmap, etc.
+- **Table** — paginated rows with sort and column formatting
+- **Text** — markdown notes, section headers, callouts
+- **Image** — embedded artifact
+- **Map** — geographic widget
+
+Keep it focused. A great dashboard answers one question per row.
+
+---
+
+## Step 2 — Create the dashboard
+
+The fastest path is to ask DEHA:
+
+> "Create a daily ops dashboard with: today's revenue, today's orders, open tickets, average support response time, a 30-day revenue line chart, orders by region bar chart, top 10 customers this week table, and an agent quality heatmap. Refresh every 5 minutes."
+
+DEHA generates the dashboard, wires every widget to a SQL query against your warehouse, and applies your brand palette.
+
+Or build it in the **Visualizations → Dashboards** page in the dashboard.
+
+---
+
+## Step 3 — Author widgets manually (optional)
+
+If you want hand-control, each widget is a YAML block:
+
+```yaml
+- type: kpi
+  title: "Today's revenue"
+  query: |
+    SELECT SUM(total) AS value
+    FROM sales
+    WHERE order_date = CURRENT_DATE
+  format: currency
+  compare_to: "yesterday"
+
+- type: chart
+  title: "Revenue (last 30 days)"
+  query: |
+    SELECT order_date, SUM(total) AS revenue
+    FROM sales
+    WHERE order_date >= CURRENT_DATE - INTERVAL '30 days'
+    GROUP BY order_date
+    ORDER BY order_date
+  spec:
+    mark: line
+    encoding:
+      x: { field: order_date, type: temporal }
+      y: { field: revenue,    type: quantitative }
+```
+
+You can hand-write Vega-Lite specs for full control, or use the text-to-chart helper to generate them.
+
+---
+
+## Step 4 — Add filters
+
+A filter bar at the top of the dashboard lets users narrow the view. The most common are:
+
+- **Date range** — last 7d / 30d / 90d / YTD / custom
+- **Segment selector** — region, channel, plan tier, agent
+- **Status filter** — active / archived / all
+
+Mark which widgets each filter applies to. Widgets that don't apply (e.g., a static instructional note) ignore the filter.
+
+---
+
+## Step 5 — Embed it
+
+Save the dashboard. The platform generates a signed embed URL:
+
+```
+https://embed.deha.one/d/{dashboard_id}?token=<hs256>
+```
+
+Drop the URL into an iframe in:
+
+- Confluence (paste into an iframe macro)
+- Notion (paste in an embed block)
+- Your own internal portal
+- A Slack channel using a link unfurl
+
+You control:
+
+- Token expiry (default 30 days, configurable)
+- Whether viewers can change filters
+- Which widgets are visible per embed token
+
+For customer-facing embeds, generate per-customer tokens with a filter binding (e.g., `customer_id=42`) so each customer only sees their own data.
+
+---
+
+## Step 6 — Schedule a PDF report
+
+Open the dashboard's **Schedule** tab and add a recurring snapshot:
+
+```yaml
+schedule:
+  cron: "0 7 * * MON"
+  timezone: Europe/Istanbul
+  format: pdf
+  delivery:
+    - type: mail
+      to: ["leadership@example.com"]
+      subject: "Weekly Ops Report — week of {{ start_date }}"
+    - type: slack
+      target: "#leadership"
+      text: "Weekly ops report attached."
+```
+
+Every Monday at 7am, the platform renders the dashboard with the previous week's data and delivers the PDF.
+
+---
+
+## Step 7 — Iterate
+
+Once you have a dashboard in front of stakeholders, iteration is fast:
+
+- Add or remove widgets in real time (versioned, with rollback)
+- Tune queries based on which widgets get the most attention
+- Promote useful widgets to "saved" status so other dashboards can reuse them
+- Track loading time per widget; heavy widgets should move to materialized tables
+
+---
+
+## Performance tips
+
+| Issue | Fix |
+|---|---|
+| A widget queries 100M rows | Aggregate in SQL first or move to a daily materialized table |
+| Live refresh is too frequent | Set widget refresh to match data cadence (daily batch needs daily refresh, not 1 min) |
+| Dashboard takes 8 seconds to load | Profile each widget; the bottleneck is usually one over-scoped query |
+| Embed loads slowly for customers | Per-customer materialized views, with refresh on a schedule |
+| PDF generation times out | Reduce widget count or simplify the heaviest queries |
+
+---
+
+## Common patterns
+
+- **Self-serve customer dashboard** — embedded per-customer view with their user data scope
+- **On-call ops board** — TVs in the office, big-number KPIs, hourly refresh
+- **Executive monthly** — 1st of the month, PDF to the C-suite, dashboard archived for audit
+- **Quality monitor** — agent score heatmap, drift severity, alert volume; emails the team lead daily
+- **IoT fleet board** — every connected device with current state, last reading, and offline detection

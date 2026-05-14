@@ -1,0 +1,215 @@
+---
+title: "Creating Automations"
+sidebarTitle: "Creating Automations"
+description: "How to create multi-step automations using DEHA, the dashboard, or YAML configuration."
+icon: "plus"
+---
+
+There are three ways to create an automation in DEHA ONE, depending on how you prefer to work.
+
+---
+
+## Option 1: Ask DEHA (recommended)
+
+The fastest way to create an automation is to describe what you want in plain language. DEHA, your platform assistant, will build the automation for you.
+
+<Steps>
+  <Step title="Open DEHA">
+    Go to the DEHA assistant in your dashboard or use the API.
+  </Step>
+  <Step title="Describe your workflow">
+    Tell DEHA what you want to happen. For example:
+
+    > "When a WhatsApp message comes in, route it to my support agent, review the response for quality, and send it back to the customer."
+  </Step>
+  <Step title="Review and confirm">
+    DEHA generates the automation and shows you a summary. Review the trigger, steps, and settings, then confirm to activate it.
+  </Step>
+</Steps>
+
+<Tip>
+You can iterate with DEHA. Say things like "add a condition to check for urgent messages" or "also archive the conversation" to refine the automation before activating it.
+</Tip>
+
+---
+
+## Option 2: Use the dashboard
+
+The dashboard provides a visual interface for building automations.
+
+<Steps>
+  <Step title="Navigate to Automations">
+    In the sidebar, click **Automations** and then **Create New**.
+  </Step>
+  <Step title="Set the trigger">
+    Choose what starts the automation: an incoming message (and from which channel), a schedule, or an API call.
+  </Step>
+  <Step title="Add steps">
+    Build your workflow by adding steps one at a time. Choose from available step types like "Run an AI Agent," "Transform Data," "Make a Decision," and more.
+  </Step>
+  <Step title="Configure each step">
+    For each step, fill in the required settings. For example, an agent step needs you to select which agent to use and what input to send it.
+  </Step>
+  <Step title="Save and activate">
+    Give your automation a name and description, then save it. Toggle it on when you are ready.
+  </Step>
+</Steps>
+
+---
+
+## Option 3: Write YAML (power users)
+
+If you prefer working with configuration files, you can define automations directly in YAML.
+
+<AccordionGroup>
+  <Accordion title="Automation YAML structure">
+
+    Every automation YAML file has three main sections: identity, trigger, and steps.
+
+    ```yaml
+    # Identity
+    name: "my_automation"
+    description: "What this automation does"
+    enabled: true
+
+    # Trigger -- what starts the automation
+    trigger:
+      source: "whatsapp"
+      event_type: "message.inbound"
+
+    # Steps -- what the automation does
+    steps:
+      - type: "transform"
+        operation: "extract"
+        config:
+          expressions:
+            message: "data.payload.content"
+            user_id: "data.metadata.user_id"
+
+      - type: "agent"
+        agent_ref: "agents/support_bot.yaml"
+        input_mapping:
+          message: "context.message"
+        timeout: 60
+
+      - type: "fan_out"
+        targets:
+          - destination: "dashboard"
+            transform:
+              content: "step_result.content"
+          - destination: "archive"
+            transform:
+              content: "step_result.content"
+    ```
+  </Accordion>
+
+  <Accordion title="Trigger options">
+
+    **Message trigger** -- starts when a message arrives on a channel:
+    ```yaml
+    trigger:
+      source: "whatsapp"          # whatsapp, telegram, webchat
+      event_type: "message.inbound"
+    ```
+
+    **Conditional trigger** -- only starts when the message matches a filter:
+    ```yaml
+    trigger:
+      source: "telegram"
+      event_type: "message.inbound"
+      condition:
+        field: "data.payload.content"
+        operator: "contains"
+        value: "complaint"
+    ```
+
+    **Schedule trigger** -- starts on a timed schedule:
+    ```yaml
+    trigger:
+      source: "scheduler"
+      event_type: "schedule.trigger"
+    ```
+
+    **API trigger** -- starts when called via the REST API:
+    ```yaml
+    api_endpoint:
+      enabled: true
+      path: "/api/v1/automations/{user_id}/{name}/trigger"
+      auth: "api_key"
+    ```
+  </Accordion>
+
+  <Accordion title="Step configuration reference">
+
+    Every step has a `type` and type-specific settings. Common optional fields:
+
+    | Field | Description |
+    | --- | --- |
+    | `id` | A unique name for this step, used for branching |
+    | `on_error` | What to do if the step fails: `skip` (continue) or `fail` (stop) |
+    | `output_key` | Save this step's result under a name for later steps to use |
+
+    Steps pass data to each other using references:
+
+    | Reference | What it accesses |
+    | --- | --- |
+    | `context.{key}` | A value saved by an earlier step |
+    | `step_result.{key}` | The output of the immediately previous step |
+    | `data.{path}` | A field from the original triggering event |
+    | `literal:{value}` | A fixed text value |
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Key settings
+
+Every automation has a few important settings:
+
+| Setting | What it controls |
+| --- | --- |
+| **Name** | A unique identifier for your automation |
+| **Description** | A summary that appears in the dashboard |
+| **Enabled** | Whether the automation is currently active |
+| **Trigger** | What event starts the automation |
+| **Steps** | The ordered list of actions to perform |
+
+---
+
+## Example: Process WhatsApp messages
+
+Here is a complete example that processes incoming WhatsApp messages, routes them to an AI agent, and archives the conversation.
+
+<Steps>
+  <Step title="Trigger: WhatsApp message arrives">
+    The automation starts when a customer sends a message on WhatsApp.
+  </Step>
+  <Step title="Step 1: Extract message details">
+    Pull out the customer's message, phone number, and session information.
+  </Step>
+  <Step title="Step 2: Run the support agent">
+    Send the message to your support AI agent. The agent reads the message, checks the knowledge base, and generates a helpful response.
+  </Step>
+  <Step title="Step 3: Send the reply">
+    Deliver the agent's response back to the customer on WhatsApp.
+  </Step>
+  <Step title="Step 4: Archive the conversation">
+    Save the full interaction for your records and future analytics.
+  </Step>
+</Steps>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Step Types" icon="list-check" href="/automations/step-types">
+    See all the actions you can add to your automations.
+  </Card>
+  <Card title="Scheduling" icon="clock" href="/automations/scheduling">
+    Run automations on a time-based schedule.
+  </Card>
+  <Card title="Human Review" icon="user-check" href="/automations/human-review">
+    Add approval gates for quality control.
+  </Card>
+</CardGroup>

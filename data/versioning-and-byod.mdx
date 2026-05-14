@@ -1,0 +1,119 @@
+---
+title: "Versioning & BYOD"
+sidebarTitle: "Versioning & BYOD"
+description: "Snapshot your data with time-travel and rollback. Route results back to your own warehouse, MongoDB, or Qdrant."
+icon: "clock-rotate-left"
+---
+
+DEHA ONE processes your data, but it does not want to own it. Two features make that practical:
+
+1. **Versioning** — every snapshot is point-in-time, time-travelable, and rollback-able
+2. **BYOD (Bring Your Own Data)** — results sink back to your own storage, with the platform keeping only operational state
+
+---
+
+## Versioning (Delta Lake snapshots)
+
+A **snapshot** is the state of a named dataset at a specific point in time. Snapshots are immutable, content-addressable, and stored in Delta Lake format.
+
+### What you get
+
+| Capability | Behavior |
+|---|---|
+| **Append a new snapshot** | Roll forward to a new version with a single pipeline step |
+| **Time-travel read** | Query any past version by name + version number or by timestamp |
+| **Rollback** | Re-point the "current" pointer to any past version atomically |
+| **Diff** | Row-level diff between any two versions (added / removed / changed) |
+| **Schema evolution** | Tracked across versions; backward-compatible reads |
+| **Retention** | Configurable per dataset (default 30 days of versions) |
+
+### When to snapshot
+
+- After a daily / hourly load — so you can roll back if downstream complains
+- Before a destructive transform — so the "before" state survives
+- Before pushing to production — so the prior production state is preserved
+- At quarter close — for audit and compliance evidence
+
+### Rollback in practice
+
+If a downstream report looks wrong, ask DEHA:
+
+> "Roll the customer_master dataset back to yesterday at 18:00 and re-run the weekly KPI pipeline."
+
+DEHA validates the request, performs the atomic re-point (no data movement), and re-runs the dependent pipelines. Total time: seconds.
+
+---
+
+## BYOD — Bring Your Own Data
+
+DEHA ONE's BYOD model means **your business data lives in your warehouse, not ours**. The platform processes data ephemerally and sinks the results back to systems you own.
+
+### BYOD destinations
+
+| Destination | What you can sink to it |
+|---|---|
+| **PostgreSQL** | Tables, materialized views |
+| **MySQL** | Tables |
+| **MongoDB** | Collections (per-user prefix preserved) |
+| **MSSQL / Oracle / SQLite** | Tables |
+| **S3 (any S3-compatible)** | Parquet / CSV / JSON object snapshots |
+| **External Qdrant** | Vector collections |
+| **External MongoDB** | Archive of platform events |
+| **REST webhook** | Push-based downstream notification |
+
+### Storage strategies per user
+
+Pick how data flows for your user:
+
+- **INTERNAL** — operational state only; business data may not flow to platform storage
+- **EXTERNAL** — everything routes to your storage (warehouse, Mongo, Qdrant)
+- **HYBRID** — operational state internal, business data external (most common)
+
+Per-data-category routing is supported: `BUSINESS_DATA`, `ANALYTICS_RESULTS`, `EMBEDDINGS`, `FILES`, `CONVERSATIONS` can each go to a different destination.
+
+### Why BYOD matters
+
+- **Data residency** — keep data in your region of choice
+- **Existing investments** — leverage your warehouse, your Mongo, your Qdrant, your S3
+- **Cost control** — pay for storage in your provider's terms, not the platform's
+- **Compliance** — your DLP, your encryption keys, your access policies
+- **Vendor lock-in mitigation** — your data is always in your systems, not the platform's
+
+---
+
+## Operational vs. business data
+
+| Data category | Where it lives |
+|---|---|
+| **Operational** (sessions, locks, idempotency keys, lineage) | Platform |
+| **Business data** (your tables, your customers, your transactions) | You (BYOD) or platform (your choice) |
+| **Analytics results** | You (BYOD) or platform |
+| **Conversations / messages** | You (BYOD) or platform |
+| **Embeddings** | You (BYOD Qdrant) or platform Qdrant |
+| **Files / attachments** | You (BYOD S3) or platform |
+
+You decide which category goes where on a per-user basis.
+
+---
+
+## DuckDB inside the platform
+
+For transient analytics work — text-to-SQL, profiling, ad-hoc queries — DEHA ONE uses a per-user DuckDB database. DuckDB is:
+
+- File-isolated per user
+- Read-only for analytics / query workloads
+- Ephemeral by default (process and discard)
+- Optionally persistent with TTL-based sink to your BYOD destination
+
+DuckDB connects directly to your warehouse via native scanners (PostgreSQL, MySQL, MongoDB), so queries against your live warehouse work without moving data into the platform.
+
+---
+
+## Audit and lineage
+
+Every snapshot and every BYOD write produces a lineage event in **OpenLineage** format, forwarded to **Marquez** (or your own lineage system). You can:
+
+- Trace any downstream artifact back to every input that produced it
+- See which pipeline / agent / user triggered the write
+- Browse the DAG of your data ecosystem
+- Audit cross-user data movement (and prove there is none)

@@ -1,0 +1,141 @@
+---
+title: "Validate Config"
+api: "POST /api/v1/config/{user_id}/validate"
+description: "Validate user configurations with cross-reference checks."
+---
+
+Performs comprehensive cross-reference validation on your configuration files without deploying them. This is a dry-run operation that checks for issues such as:
+
+- Missing agent references
+- Invalid schema references
+- Inconsistent graph edges in agent configurations
+- Missing integration references
+- Session lifecycle configuration issues
+
+## Authentication
+
+Requires JWT with `read` permission. Your user must match the `{user_id}` in the URL.
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="configs" type="object" required>
+  A map of configuration type to YAML content strings. Include all configurations that reference each other for accurate cross-reference validation.
+</ParamField>
+
+### Supported Config Types
+
+| Key | Description |
+|-----|-------------|
+| `user` | Main user configuration |
+| `channels` | Channel configurations |
+| `routes` | Routing rules |
+| `data` | Data refinery configuration |
+| `agent:{name}` | Agent configuration (e.g., `agent:support_agent`) |
+| `pipeline:{name}` | Pipeline configuration |
+
+## Response
+
+<ResponseField name="is_valid" type="boolean">
+  Whether all validations passed.
+</ResponseField>
+<ResponseField name="errors" type="array">
+  List of validation errors. These must be fixed before deployment.
+</ResponseField>
+<ResponseField name="warnings" type="array">
+  List of non-blocking warnings. Deployment can proceed with warnings, but they should be reviewed.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Missing or invalid credentials |
+| `403` | Insufficient permissions or user mismatch |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/validate" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "configs": {
+      "user": "name: ACME Corp\nplan: growth\nsession_lifecycle:\n  idle_timeout: 1800\n",
+      "agent:support_agent": "name: support_agent\nnodes:\n  - id: llm_node\n    type: llm\n"
+    }
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/validate",
+    headers={"Authorization": f"Bearer {jwt_token}"},
+    json={
+        "configs": {
+            "user": "name: ACME Corp\nplan: growth\n",
+            "agent:support_agent": "name: support_agent\nnodes:\n  - id: llm_node\n    type: llm\n"
+        }
+    }
+)
+result = response.json()
+
+if result["is_valid"]:
+    print("Validation passed!")
+else:
+    for error in result["errors"]:
+        print(f"Error: {error}")
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/proxy/acme_corp/config/api/v1/config/acme_corp/validate",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      configs: {
+        user: "name: ACME Corp\nplan: growth\n",
+        "agent:support_agent": "name: support_agent\nnodes:\n  - id: llm_node\n    type: llm\n"
+      }
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response (Valid)
+{
+  "is_valid": true,
+  "errors": [],
+  "warnings": [
+    "Pipeline 'daily_report' has no error handling node"
+  ]
+}
+```
+
+```json Example Response (Invalid)
+{
+  "is_valid": false,
+  "errors": [
+    "Agent 'support_agent' references unknown schema 'orders_schema'",
+    "Agent 'support_agent' has edge from 'llm_node' to non-existent node 'tool_node'"
+  ],
+  "warnings": [
+    "Agent 'data_analyst' has no fallback configured"
+  ]
+}
+```
+
+<Tip>
+Include all related configurations in a single validation request for accurate cross-reference checking. For example, if an agent references a schema defined in the user config, include both `user` and the agent config.
+</Tip>

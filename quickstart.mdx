@@ -1,0 +1,110 @@
+---
+title: "Quickstart"
+description: "Go from sign-up to a working AI agent in under five minutes."
+---
+
+This guide walks you through creating your account, building your first AI agent with DEHA, and connecting it to a messaging channel.
+
+<Steps>
+  <Step title="Sign in to the dashboard">
+    Head to [app.deha.one](https://app.deha.one) and create your account. You can sign up with your email address, Google, or single sign-on (SSO).
+
+    <Info>
+      New accounts include a free trial with starter credits so you can explore every capability -- agents, automations, channels, data, knowledge base, optimization -- before choosing a plan.
+    </Info>
+
+    Once you are signed in, you will land on the dashboard -- your central hub for managing agents, channels, automations, data, and integrations.
+  </Step>
+
+  <Step title="Create your first agent with DEHA">
+    The fastest way to create an agent is to ask DEHA, your built-in AI assistant.
+
+    1. Click the **DEHA** button in the dashboard sidebar
+    2. Describe the agent you want to create in plain English. For example:
+
+    > "Create a customer support agent that answers questions about our products, looks up orders in our database, greets users warmly, and escalates billing issues to a human."
+
+    3. DEHA will design the agent (graph topology, tools, knowledge), generate the configuration, validate it, and show you a preview with a diff
+    4. Review the details and click **Deploy**. DEHA also runs smoke tests and self-heals if anything fails on first run.
+
+    Your agent is now live.
+
+    <Tip>
+      You can also build agents in the **Agents** page using the visual node-graph editor, or edit the YAML directly in the Monaco editor with diff and version history. See [Creating Agents](/agents/creating-agents).
+    </Tip>
+  </Step>
+
+  <Step title="Connect a channel">
+    Give your agent a way to reach your users by connecting a messaging channel.
+
+    1. Go to **Channels** in the sidebar
+    2. Choose a channel: **WhatsApp**, **Telegram**, **Email**, **Slack**, or **Web Chat**
+    3. Follow the on-screen setup instructions to link your account (Meta Business, BotFather, mail provider, Slack workspace, etc.)
+    4. Assign your agent to handle messages on the channel
+
+    <Info>
+      **Web Chat** is the fastest to set up -- it works instantly with no external account needed. Use it to test your agent before connecting production channels.
+    </Info>
+  </Step>
+
+  <Step title="(Optional) Connect data and knowledge">
+    To make your agent dramatically more useful, give it data and documents to work with.
+
+    - **Knowledge base**: Upload PDFs, DOCX, spreadsheets, or paste URLs in the **Knowledge** page. Documents are parsed (including OCR for scanned PDFs), chunked, and embedded automatically.
+    - **Data sources**: Connect a PostgreSQL, MySQL, MongoDB, REST API, file, or webhook in the **Data Studio**. Your agent can now ask questions about your data in SQL or plain English.
+    - **Tools**: Hook up REST APIs or run sandboxed Python code via the **Integrations** page.
+
+    DEHA can do all of this for you -- just say "connect my PostgreSQL database and let the agent answer questions about orders."
+  </Step>
+
+  <Step title="Test your agent">
+    Send a test message and watch your agent respond.
+
+    - **Web Chat**: Click the chat widget on the dashboard to start a conversation
+    - **WhatsApp / Telegram / Slack**: Send a message from your phone or workspace to the connected number or bot
+    - **API**: Call the agent directly from your application (see [API Reference](/api-reference/gateway-agent-invoke))
+
+    If the response is not quite right, go back to DEHA and refine your agent. You can say things like:
+
+    > "Update my support agent to also handle return requests, check order status from the database, and route refund requests to a human review queue."
+
+    DEHA updates the configuration, redeploys, and runs regression tests -- automatically.
+  </Step>
+
+  <Step title="Monitor usage and quality">
+    Keep track of activity, credit consumption, and response quality from the dashboard.
+
+    1. Navigate to **Billing** to see credit balance, usage breakdown by agent and operation, and per-user quota status
+    2. Open **Logs** to view structured logs, distributed traces, and active alerts
+    3. Use **HITL Queue** to review any agent responses flagged for human approval
+
+    <Tip>
+      Set up quota alerts (80% by default) and overage actions (alert / throttle / block) so usage never surprises you. See [Credits & Quotas](/billing/credits-and-quotas).
+    </Tip>
+  </Step>
+</Steps>
+
+---
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="Build your first agent" icon="robot" href="/guides/first-agent">
+    A detailed walkthrough with tools, memory, and human review.
+  </Card>
+  <Card title="Create an automation" icon="gears" href="/guides/first-automation">
+    Set up a multi-step pipeline that runs on a schedule or responds to events.
+  </Card>
+  <Card title="Connect a database" icon="database" href="/guides/connect-data-source">
+    Pull data from PostgreSQL, MySQL, MongoDB, S3, or REST and start querying.
+  </Card>
+  <Card title="Build a dashboard" icon="chart-pie" href="/guides/build-dashboard">
+    Generate charts from plain English and export shareable PDF dashboards.
+  </Card>
+  <Card title="Connect IoT devices" icon="microchip" href="/guides/connect-iot-device">
+    Stream sensor data over MQTT, OPC-UA, or Modbus into your pipelines.
+  </Card>
+  <Card title="Explore the API" icon="rectangle-terminal" href="/api-reference/overview">
+    Integrate DEHA ONE into your existing systems with our REST API.
+  </Card>
+</CardGroup>

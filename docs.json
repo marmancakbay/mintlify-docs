@@ -1,0 +1,337 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "DEHA DOCS",
+  "theme": "palm",
+  "logo": {
+    "light": "/logo/deha_docs.png",
+    "dark": "/logo/deha_docs.png",
+    "height": 50
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#818CF8",
+    "dark": "#4F46E5"
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "css": "/global.css",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Welcome",
+            "pages": ["introduction", "quickstart", "platform-overview"]
+          },
+          {
+            "group": "DEHA AI Assistant",
+            "pages": [
+              "deha/overview",
+              "deha/natural-language-config",
+              "deha/plan-and-execute"
+            ]
+          },
+          {
+            "group": "AI Agents",
+            "pages": [
+              "agents/overview",
+              "agents/creating-agents",
+              "agents/node-types",
+              "agents/tools-and-integrations",
+              "agents/multi-agent-orchestration"
+            ]
+          },
+          {
+            "group": "Automations & Pipelines",
+            "pages": [
+              "automations/overview",
+              "automations/creating-automations",
+              "automations/step-types",
+              "automations/scheduling",
+              "automations/human-review"
+            ]
+          },
+          {
+            "group": "Channels",
+            "pages": [
+              "channels/overview",
+              "channels/whatsapp",
+              "channels/telegram",
+              "channels/email",
+              "channels/slack",
+              "channels/web-chat"
+            ]
+          },
+          {
+            "group": "Data & Analytics",
+            "pages": [
+              "data/overview",
+              "data/connecting-data",
+              "data/querying-data",
+              "data/analytics",
+              "data/transformations",
+              "data/data-quality",
+              "data/privacy-and-pii",
+              "data/versioning-and-byod"
+            ]
+          },
+          {
+            "group": "Knowledge Base",
+            "pages": [
+              "knowledge-base/overview",
+              "knowledge-base/uploading-documents",
+              "knowledge-base/search-and-retrieval"
+            ]
+          },
+          {
+            "group": "IoT & Devices",
+            "pages": [
+              "iot/overview",
+              "iot/protocols",
+              "iot/devices-and-schemas",
+              "iot/commands-and-control"
+            ]
+          },
+          {
+            "group": "Optimization",
+            "pages": [
+              "optimization/overview",
+              "optimization/problem-types"
+            ]
+          },
+          {
+            "group": "Web Intelligence",
+            "pages": [
+              "web-intel/overview",
+              "web-intel/search",
+              "web-intel/scraping"
+            ]
+          },
+          {
+            "group": "Visualizations & Reports",
+            "pages": [
+              "viz/overview",
+              "viz/charts",
+              "viz/dashboards",
+              "viz/embeds-and-reports"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/overview",
+              "integrations/rest-api-tools",
+              "integrations/code-execution",
+              "integrations/mcp-protocol"
+            ]
+          },
+          {
+            "group": "Billing & Usage",
+            "pages": [
+              "billing/overview",
+              "billing/credits-and-quotas"
+            ]
+          },
+          {
+            "group": "Security & Access",
+            "pages": [
+              "security/overview",
+              "security/api-keys",
+              "security/roles-and-permissions",
+              "security/byok-and-vault"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "guides/first-agent",
+              "guides/first-automation"
+            ]
+          },
+          {
+            "group": "Channel Setup",
+            "pages": [
+              "guides/setup-whatsapp",
+              "guides/setup-telegram",
+              "guides/setup-email",
+              "guides/setup-slack",
+              "guides/setup-web-chat"
+            ]
+          },
+          {
+            "group": "Data & Analytics",
+            "pages": [
+              "guides/connect-data-source",
+              "guides/text-to-sql",
+              "guides/run-analytics",
+              "guides/forecast-and-drift",
+              "guides/build-knowledge-base"
+            ]
+          },
+          {
+            "group": "Operations",
+            "pages": [
+              "guides/multi-agent-workflow",
+              "guides/human-review-gates",
+              "guides/scheduled-automations",
+              "guides/event-driven-triggers"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "guides/api-access",
+              "guides/custom-integrations",
+              "guides/optimize-routes-and-schedules",
+              "guides/connect-iot-device",
+              "guides/build-dashboard"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/overview",
+              "api-reference/authentication"
+            ]
+          },
+          {
+            "group": "Dynamic API",
+            "pages": [
+              "api-reference/dynamic-api-overview",
+              "api-reference/dynamic-api-pipeline",
+              "api-reference/dynamic-api-agent",
+              "api-reference/dynamic-api-webhooks",
+              "api-reference/dynamic-api-sdks"
+            ]
+          },
+          {
+            "group": "Agents & Pipelines",
+            "pages": [
+              "api-reference/gateway-agent-invoke",
+              "api-reference/gateway-pipeline-invoke",
+              "api-reference/gateway-webhook",
+              "api-reference/gateway-mcp-endpoint",
+              "api-reference/gateway-proxy",
+              "api-reference/gateway-health"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "api-reference/config-list",
+              "api-reference/config-get",
+              "api-reference/config-create",
+              "api-reference/config-deploy",
+              "api-reference/config-validate",
+              "api-reference/config-diff",
+              "api-reference/config-rollback"
+            ]
+          },
+          {
+            "group": "Dashboard (BFF)",
+            "pages": [
+              "api-reference/bff-chat",
+              "api-reference/bff-hitl",
+              "api-reference/bff-vault",
+              "api-reference/bff-api-keys",
+              "api-reference/bff-websocket"
+            ]
+          },
+          {
+            "group": "Knowledge Base",
+            "pages": [
+              "api-reference/vector-ingest",
+              "api-reference/vector-search",
+              "api-reference/vector-collections",
+              "api-reference/vector-maintenance"
+            ]
+          },
+          {
+            "group": "Data & Analytics",
+            "pages": [
+              "api-reference/data-engine-query",
+              "api-reference/data-engine-transform",
+              "api-reference/data-engine-export",
+              "api-reference/data-engine-profile",
+              "api-reference/query-engine-ask",
+              "api-reference/query-engine-sql",
+              "api-reference/query-engine-train",
+              "api-reference/analytics-analyze",
+              "api-reference/analytics-tasks",
+              "api-reference/connector-extract",
+              "api-reference/connector-upload",
+              "api-reference/connector-status"
+            ]
+          },
+          {
+            "group": "Billing",
+            "pages": [
+              "api-reference/metering-usage",
+              "api-reference/metering-credits",
+              "api-reference/metering-quotas"
+            ]
+          },
+          {
+            "group": "Scheduling",
+            "pages": [
+              "api-reference/scheduler-create",
+              "api-reference/scheduler-list",
+              "api-reference/scheduler-delete",
+              "api-reference/scheduler-trigger"
+            ]
+          },
+          {
+            "group": "Users",
+            "pages": [
+              "api-reference/users-list",
+              "api-reference/users-create",
+              "api-reference/users-update-role",
+              "api-reference/users-delete"
+            ]
+          }
+        ]
+      }
+    ],
+    "anchors": [
+      {
+        "anchor": "Dashboard",
+        "icon": "browser",
+        "href": "https://app.deha.one"
+      },
+      {
+        "anchor": "Support",
+        "icon": "headset",
+        "href": "https://support.deha.one"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "linkedin": "https://linkedin.com/company/deha-one",
+      "x": "https://x.com/deha_one"
+    }
+  },
+  "api": {
+    "auth": {
+      "method": "bearer"
+    },
+    "baseUrl": "https://api.deha.one"
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": false
+  }
+}

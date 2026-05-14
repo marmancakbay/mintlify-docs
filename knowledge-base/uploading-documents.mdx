@@ -1,0 +1,193 @@
+---
+title: "Uploading Documents"
+sidebarTitle: "Uploading Documents"
+description: "Upload and organize documents in your knowledge base so your AI agents can reference them."
+icon: "file-arrow-up"
+---
+
+Add documents to your knowledge base through the DEHA ONE dashboard or API. Once uploaded, your AI agents can immediately start using them to answer questions.
+
+---
+
+## Uploading from the Dashboard
+
+<Steps>
+  <Step title="Go to Knowledge Base">
+    In your DEHA ONE dashboard, navigate to **Knowledge Base** from the main menu.
+  </Step>
+  <Step title="Select a collection">
+    Choose the collection where you want to add documents, or create a new one.
+  </Step>
+  <Step title="Upload your files">
+    Click **Upload** and select one or more files from your computer. You can also drag and drop files into the upload area.
+  </Step>
+  <Step title="Add labels (optional)">
+    Tag your documents with labels like "policy", "technical", or "FAQ" to help organize and filter them later.
+  </Step>
+  <Step title="Wait for processing">
+    DEHA ONE processes your documents automatically. You will see a progress indicator, and the status changes to **Completed** when the document is ready.
+  </Step>
+</Steps>
+
+---
+
+## Supported File Formats
+
+| Format | Extensions | Notes |
+|---|---|---|
+| **PDF** | `.pdf` | Works best with text-based PDFs. Scanned documents without searchable text may not extract well. |
+| **Word** | `.docx` | Microsoft Word documents |
+| **Excel** | `.xlsx` | Spreadsheet data |
+| **CSV** | `.csv` | Comma-separated data files |
+| **Plain text** | `.txt` | Raw text files |
+| **Markdown** | `.md` | Markdown with formatting preserved |
+| **HTML** | `.html`, `.htm` | Web pages with formatting stripped |
+| **JSON** | `.json` | Structured data |
+
+<Tip>
+  For best results, upload clean, well-structured documents. Remove unnecessary headers, footers, and boilerplate content before uploading -- this helps your agent find relevant information faster.
+</Tip>
+
+---
+
+## Organizing with Collections
+
+Collections are like folders that group related documents together. They help you keep your knowledge base organized and make it easier to control which information each agent can access.
+
+### Creating a Collection
+
+1. Go to **Knowledge Base** in the dashboard
+2. Click **New Collection**
+3. Give it a descriptive name (e.g., "Product Documentation", "HR Policies")
+
+### Suggested Collection Structures
+
+Here are some common ways to organize your collections:
+
+**By department:**
+- `hr_policies` -- Employee handbook, benefits guide, onboarding materials
+- `engineering_docs` -- API documentation, architecture guides, runbooks
+- `sales_playbooks` -- Sales scripts, competitive analysis, pricing guides
+
+**By content type:**
+- `faqs` -- Frequently asked questions and answers
+- `product_guides` -- User manuals and how-to guides
+- `company_policies` -- Terms of service, privacy policy, return policy
+
+**Single collection** (for smaller knowledge bases):
+- `all_documents` -- Everything in one place
+
+<Note>
+  Use lowercase letters, numbers, and underscores for collection names. Avoid spaces and special characters.
+</Note>
+
+---
+
+## Uploading via API
+
+For automation or bulk uploads, use the API to add documents programmatically.
+
+### Upload a file
+
+```bash
+POST /vector/ingest
+Content-Type: multipart/form-data
+
+file: company_handbook.pdf
+collection_name: company_knowledge
+metadata: {"category": "policy", "department": "hr"}
+```
+
+### Upload text content
+
+```bash
+POST /vector/ingest
+{
+  "collection_name": "company_knowledge",
+  "content": "Our return policy allows returns within 30 days of purchase...",
+  "metadata": {
+    "source": "return_policy",
+    "category": "policy"
+  }
+}
+```
+
+### Upload multiple documents at once
+
+```bash
+POST /vector/ingest/batch
+{
+  "collection_name": "company_knowledge",
+  "documents": [
+    {"content": "Document 1 text...", "metadata": {"source": "doc1.txt"}},
+    {"content": "Document 2 text...", "metadata": {"source": "doc2.txt"}}
+  ]
+}
+```
+
+---
+
+## Document Processing Status
+
+After uploading, documents go through automatic processing. You can track the status in the dashboard or via API.
+
+| Status | What It Means |
+|---|---|
+| **Pending** | Document received, waiting to be processed |
+| **Processing** | Document is being analyzed and indexed |
+| **Completed** | Document is ready and available for your agents |
+| **Failed** | Something went wrong -- check the error details and try again |
+
+Processing time depends on the document size. Most documents are processed within a few seconds, while larger files may take up to a minute.
+
+---
+
+## Updating Documents
+
+When your source documents change, simply upload the updated version. DEHA ONE is smart about updates:
+
+- **Unchanged content** is recognized and skipped (no duplicate processing)
+- **New or modified content** is processed and indexed
+- You do not need to delete the old version first
+
+---
+
+## Removing Documents
+
+To remove a document from your knowledge base:
+
+1. Go to **Knowledge Base** in the dashboard
+2. Find the document you want to remove
+3. Click **Delete**
+
+To delete an entire collection and all its documents:
+
+1. Go to **Knowledge Base > Collections**
+2. Select the collection
+3. Click **Delete Collection**
+
+<Warning>
+  Deleting a collection permanently removes all documents inside it. This cannot be undone.
+</Warning>
+
+---
+
+## Tips for Better Results
+
+<AccordionGroup>
+  <Accordion title="Use clear, descriptive document titles">
+    Name your files descriptively (e.g., "Return Policy - 2025" instead of "doc_v3_final"). This helps both you and your agents identify content quickly.
+  </Accordion>
+  <Accordion title="Break up very large documents">
+    If you have a 200-page manual, consider splitting it into logical sections (one file per chapter). This improves search accuracy because your agent can find the exact section that answers a question.
+  </Accordion>
+  <Accordion title="Add metadata labels">
+    Use labels like "department", "category", or "last_updated" when uploading. This lets you filter searches and keep your knowledge base organized as it grows.
+  </Accordion>
+  <Accordion title="Keep content current">
+    Re-upload documents when they change. Outdated information in your knowledge base leads to outdated answers from your agents.
+  </Accordion>
+  <Accordion title="Start small and expand">
+    Begin with your most-referenced documents (FAQs, key policies, product guides) and add more over time. You do not need to upload everything at once.
+  </Accordion>
+</AccordionGroup>

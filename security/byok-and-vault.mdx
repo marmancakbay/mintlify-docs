@@ -1,0 +1,139 @@
+---
+title: "BYOK & Vault"
+sidebarTitle: "BYOK & Vault"
+description: "Bring your own LLM, embedding, and integration keys. Store every credential in an encrypted, audited vault."
+icon: "key"
+---
+
+DEHA ONE is designed to run on **your** API keys and **your** credentials. The vault is the encrypted, user-isolated store that makes this safe.
+
+---
+
+## What the vault stores
+
+Anything sensitive that any service needs at runtime:
+
+| Category | Examples |
+|---|---|
+| **LLM provider keys** | OpenAI, Anthropic, Google Gemini, Google Vertex AI service-account JSON, DeepSeek |
+| **Embedding provider keys** | OpenAI, Google, HuggingFace, custom |
+| **Database credentials** | PostgreSQL, MySQL, MSSQL, Oracle, MongoDB |
+| **Channel tokens** | WhatsApp, Telegram, Slack, mail provider |
+| **REST API credentials** | Bearer tokens, API keys, OAuth client secrets, refresh tokens |
+| **Cloud credentials** | S3 access keys, GCP service-account JSON, Azure SP keys |
+| **Webhook secrets** | HMAC signing keys, JWT signing keys |
+| **MCP server tokens** | Per-server bearer tokens |
+
+---
+
+## How vault references work
+
+Anywhere a credential is needed in YAML, you write a vault reference:
+
+```yaml
+connector:
+  type: postgresql
+  host: db.example.com
+  port: 5432
+  user: $vault:warehouse_user
+  password: $vault:warehouse_password
+```
+
+At runtime, each service resolves `$vault:<key>` to the actual secret value, with the resolved value never written to logs, traces, or downstream artifacts.
+
+---
+
+## How it is stored
+
+- **At rest**: AES-256-GCM encryption using SOPS + age
+- **In transit**: TLS to every service
+- **In Redis cache**: short-lived (per request), user-scoped key, never durable
+- **Backup**: dual-written to MongoDB for restart resilience
+- **Audit**: every read and every write is logged with caller identity, but the value itself is never recorded
+
+The encryption layer is **content-agnostic** — it works for short tokens, long passphrases, and multi-line JSON blobs (e.g., a full Vertex AI service-account JSON).
+
+---
+
+## Multi-line and complex secrets
+
+The vault supports any string content, including:
+
+- Multi-line JSON (e.g., GCP service-account keys)
+- PEM-encoded keys and certificates
+- Base64-encoded blobs
+- Connection strings with embedded credentials
+
+There is no length cap on values. You can paste a full Vertex AI service-account JSON into one vault entry and reference it from anywhere.
+
+---
+
+## BYOK — Bring Your Own Keys
+
+### LLM BYOK
+
+Users can supply their own LLM credentials. Once vaulted, the platform compiles them into per-user LiteLLM entries:
+
+```yaml
+llm_providers:
+  - alias: smart           # user's own GPT-4 via their key
+    provider: openai
+    api_key: $vault:my_openai_key
+
+  - alias: smart_vertex    # user's own Vertex AI
+    provider: vertex_ai
+    project_id: my-gcp-project
+    location: us-central1
+    service_account_json: $vault:my_vertex_sa_json
+```
+
+At call time, the agent uses `smart` or `smart_vertex` and the platform routes via the user's account. Cost: zero platform credits, paid directly to the LLM provider.
+
+### Embedding BYOK
+
+Same model for embeddings:
+
+```yaml
+knowledge_base:
+  collection_defaults:
+    embedding_model: $vault:my_openai_key:text-embedding-3-large
+```
+
+Every ingest and search uses your key. Platform credits stay untouched.
+
+### Why use BYOK
+
+- **No credit consumption** for AI calls — pay your provider directly
+- **Your rate limits** apply, not the platform's
+- **Your provider compliance** (e.g., enterprise SOC 2, BAA for healthcare)
+- **Audit trail in your provider's billing** consolidates with your existing reporting
+
+---
+
+## Per-entity API keys
+
+Beyond vault entries, the platform issues **API keys** for accessing your own agents and pipelines from outside:
+
+| Key scope | What it can access |
+|---|---|
+| **User API key** | Every agent and pipeline for the user |
+| **Per-agent API key** | Only that one agent |
+| **Per-pipeline API key** | Only that one pipeline |
+
+All keys are SHA-256 hashed at rest. Rate limits and IP whitelists apply per key. Keys are revokable and rotatable from the dashboard.
+
+See [API Keys](/security/api-keys) for full details.
+
+---
+
+## Audit trail
+
+Every vault read produces an audit event with:
+
+- The vault key name
+- The calling service and user
+- The trace ID for correlation
+- The timestamp
+- **Never** the resolved value
+
+You can query the audit log for any vault key to see exactly who used it, from where, and when.

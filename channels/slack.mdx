@@ -1,0 +1,111 @@
+---
+title: "Slack"
+sidebarTitle: "Slack"
+description: "Bring your AI agents into Slack workspaces — DMs, channels, threads, alerts, and notifications."
+icon: "slack"
+---
+
+Slack is one of DEHA ONE's built-in channels. Once connected, your agents can respond in DMs, threads, and channels exactly the same way they respond on WhatsApp or the web — same context, same tools, same knowledge.
+
+<Info>
+  Slack is especially good for **internal** agents (engineering on-call, ops, finance, HR) and for **alert routing** from pipelines. Many users use Slack as their primary feedback channel for pipeline outputs.
+</Info>
+
+---
+
+## What you can do
+
+- **Conversational agents** — DM the bot or `@mention` it in a channel
+- **Thread replies** — the bot keeps context per thread
+- **Slash commands** — bind any slash command to an agent or pipeline
+- **Pipeline notifications** — send alerts, charts, and reports to a channel from any pipeline step
+- **Interactive blocks** — buttons and select menus for human-in-the-loop approvals
+- **Rich attachments** — files, images, PDFs (e.g. an exported chart or dashboard snapshot)
+- **Reactions and edits** — the bot can reply with reactions and edit its own messages
+
+---
+
+## What you need to set up
+
+| Item | Where it comes from |
+|---|---|
+| **Slack app** | Create one at [api.slack.com/apps](https://api.slack.com/apps) for your workspace |
+| **Bot token** (`xoxb-...`) | OAuth & Permissions page — install the app to your workspace |
+| **Signing secret** | App credentials page (used to verify Slack signatures on inbound events) |
+| **Event subscriptions** | Point at your DEHA ONE webhook URL and subscribe to `message.channels`, `message.im`, `app_mention` (and any others you want) |
+| **Scopes** | Typically `chat:write`, `app_mentions:read`, `im:history`, `im:write`, `channels:history`, `commands`, `files:write` |
+
+The dashboard walks you through this on the **Channels → Slack** page. Tokens are stored in the encrypted vault and never logged.
+
+See the [Slack setup guide](/guides/setup-slack) for a step-by-step walkthrough.
+
+---
+
+## Security
+
+Every inbound Slack request is verified using:
+
+- **HMAC-SHA256** signature using your signing secret
+- **Timestamp replay protection** — requests older than ~5 minutes are rejected
+- **Per-user rate limiting** to prevent abuse
+
+Outbound responses go through the Slack Web API using your bot token (vaulted, never exposed to logs or downstream services).
+
+---
+
+## Routing rules
+
+You decide which agents handle which Slack traffic. Common patterns:
+
+| Pattern | Configuration |
+|---|---|
+| One bot, one agent | All DMs and mentions go to a single agent |
+| Channel-scoped agents | `#support` → support agent, `#engineering` → on-call agent |
+| Slash-command-scoped | `/ask` → general agent, `/report` → analytics agent |
+| Sub-team routing | Mentions in `#hr-*` channels → HR agent, `#finops-*` → finops agent |
+
+Routing rules live in your user's `routes.yaml` config. DEHA can configure them from a sentence like *"create a Slack bot that handles `@DEHA` mentions with the support agent and `/forecast` slash commands with the analyst agent."*
+
+---
+
+## Human handoff and HITL
+
+The same human-in-the-loop primitives that work on WhatsApp work in Slack:
+
+- A **handoff button** in the agent reply transfers the conversation to a human reviewer
+- An **approval interactive block** asks a team member to approve or reject an agent-proposed action before the agent proceeds
+- **Threaded escalation** keeps the customer / employee conversation in one place while the human-side discussion happens in another thread
+
+See [Human review](/automations/human-review) for the patterns.
+
+---
+
+## Pipeline → Slack notifications
+
+Slack is also a notification target for any pipeline step. The most common uses:
+
+- Alerts when a metric crosses a threshold (with an attached chart)
+- Daily / weekly digests posted to a channel
+- HITL approval requests with interactive buttons
+- Build / deployment notifications from CI / CD integrations
+- IoT alerts (e.g. "Device offline for >10 minutes")
+
+```yaml
+- type: publish
+  channel: slack
+  target: "#alerts-prod"
+  text: "*Forecast deviation*: yesterday's actuals were 18% below the forecast."
+  attachments:
+    - chart_id: forecast-vs-actual-rolling
+      format: png
+```
+
+---
+
+## What you cannot do (yet)
+
+- **Voice / Huddles** — Slack DMs and channels only
+- **Workflow Builder integration** — coming soon
+- **Enterprise Grid org-level installs** — currently per-workspace only
+
+For anything not yet supported, you can still use Slack as a notification target via webhook.

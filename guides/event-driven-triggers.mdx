@@ -1,0 +1,188 @@
+---
+title: "Event-driven triggers"
+sidebarTitle: "Event-driven triggers"
+description: "React to events from your channels, IoT devices, data changes, webhooks, and external systems."
+icon: "bolt"
+---
+
+Cron schedules are great when you know *when* something will happen. **Event triggers** are how you react when something happens that you cannot predict.
+
+This guide shows you the four most common event-driven patterns and how to wire them up.
+
+---
+
+## Pattern 1 — React to incoming messages
+
+Trigger a pipeline (in addition to or instead of an agent) when a customer sends a message.
+
+```yaml
+pipeline: log-vip-messages
+trigger:
+  type: event
+  stream: stream:whatsapp:inbound
+  filter: contains(data.contact.tags[*], 'vip')
+
+steps:
+  - id: classify
+    type: llm_transform
+    prompt: "Score urgency 0-1 and pick a category."
+    input_keys: ["data.message.text"]
+    output_key: classification
+
+  - id: alert
+    type: publish
+    channel: slack
+    target: "#vip-support"
+    text: "VIP message from ${data.contact.name}: urgency ${classification.urgency}"
+```
+
+The pipeline runs in parallel with your agent — same message, different pipeline. Useful for logging, alerting, and side-effect actions that should not block the customer reply.
+
+---
+
+## Pattern 2 — React to IoT telemetry
+
+Trigger a pipeline when a sensor reports an out-of-band reading.
+
+```yaml
+pipeline: pump-vibration-alert
+trigger:
+  type: event
+  stream: stream:iot:telemetry
+  filter: data.device_id == 'pump-7' && data.vibration > 8.0
+  cooldown_seconds: 300
+
+steps:
+  - id: analyze_window
+    type: analyze
+    task: anomaly
+    method: isolation_forest
+    series: ${trigger.recent_telemetry}
+
+  - id: maybe_alert
+    type: condition
+    expression: "analyze_window.is_anomaly"
+    branches:
+      "true": ticket
+      "false": __end__
+
+  - id: ticket
+    type: rest_api
+    tool_ref: jira_create_issue
+    body:
+      summary: "Pump 7 vibration anomaly"
+      severity: high
+```
+
+The `cooldown_seconds` setting prevents alert spam — once fired, the trigger cannot fire again for 5 minutes per device.
+
+---
+
+## Pattern 3 — React to data changes
+
+Trigger a pipeline only when your data actually changed.
+
+```yaml
+pipeline: refresh-customer-master
+trigger:
+  type: data_change
+  query: |
+    SELECT COUNT(*), MAX(updated_at)
+    FROM customers
+    WHERE updated_at > CURRENT_DATE - INTERVAL '1 day'
+  comparison: hash
+  poll_interval_seconds: 600
+
+steps:
+  - id: rebuild
+    type: agent
+    agent_name: customer_master_pipeline
+    wait_for_result: true
+```
+
+The platform hashes the result of the SQL query every 10 minutes. The pipeline fires only when the hash changes — no wasted runs.
+
+Comparison modes:
+
+- `hash` — change anywhere in the result set
+- `row_count` — number of rows changed
+- `percentage` — value changed by more than X%
+
+---
+
+## Pattern 4 — React to webhooks
+
+Trigger a pipeline from an external system (Stripe, GitHub, Shopify, custom services).
+
+```yaml
+pipeline: stripe-payment-succeeded
+trigger:
+  type: webhook
+  path: /webhooks/stripe-payment
+  secret: $vault:stripe_webhook_secret
+  signature: hmac-sha256
+  ip_allowlist:
+    - 3.18.12.63
+    - 3.130.192.231
+    # ... Stripe egress IPs
+
+steps:
+  - id: provision
+    type: agent
+    agent_name: customer_provisioning_agent
+    input_mapping:
+      customer_email: body.data.object.customer_email
+      plan:           body.data.object.metadata.plan
+```
+
+The webhook URL is unique to your user. Every request is verified with HMAC-SHA256 against the vaulted secret. IP allow-listing is optional but recommended for production.
+
+---
+
+## Composite triggers
+
+Combine multiple sub-triggers with AND / OR / SEQUENCE logic:
+
+```yaml
+trigger:
+  type: composite
+  operator: and
+  window_seconds: 600
+  triggers:
+    - type: cron
+      expression: "0 9 * * MON-FRI"
+    - type: data_change
+      query: "SELECT COUNT(*) FROM orders WHERE order_date = CURRENT_DATE"
+```
+
+This fires only on weekday mornings *if* yesterday's orders changed since the last run.
+
+---
+
+## Adding conditions
+
+Any trigger can have a condition attached. The trigger fires (the upstream event happens), but the pipeline only runs if the condition is met.
+
+```yaml
+trigger:
+  type: event
+  stream: stream:whatsapp:inbound
+  filter: data.message.text ~= 'cancel'   # JMESPath substring
+condition:
+  type: time_window
+  hours: [9, 10, 11, 12, 13, 14, 15, 16, 17]
+  weekdays: [MON, TUE, WED, THU, FRI]
+  timezone: Europe/Istanbul
+```
+
+Result: cancellation pipeline only runs during business hours. Outside that window, the message still reaches the agent but the cancellation pipeline is skipped.
+
+---
+
+## Tips
+
+- **Use cooldowns liberally** for high-frequency event sources (IoT, social listening)
+- **Cap concurrency** if a single event can trigger many parallel pipeline runs
+- **Always combine with idempotency keys** — the platform deduplicates by `idempotency_key` for 24 hours
+- **Test with the Replay tool** in the dashboard — send a synthetic event to a trigger without waiting for it to occur in production
+- **Monitor trigger health** — the dashboard shows fire rate, condition pass rate, and last-fire timestamp per trigger

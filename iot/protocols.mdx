@@ -1,0 +1,106 @@
+---
+title: "IoT Protocols"
+sidebarTitle: "Protocols"
+description: "MQTT, OPC-UA, Modbus, HTTP polling, and webhook -- five protocols you can pick from to bring devices online."
+icon: "ethernet"
+---
+
+A **connection** in DEHA ONE is one physical link to one device, gateway, or broker. Each connection picks exactly one of the five supported protocols.
+
+---
+
+## MQTT (and MQTTS)
+
+The most widely-used pub/sub protocol for IoT. Use it when your devices already publish to an MQTT broker, or when you want to fan-out commands to many devices at once.
+
+| Setting | What it is |
+|---|---|
+| **Broker URL** | e.g. `mqtts://broker.example.com:8883` |
+| **Topics (subscribe)** | One or more topics for inbound telemetry |
+| **Topics (publish)** | Topics used when sending commands back |
+| **Auth** | Username/password or client certificate (vaulted) |
+| **QoS** | 0, 1, or 2 per subscription |
+
+<Tip>
+  Use MQTTS (TLS) in production. The Gateway resolves client certs and credentials from the encrypted vault -- they never appear in YAML.
+</Tip>
+
+---
+
+## OPC-UA
+
+The industrial automation standard. Use it for PLCs, SCADA, MES, and other factory-floor systems that expose an OPC-UA server.
+
+| Setting | What it is |
+|---|---|
+| **Endpoint URL** | e.g. `opc.tcp://plc01.factory.lan:4840` |
+| **Security policy** | None, Basic256Sha256, etc. |
+| **Auth** | Anonymous, username/password, or X.509 certificate |
+| **Subscriptions** | Node IDs to monitor with sampling interval and queue size |
+| **Methods** | Optional callable methods (with argument schemas) |
+
+OPC-UA is bidirectional -- you can both read monitored nodes and write to writable nodes or invoke server methods.
+
+---
+
+## Modbus (TCP and RTU)
+
+For legacy industrial devices that speak Modbus. The Gateway supports both Modbus TCP (Ethernet) and Modbus RTU (serial).
+
+| Setting | What it is |
+|---|---|
+| **Transport** | `tcp` or `rtu` |
+| **Host / Port (TCP)** | Slave IP and port (default 502) |
+| **Serial config (RTU)** | Device, baud rate, parity, stop bits |
+| **Slave ID** | Unit ID for the target device |
+| **Registers** | List of read addresses with function code, length, and Python type mapping |
+
+<Info>
+  Modbus values are raw 16-bit registers. The Gateway converts them to typed values (int16, uint16, int32 BE/LE, float32, etc.) using the type map you define per device.
+</Info>
+
+---
+
+## HTTP Polling
+
+For devices that expose an HTTP endpoint but cannot push. The Gateway pulls on a fixed cadence.
+
+| Setting | What it is |
+|---|---|
+| **URL** | The endpoint to poll |
+| **Method** | GET or POST |
+| **Interval** | Poll cadence in seconds |
+| **Auth** | Bearer, API key, basic, or signed -- all vaulted |
+| **JSONPath / mapping** | How to extract device readings from the response body |
+
+Polling is read-only. Use webhooks or MQTT/OPC-UA/Modbus if you need to send commands.
+
+---
+
+## Inbound Webhooks
+
+The simplest option: have your device or gateway POST to a DEHA ONE endpoint and we ingest the body.
+
+| Setting | What it is |
+|---|---|
+| **Path** | Public webhook path, e.g. `/webhook/{user_id}/sensor-fleet` |
+| **Auth** | API key in header (vaulted), HMAC signature, or signed JWT |
+| **Body codec** | `json`, `raw`, or `csv_row` |
+| **Brute-force protection** | Sliding-window per-IP rate limiting, IP whitelist (optional) |
+
+Webhooks are inbound-only -- they cannot send commands back to the device.
+
+---
+
+## What every protocol gets for free
+
+Regardless of which protocol you choose, the Gateway adds:
+
+- **Per-user isolation** -- no device can spill into another user's stream
+- **Per-device rate limiting** -- a chatty device cannot DoS the platform
+- **Exponential-backoff reconnect** -- transient outages recover automatically
+- **Schema validation** -- typed checks before the event hits your pipelines
+- **Offline detection** -- heartbeat sweep marks silent devices offline
+- **DLQ** -- bad frames are routed to a dead-letter stream for inspection
+- **Hot reload** -- add/remove/edit devices live, no restart needed
+- **Audit log** -- every command and config change is recorded

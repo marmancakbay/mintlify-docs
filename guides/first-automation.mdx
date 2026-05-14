@@ -1,0 +1,133 @@
+---
+title: "Create Your First Automation"
+sidebarTitle: "First Automation"
+description: "Build a multi-step workflow that processes data, runs agents, and delivers results automatically."
+icon: "bolt"
+---
+
+## What You Will Build
+
+In this guide, you will create an automation that pulls data from an external source, processes it with AI, and delivers the results -- all without manual intervention.
+
+<Info>
+Before you begin, make sure you have:
+- A DEHA ONE account with a workspace set up
+- At least one [agent configured](/guides/first-agent)
+</Info>
+
+---
+
+<Steps>
+
+### What Is an Automation?
+
+An automation is a multi-step workflow that runs tasks in sequence. Each step can:
+- **Pull data** from an API, database, or file
+- **Transform data** using filters, mappings, or AI
+- **Run an agent** to classify, summarize, or generate content
+- **Send notifications** via email, webhook, or messaging channels
+- **Pause for human review** when approval is needed
+
+### Create an Automation with DEHA
+
+The easiest way is to describe what you want to the **DEHA AI Assistant**:
+
+> "Create an automation that pulls customer data from our CRM API every day, uses AI to classify customers by engagement level, and stores the results."
+
+> "When a new support ticket arrives, have the agent draft a response and send it for my review before replying."
+
+DEHA will generate the automation for you. Review it in the dashboard under **Automations** and click **Publish**.
+
+### Create an Automation from the Dashboard
+
+You can also build automations step by step in the dashboard:
+
+1. Go to **Automations** in the sidebar.
+2. Click **Create Automation**.
+3. Give it a name and description.
+4. Choose a trigger:
+   - **Manual** -- Run it on demand
+   - **Scheduled** -- Run on a timer or cron schedule
+   - **Event-driven** -- Run when something happens (e.g., a new message arrives)
+
+### Add Steps to Your Automation
+
+Build your workflow by adding steps. Each step runs in order, and can use the output of previous steps.
+
+**Example: Data sync and classification**
+
+| Step | Type | What It Does |
+|------|------|-------------|
+| 1. Pull data | Data connector | Fetches customer records from your CRM API |
+| 2. Clean data | Transform | Extracts and normalizes the fields you need |
+| 3. Classify | Agent | Uses AI to categorize each customer by engagement level |
+| 4. Store results | Data engine | Saves the classified data to your workspace database |
+
+### Handle Errors Gracefully
+
+Each step has an error handling policy:
+
+| Policy | What Happens |
+|--------|-------------|
+| **Stop** | The automation stops immediately if this step fails |
+| **Skip** | Skip the failed step and continue with the next one |
+| **Use default** | Use a fallback value and continue |
+
+Set this in each step's settings. For critical steps (like pulling data), use **Stop**. For optional enrichment steps, **Skip** is often fine.
+
+### Add a Human Review Step
+
+For workflows where you want a person to approve before continuing, add a **Human Review** step:
+
+1. Add a step with type **Human Review**.
+2. Write a review prompt: "Please check the AI-generated classification for accuracy."
+3. Choose who should review: any team member with the appropriate role.
+
+The automation pauses at this step until someone approves, edits, or rejects the result in the dashboard.
+
+### Run Your Automation
+
+**Manual run:** Go to **Automations**, find your automation, and click **Run Now**.
+
+**Scheduled run:** Set up a schedule during creation (e.g., "Every day at 8 AM"). See [Scheduled Automations](/guides/scheduled-automations) for more options.
+
+### Monitor Progress
+
+Track your automation in the dashboard:
+
+1. Go to **Automations > Runs**.
+2. See the status of each run: running, completed, failed, or waiting for review.
+3. Click into a run to see step-by-step progress and results.
+
+<Check>
+Run your automation and verify that each step completes successfully. Check the results in your workspace data or notification channel.
+</Check>
+
+</Steps>
+
+---
+
+## Automation Step Types
+
+| Step Type | Description |
+|-----------|-------------|
+| **Data connector** | Pull data from REST APIs, databases, or uploaded files |
+| **Transform** | Filter, map, or reshape data |
+| **Agent** | Run an AI agent to process, classify, or generate content |
+| **Data query** | Run a natural language or SQL query against your data |
+| **Analytics** | Run machine learning analysis (classification, forecasting, anomaly detection) |
+| **Human review** | Pause for human approval or modification |
+| **Notification** | Send results via email, webhook, or messaging channel |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Scheduled Automations" icon="clock" href="/guides/scheduled-automations">
+    Run your automations on a timer or cron schedule.
+  </Card>
+  <Card title="Connect a Data Source" icon="database" href="/guides/connect-data-source">
+    Set up data connectors to feed your automations.
+  </Card>
+</CardGroup>

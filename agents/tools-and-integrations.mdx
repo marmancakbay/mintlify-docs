@@ -1,0 +1,239 @@
+---
+title: "Tools & Integrations"
+sidebarTitle: "Tools & Integrations"
+description: "Give your agents superpowers by connecting APIs, databases, knowledge bases, code execution, and more. Everything your agents can do beyond conversation."
+icon: "plug"
+---
+
+On their own, agents can hold conversations. But the real power comes when you connect them to your tools and data. An agent with the right integrations can look up orders, create CRM contacts, query databases, run calculations, search documents, scrape the web, optimize routes, and call any API -- all as part of a natural conversation.
+
+<Info>
+  **Pipeline-First architecture**: agents do not call raw integrations directly. Instead, every external tool (REST API, Python code, MCP server, data step, optimizer, scraper, etc.) is wrapped in a **pipeline endpoint** with its own input/output schema, API key, rate limit, and timeout. Agents bind to pipelines using `bind_all_pipelines`, `bind_pipelines`, or `allowed_pipelines` on the LLM node. This gives you clear separation between "intelligence" (agents) and "execution" (pipelines), and makes the same tool callable from any agent, any other pipeline, or directly via REST API.
+</Info>
+
+---
+
+## What tools can agents use?
+
+<CardGroup cols={2}>
+  <Card title="REST APIs" icon="globe">
+    Connect any REST API -- your CRM, e-commerce platform, helpdesk, payment system, or custom internal services. Agents call endpoints, send data, and use responses in their answers.
+  </Card>
+  <Card title="Knowledge base search" icon="book-open">
+    Upload documents, FAQs, product guides, or policy files. Agents search them semantically to give accurate, grounded answers instead of relying on general knowledge alone.
+  </Card>
+  <Card title="Code execution" icon="code">
+    Agents can write and run Python code in a secure sandbox. Perfect for calculations, data processing, format conversions, and anything that needs precise computation.
+  </Card>
+  <Card title="Data queries" icon="database">
+    Ask questions about your data in natural language. Agents translate questions into database queries, run analysis, and return results -- no SQL knowledge needed.
+  </Card>
+  <Card title="Analytics" icon="chart-line">
+    Run machine learning analysis on your data: classification, forecasting, anomaly detection, clustering, and trend analysis -- all triggered by the agent during conversation.
+  </Card>
+  <Card title="Other agents" icon="sitemap">
+    Agents can delegate tasks to specialized sub-agents. A support agent can call a data analyst agent to run a report, then present the results to the customer.
+  </Card>
+</CardGroup>
+
+---
+
+## Built-in tools
+
+Every DEHA ONE agent has access to these built-in capabilities (when enabled). Each is a pipeline endpoint under the hood, so they can also be called directly via REST API or chained inside any other pipeline.
+
+| Capability | What it does |
+|---|---|
+| **Knowledge search** | Vector search + cross-encoder reranking over your uploaded documents |
+| **Text-to-SQL** | Translates plain-English questions into safe SQL and runs them |
+| **Direct SQL** | Runs read-only SQL with cost estimation and validation |
+| **Data profiling** | Statistics, distributions, quality metrics for any table |
+| **Data cleaning & validation** | 12 cleaning operations + schema validation |
+| **PII detection & anonymization** | Presidio-based detection with replace / hash / mask / encrypt |
+| **Entity resolution** | Splink-powered fuzzy deduplication with HITL review |
+| **ML analysis** | Classification, regression, clustering, forecasting, anomaly, drift, survival |
+| **MLflow registry** | Train, register, promote, predict with SHAP explanations |
+| **Data extraction** | Pull from REST, PostgreSQL, MySQL, MongoDB, S3, SFTP, file, webhook |
+| **Code execution** | Sandboxed Python 3.12 with `standard`, `data`, or `ml` runtime profiles |
+| **Web search** | 13-provider parallel web search |
+| **Web scraping** | Markdown / CSS / LLM extraction via Chromium pool |
+| **Optimization** | OR-Tools: routing, scheduling, assignment, packing, network flow, LP/MIP |
+| **Visualization** | Vega-Lite charts, dashboards, PDF reports |
+| **IoT commands** | Send commands to devices over MQTT, OPC-UA, or Modbus |
+| **Pipeline invocation** | Trigger any user pipeline as a tool |
+
+These tools are available out of the box -- no integration setup needed.
+
+---
+
+## Adding API integrations
+
+To connect an external API, you need three things: the API's base URL, authentication credentials, and a description of the endpoints you want to use.
+
+### Using DEHA
+
+The easiest way to add an integration:
+
+> **You:** "Connect our Shopify store at mystore.myshopify.com. I need order lookup, inventory check, and return processing. We use an API key for authentication."
+>
+> **DEHA:** "I'll set up the Shopify integration with three endpoints. I'll need your API key -- you can add it through the vault in the dashboard."
+
+### What gets configured
+
+When you add an API integration, the following is set up:
+
+| Component | Description |
+|---|---|
+| **Connection** | Base URL, authentication method, default headers, timeout settings |
+| **Endpoints** | Each API operation becomes a tool the agent can call |
+| **Authentication** | API keys, Bearer tokens, Basic auth, or OAuth2 -- credentials stored securely |
+| **Error handling** | How the agent responds when an API call fails |
+
+### Authentication methods
+
+| Method | Description |
+|---|---|
+| **API key** | A key sent in a custom header (most common) |
+| **Bearer token** | Authorization header with a bearer token |
+| **Basic auth** | Username and password combination |
+| **OAuth2** | Client credentials flow with automatic token refresh |
+
+All credentials are stored securely in your user vault and never exposed to end users.
+
+---
+
+## Adding knowledge base access
+
+Give your agent access to your documents so it can answer questions accurately:
+
+<Steps>
+  <Step title="Upload documents">
+    Upload PDFs, text files, or other documents through the dashboard. They are automatically processed and indexed for search.
+  </Step>
+  <Step title="Create a collection">
+    Organize documents into collections (e.g., "product_docs", "company_policies", "faq").
+  </Step>
+  <Step title="Connect to your agent">
+    Tell DEHA or configure through the dashboard which collections your agent should search.
+  </Step>
+  <Step title="Agent searches automatically">
+    When a customer asks a question, the agent searches the relevant collection and uses the results to formulate an accurate answer.
+  </Step>
+</Steps>
+
+### Search settings
+
+| Setting | Description | Default |
+|---|---|---|
+| **Collection** | Which document collection to search | "default" |
+| **Number of results** | How many relevant passages to retrieve | 3 |
+| **Similarity threshold** | Minimum relevance score (0 to 1) | 0.7 |
+
+Higher similarity thresholds mean more relevant results but fewer matches. Lower thresholds cast a wider net but may include less relevant content.
+
+---
+
+## Code execution
+
+Agents can run Python code in a secure, isolated environment. This is useful for:
+
+- Mathematical calculations and data processing
+- Format conversions (dates, currencies, units)
+- Custom logic that goes beyond what the AI model can do reliably
+- Data analysis with libraries like pandas and numpy
+
+### Security
+
+Code runs in a completely isolated environment with strict limits:
+
+- No access to your network or other services (by default)
+- Limited memory and CPU
+- Execution timeout enforced
+- Read-only file system
+- Common data science libraries pre-installed (numpy, pandas, scipy)
+
+---
+
+## How agents decide which tool to use
+
+When you connect tools to an agent, the AI model decides which tool to use based on the conversation. Here is how it works:
+
+1. **Customer sends a message** -- "What's the status of my order #12345?"
+2. **Agent recognizes the need** -- This requires looking up order information
+3. **Agent calls the right tool** -- Calls the Shopify order lookup endpoint with order #12345
+4. **Tool returns the result** -- Order status, shipping info, estimated delivery
+5. **Agent responds naturally** -- "Your order #12345 shipped yesterday and is expected to arrive on Friday."
+
+The agent can also chain multiple tool calls in a single turn. For example, it might look up an order, then check inventory for a replacement, then process a return -- all as part of one conversation turn.
+
+### What happens when a tool fails
+
+If an API call fails or times out, the agent handles it gracefully:
+
+- **HTTP errors** -- The agent explains the issue and suggests alternatives
+- **Timeouts** -- The agent lets the customer know and offers to try again
+- **Connection failures** -- The agent acknowledges the problem and can attempt retry or escalation
+
+You can customize how your agent handles failures in its system prompt.
+
+---
+
+## Managing tool access
+
+Access is controlled at the LLM node level via three settings (all on `node_llm`):
+
+| Setting | What it does |
+|---|---|
+| `bind_all_pipelines: true` | Bind every user pipeline as a callable tool — broadest access. |
+| `bind_pipelines: [a, b, c]` | Bind only the listed pipelines. Most common in production. |
+| `allowed_pipelines: [a, b]` | Whitelist enforced at call time, even if more were bound. Defense in depth. |
+
+### Give access to all tools
+
+The simplest approach -- your agent can use every pipeline that is configured for your user. Good for prototyping or for general-purpose admin agents.
+
+### Selective access
+
+Restrict an agent to specific pipelines. For example, your sales agent gets CRM lookup and quote-generation pipelines but not the admin user-management pipeline. Your data analyst gets query and forecast pipelines but not the messaging-send pipelines.
+
+### No tools
+
+For simple conversational agents that only need to chat (FAQ bots, greeters), leave all three settings unset. The agent will not call any tools.
+
+<Tip>
+  Start with selective access (`bind_pipelines`) and add more pipelines as needed. Agents work better when they have a focused set of tools relevant to their role -- fewer choices means faster, more accurate tool selection by the LLM.
+</Tip>
+
+---
+
+## External AI tool servers (MCP)
+
+DEHA ONE supports the Model Context Protocol (MCP), which lets you connect external AI tool servers. If you use platforms that expose MCP-compatible tools, your agents can use them directly.
+
+### Setting up an MCP connection
+
+You need the server URL, authentication credentials, and optionally which specific tools to allow or block.
+
+| Setting | Description |
+|---|---|
+| **Server URL** | The endpoint of the MCP server |
+| **Authentication** | How to authenticate (bearer token, API key) |
+| **Allowed tools** | Specific tools to make available (empty = all tools) |
+| **Blocked tools** | Tools to exclude |
+| **Timeout** | Maximum time to wait for a response |
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Agents" icon="plus" href="/agents/creating-agents">
+    Learn how to create and configure agents step by step.
+  </Card>
+  <Card title="Multi-Agent Orchestration" icon="sitemap" href="/agents/multi-agent-orchestration">
+    Build teams of specialized agents that collaborate.
+  </Card>
+  <Card title="Node Types" icon="shapes" href="/agents/node-types">
+    Explore all the building blocks for agent workflows.
+  </Card>
+</CardGroup>

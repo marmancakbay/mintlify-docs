@@ -1,0 +1,112 @@
+---
+title: "Pipelines — Dynamic API"
+api: "POST /api/v1/pipelines/{user_id}/{name}/{invoke|invoke-async|stream}"
+description: "Invoke a compiled pipeline in sync, async, or streaming mode."
+---
+
+All three routes share the same request envelope, validation, rate limiting, and billing. The mode suffix only controls the delivery shape.
+
+## Authentication
+
+```
+Authorization: Bearer <api_key>
+X-User-Id:   <user_id>
+```
+
+The API key is user-scoped — it must match the path `{user_id}` or the request is rejected with `403`.
+
+## Path parameters
+
+<ParamField path="user_id" type="string" required>
+  User identifier.
+</ParamField>
+<ParamField path="name" type="string" required>
+  Compiled pipeline name (matches the file name under `configs/users/{user}/pipelines/`).
+</ParamField>
+
+## Request body
+
+The body is validated against the pipeline's declared JSON Schema at `api.input.json_schema`. Request `Content-Type` must match one of `api.input.content_type` (`application/json` by default).
+
+## Sync invocation
+
+```bash
+curl -X POST "$BASE/api/v1/pipelines/acme_corp/sentiment_routing/invoke" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Analyze Q1 feedback","context":{"quarter":"Q1-2026"}}'
+```
+
+Returns `200` with the terminal result once the pipeline completes or `502/504` if a step fails or the configured timeout is exceeded.
+
+## Async invocation
+
+```bash
+curl -X POST "$BASE/api/v1/pipelines/acme_corp/sentiment_routing/invoke-async" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Analyze Q1 feedback"}'
+```
+
+Returns `202 Accepted` with:
+
+```json
+{
+  "status": "accepted",
+  "trace_id": "trc-1745190000-9f3c...",
+  "result": {}
+}
+```
+
+Poll the result:
+
+```bash
+curl "$BASE/api/v1/pipelines/acme_corp/sentiment_routing/result/$TRACE_ID" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "X-User-Id: acme_corp"
+```
+
+Or register an `on_complete` webhook on the pipeline YAML to receive a push callback (see [Webhooks](/api-reference/dynamic-api-webhooks)).
+
+## Streaming invocation
+
+```bash
+curl -N -X POST "$BASE/api/v1/pipelines/acme_corp/sentiment_routing/stream" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "X-User-Id: acme_corp" \
+  -H "Accept: text/event-stream" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Analyze Q1 feedback"}'
+```
+
+Server-Sent Events body:
+
+```
+event: node.started
+data: {"node":"extract","trace_id":"trc-..."}
+
+event: node.completed
+data: {"node":"extract","output_keys":["feedback"]}
+
+event: final
+data: {"status":"completed","result":{...}}
+```
+
+Switch the `Accept` header to `application/x-ndjson` to receive newline-delimited JSON instead.
+
+## Error responses
+
+| Status | Code | Reason |
+|--------|------|--------|
+| 400 | `BFF-API-400` | Malformed body / schema validation failure |
+| 403 | `BFF-USER-403` | User header does not match path |
+| 404 | `BFF-PIPELINE-404` | Pipeline not found or disabled |
+| 406 | `BFF-API-406` | `Accept` header not supported by endpoint |
+| 409 | `BFF-API-409a` | Mode not declared for this endpoint |
+| 409 | `BFF-API-409b` | Idempotent invocation already in flight |
+| 415 | `BFF-API-415` | `Content-Type` not supported |
+| 429 | `BFF-API-429` | Rate limit exceeded |
+| 502 | `BFF-API-502` | Upstream pipeline step failed |
+| 504 | `BFF-API-504` | Timeout |

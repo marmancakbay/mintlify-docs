@@ -1,0 +1,131 @@
+---
+title: "Vault Keys"
+api: "GET https://api.deha.one/api/v1/vault/keys"
+description: "Manage user-scoped API keys for LLM providers and integrations."
+---
+
+Manage user-scoped API keys for LLM providers (OpenAI, Anthropic, Google, DeepSeek) and third-party integrations. Keys are stored securely and never returned in plaintext after creation. LLM provider keys are automatically synced to the LLM gateway for immediate use.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## List Keys
+
+`GET https://api.deha.one/api/v1/vault/keys`
+
+Returns the names and providers of stored keys. Key values are never returned.
+
+```json Example Response
+{
+  "keys": [
+    {"key_name": "openai_api_key", "provider": "openai", "is_set": true},
+    {"key_name": "google_api_key", "provider": "google", "is_set": true}
+  ],
+  "count": 2
+}
+```
+
+---
+
+## Create/Update Key
+
+`POST https://api.deha.one/api/v1/vault/keys`
+
+<ParamField body="key_name" type="string" required>
+  Key identifier from the allowed list (see Allowed Key Names below).
+</ParamField>
+<ParamField body="value" type="string" required>
+  The API key value.
+</ParamField>
+
+LLM provider keys (`openai_api_key`, `google_api_key`, `anthropic_api_key`, `deepseek_api_key`) are automatically synced to the LLM gateway for immediate use with AI agents.
+
+---
+
+## Delete Key
+
+`DELETE https://api.deha.one/api/v1/vault/keys/{key_name}`
+
+Deletes a stored key. LLM keys are also removed from the secret manager and LLM gateway.
+
+---
+
+## Test Key
+
+`POST https://api.deha.one/api/v1/vault/keys/{key_name}/test`
+
+Validates a stored key by making a provider-specific API call to verify it works.
+
+```json Example Response
+{
+  "key_name": "openai_api_key",
+  "provider": "openai",
+  "status": "valid",
+  "message": "Key is valid."
+}
+```
+
+## Allowed Key Names
+
+**LLM Providers:** `openai_api_key`, `google_api_key`, `anthropic_api_key`, `deepseek_api_key`, `huggingface_token`, `custom_llm_api_key`
+
+**Databases:** `mongodb_uri`, `redis_url`, `postgres_url`
+
+**Integrations:** `sap_api_key`, `sap_client_secret`, `slack_bot_token`, `jira_api_token`, `salesforce_client_secret`
+
+**Channels:** `whatsapp_phone_number_id`, `whatsapp_api_token`, `whatsapp_verify_token`, `telegram_bot_token`, `smtp_host`, `smtp_password`
+
+**Custom:** Any key starting with `custom_` or `mcp_` is also allowed.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Key name not in allowed list |
+| 401 | Missing authentication headers |
+| 404 | Key not found (for delete/test) |
+| 500 | Failed to save or delete key |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/api/v1/vault/keys" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "X-User-Id: user_123"
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/api/v1/vault/keys",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp",
+        "X-User-Id": "user_123"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/vault/keys",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "X-User-Id": "user_123"
+    }
+  }
+);
+```
+</CodeGroup>

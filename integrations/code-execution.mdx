@@ -1,0 +1,119 @@
+---
+title: "Code Execution"
+sidebarTitle: "Code Execution"
+description: "Let your agents run custom Python code for calculations, data processing, and custom logic."
+icon: "code"
+---
+
+Sometimes your agents need to do more than call an API -- they need to run custom logic. DEHA ONE's code execution capability lets your agents write and run Python code during conversations and workflows. The code runs in a secure, isolated environment that is destroyed after each execution.
+
+---
+
+## What you can do
+
+Code execution is useful when your agents need to:
+
+- **Perform calculations** -- Financial computations, unit conversions, statistical analysis
+- **Process data** -- Parse files, transform datasets, aggregate records
+- **Run custom logic** -- Business rules, validation routines, format conversions
+- **Analyze information** -- Summarize data, find patterns, generate reports
+- **Scrape web pages** -- Extract information from websites (when network access is enabled)
+
+---
+
+## How it works
+
+<Steps>
+  <Step title="Agent generates code">
+    During a conversation or workflow, the AI agent writes Python code to accomplish a specific task.
+  </Step>
+  <Step title="Code runs in a secure sandbox">
+    The code executes in an isolated environment with no access to other users' data or the broader platform.
+  </Step>
+  <Step title="Results are returned">
+    The output is captured and returned to the agent, which uses it to continue the conversation.
+  </Step>
+  <Step title="Environment is destroyed">
+    The execution environment is immediately cleaned up. No data or code persists between runs.
+  </Step>
+</Steps>
+
+---
+
+## Available libraries
+
+The execution environment comes pre-loaded with popular Python libraries:
+
+| Library | Use case |
+|---------|---------|
+| **pandas** | Data analysis and manipulation |
+| **numpy** | Numerical computing |
+| **scipy** | Scientific computing |
+| **requests / httpx** | Making HTTP requests (when network access is enabled) |
+| **beautifulsoup4** | Web scraping and HTML parsing |
+| **python-dateutil** | Date and time handling |
+
+Additional packages can be installed on demand if your use case requires them.
+
+---
+
+## Example: analyzing sales data
+
+Here is an example of what an agent might do when asked to analyze sales data:
+
+```python
+def main(inputs):
+    import pandas as pd
+
+    data = inputs["sales_data"]
+    df = pd.DataFrame(data)
+
+    summary = {
+        "total_revenue": float(df["amount"].sum()),
+        "average_order": float(df["amount"].mean()),
+        "top_product": df.groupby("product")["amount"].sum().idxmax(),
+        "order_count": len(df)
+    }
+
+    return summary
+```
+
+The agent sends in the sales data, the code processes it using pandas, and the results come back as a structured summary that the agent can present to the user.
+
+---
+
+## Security
+
+Code execution is designed with security as a top priority:
+
+- **Isolated environment** -- Each execution runs in its own container, completely separate from other users and the platform
+- **No persistent state** -- Nothing is saved between executions; each run starts fresh
+- **Resource limits** -- Memory, CPU, and execution time are all capped to prevent abuse
+- **Network controls** -- By default, code cannot make network requests. Network access can be enabled when needed.
+- **No elevated privileges** -- Code runs as an unprivileged user with a read-only filesystem (except for a small temporary directory)
+
+---
+
+## Resource limits
+
+Every execution runs with the following constraints:
+
+| Resource | Limit |
+|----------|-------|
+| Memory | 128 MB |
+| Execution time | Up to 60 seconds |
+| Output size | 64 KB |
+| Temporary storage | 64 MB |
+
+These limits ensure that no single execution can affect platform performance for other users.
+
+---
+
+## When to use code execution vs. other tools
+
+| Scenario | Best approach |
+|----------|--------------|
+| Call an external API | Use a [REST API tool](/integrations/rest-api-tools) |
+| Run a database query | Use the [Query Engine](/data/querying-data) |
+| Custom calculations or data processing | Use Code Execution |
+| Complex logic that's hard to express as API calls | Use Code Execution |

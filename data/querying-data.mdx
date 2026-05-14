@@ -1,0 +1,115 @@
+---
+title: "Querying Your Data"
+sidebarTitle: "Querying Data"
+description: "Ask questions about your data in plain English or write SQL directly to get instant answers."
+icon: "magnifying-glass-chart"
+---
+
+DEHA ONE lets you explore your data by asking questions in plain English. The platform translates your question into a database query, runs it, and returns the results -- no SQL knowledge required. Power users can also write SQL directly.
+
+---
+
+## Ask in plain English
+
+Type a question about your data and get an answer instantly. DEHA ONE's AI understands your question, generates the right query, and returns structured results.
+
+**Example questions:**
+
+- "What are the top 10 best-selling products in the last 30 days?"
+- "Show me customers who haven't placed an order in 90 days"
+- "What's the average order value by region?"
+- "How many support tickets were opened this week?"
+
+The platform shows you the generated SQL alongside the results, so you can always see exactly how your question was interpreted.
+
+<Info>
+  The more specific your question, the better the results. Instead of "Show me sales data," try "Show me total sales by product category for Q1 2026."
+</Info>
+
+---
+
+## Result formats
+
+Choose how you want to see your results:
+
+| Format | Best for |
+|--------|---------|
+| **Table** | Viewing data in rows and columns |
+| **JSON** | Using results in other systems or automations |
+| **Chart-ready** | Direct hand-off to the [Renderer](/viz/charts) for instant visualization |
+| **Summary** | An AI-generated text explanation of what the results mean |
+
+The platform can attach a plain-English explanation to any result ("revenue is up 18% week-over-week, driven primarily by category X") -- toggle it on for any query.
+
+---
+
+## Direct SQL for power users
+
+If you prefer to write SQL yourself, DEHA ONE provides a direct SQL interface with built-in safety checks:
+
+- Write and run `SELECT` / `WITH` queries against your data
+- The platform validates queries before execution (no DDL, no DML, no file operations, no SQL injection patterns)
+- Data modification commands are blocked for safety
+- **Cost estimation** runs before execution -- you see an estimate of how expensive the query will be before paying for it
+
+---
+
+## Query modes
+
+Beyond text-to-SQL and direct SQL, the platform supports two more modes for unstructured search:
+
+| Mode | What it does | Best for |
+|---|---|---|
+| **Text-to-SQL** | LLM converts your question into a safe, optimized SQL query | "How many X..." analytical questions |
+| **Direct SQL** | You write the query yourself | Power users, repeatable queries |
+| **Semantic search** | Vector-based retrieval over an indexed text corpus | Free-form text and document search |
+| **Hybrid** | Combines structured (SQL) and semantic search, ranks results jointly | "Show me complaints similar to X from the last 30 days" |
+
+---
+
+## Improving accuracy
+
+DEHA ONE learns about your data over time. You can help it give better answers by:
+
+### Adding a business glossary
+
+Define terms specific to your business so the AI understands your language:
+
+| Term | Definition |
+|------|-----------|
+| CSAT | Customer Satisfaction Score, rated 0 to 5 |
+| Churn | Customer who hasn't ordered in 90+ days |
+| GMV | Gross Merchandise Value, total sales revenue |
+| SKU | Stock Keeping Unit, unique product identifier |
+
+### Providing example questions
+
+Give the platform a few examples of questions paired with their correct queries. Even 10-20 examples for your most common questions will significantly improve accuracy.
+
+### Adding documentation
+
+Describe your data in plain language: what each table contains, what the status values mean, how revenue is calculated. This context helps the AI generate more accurate queries.
+
+---
+
+## Exploring your data
+
+Not sure what data is available? DEHA ONE provides tools to discover and understand your datasets:
+
+- **Browse tables** -- See all available tables in your database
+- **View schema** -- Check column names, data types, and structure for any table
+- **Data profiling** -- Get statistical summaries of your data, including value distributions, missing data, and quality scores
+
+---
+
+## Access control
+
+You can restrict which tables and columns are queryable. For example, you might want to hide internal audit tables or columns containing sensitive information. Restricted data is excluded from all queries, including AI-generated ones.
+
+---
+
+## Using queries with agents
+
+Your AI agents can query your data during conversations. When a customer asks "What's the status of my order?", the agent can look up the answer directly from your database and respond with real, current information.
+
+Agents can also run queries as part of automated pipelines -- for example, generating a daily sales summary report.

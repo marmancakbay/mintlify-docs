@@ -1,0 +1,89 @@
+---
+title: "Introduction"
+sidebarTitle: "Introduction"
+description: "The AI platform that runs your business -- intelligent agents, automated workflows, live data, optimization, and IoT in one place."
+---
+
+Welcome to **DEHA ONE**. It is the platform you use to put AI to work across your business: build agents that talk to customers, design workflows that move data around, ask questions about your databases in plain English, optimize routes and schedules, ingest telemetry from devices, and visualize everything in shareable dashboards.
+
+**Just tell DEHA what you need, and it builds it for you.**
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Go from sign-up to a working AI agent in under five minutes.
+  </Card>
+  <Card title="Meet DEHA" icon="sparkles" href="/deha/overview">
+    Your AI assistant that creates agents, automations, and integrations from plain English -- and self-heals when something breaks.
+  </Card>
+  <Card title="Platform Overview" icon="diagram-project" href="/platform-overview">
+    The big picture: every capability, how they fit together, and when to use which.
+  </Card>
+  <Card title="API Reference" icon="rectangle-terminal" href="/api-reference/overview">
+    Drive everything programmatically with the REST API and per-agent / per-pipeline endpoints.
+  </Card>
+</CardGroup>
+
+---
+
+## What you can build
+
+<CardGroup cols={2}>
+  <Card title="AI Agents" icon="robot" href="/agents/overview">
+    Conversational agents, document processors, and quality judges -- with tools, memory, and approval gates. Agents can call APIs, run code, search your knowledge, and delegate to other agents.
+  </Card>
+  <Card title="Omni-Channel Messaging" icon="messages" href="/channels/overview">
+    Meet customers where they are -- WhatsApp, Telegram, Email, Slack, and Web Chat. One agent, every channel, same context.
+  </Card>
+  <Card title="Automations & Pipelines" icon="gears" href="/automations/overview">
+    Design multi-step workflows that run on a schedule, on an event, or on demand. Add human review gates and let the platform handle retries, failures, and rollbacks.
+  </Card>
+  <Card title="Data & Analytics" icon="chart-mixed" href="/data/overview">
+    Connect databases, APIs, and files. Ask questions in plain English. Forecast, detect anomalies, profile data quality, scrub PII, and version snapshots with rollback.
+  </Card>
+  <Card title="Knowledge Base (RAG)" icon="books" href="/knowledge-base/overview">
+    Upload PDFs, DOCX, PPTX, spreadsheets, and webpages. Your agents search them with semantic ranking and reranking -- accurate, grounded answers with source citations.
+  </Card>
+  <Card title="IoT & Devices" icon="microchip" href="/iot/overview">
+    Connect sensors, PLCs, and gateways over MQTT, OPC-UA, Modbus, HTTP polling, or webhooks. Per-device schemas, offline detection, and bidirectional commands.
+  </Card>
+  <Card title="Optimization" icon="route" href="/optimization/overview">
+    Solve routing, scheduling, assignment, packing, and network-flow problems with industrial-grade solvers. Get answers with charts, Gantt views, and plain-English summaries.
+  </Card>
+  <Card title="Web Intelligence" icon="globe" href="/web-intel/overview">
+    Search 13 web providers in parallel (Google, Tavily, Brave, YouTube, GDELT, complaints sites). Scrape pages into clean markdown or structured JSON for your agents to consume.
+  </Card>
+  <Card title="Visualizations & Reports" icon="chart-pie" href="/viz/overview">
+    Generate charts from natural language. Build embeddable dashboards. Auto-render multi-page PDF reports on a schedule.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations/overview">
+    Connect to any REST API, run sandboxed Python code, or use the MCP protocol. Expose your agents and pipelines as MCP tools for any LLM client.
+  </Card>
+</CardGroup>
+
+---
+
+## Why DEHA ONE
+
+<AccordionGroup>
+  <Accordion title="Build with natural language">
+    DEHA, your built-in AI assistant, lets you describe what you want in plain English. It generates the configuration, validates it, deploys it, runs tests, and auto-heals if something fails. No code required for 95% of use cases.
+  </Accordion>
+  <Accordion title="Works with any AI model">
+    Use OpenAI, Anthropic, Google Gemini, DeepSeek, or your own self-hosted models via LiteLLM. Pick a model per agent, swap models without rebuilding, or use semantic aliases like `fast`, `smart`, or `cheap` and let the platform route.
+  </Accordion>
+  <Accordion title="Bring Your Own Data (BYOD)">
+    Your business data stays in your warehouse. DEHA ONE processes data but does not persist it -- results sink back to your PostgreSQL, MySQL, MongoDB, S3, or external Qdrant. Optional internal storage for operational data only.
+  </Accordion>
+  <Accordion title="Bring Your Own Keys (BYOK)">
+    Use your own LLM provider credentials (OpenAI, Vertex AI with your GCP service account, Anthropic, etc.). Embeddings, completions, and tools run on your accounts with your rate limits and your billing relationship.
+  </Accordion>
+  <Accordion title="Enterprise-grade security">
+    Zero-Trust gateway, Auth0 SSO, role-based access control, per-user data isolation, encrypted vault for credentials, IP whitelisting, signed webhooks, and a full audit trail.
+  </Accordion>
+  <Accordion title="Transparent, credit-based pricing">
+    Pay only for what you use. Monitor your credit consumption in real time, set quota alerts, and control spending with configurable overage actions (alert, throttle, or block).
+  </Accordion>
+  <Accordion title="Multi-user, multi-region, hot-reloadable">
+    Every change deploys atomically across the cluster -- no restart, no downtime. Run multiple versions of an agent with weighted traffic splits. A/B test in production safely.
+  </Accordion>
+</AccordionGroup>

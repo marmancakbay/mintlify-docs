@@ -1,0 +1,122 @@
+---
+title: "Embeds & Reports"
+sidebarTitle: "Embeds & reports"
+description: "Signed embed iframes, scheduled PDF/PNG snapshots, and fleet-scale auto-generated reports."
+icon: "file-pdf"
+---
+
+Once you have charts and dashboards, you usually want to **share** them — either as interactive embeds, or as auto-generated snapshots delivered on a schedule.
+
+---
+
+## Signed embed URLs
+
+Every saved chart and dashboard gets a signed embed URL:
+
+```
+https://embed.deha.one/c/{chart_id}?token=<hs256>      # chart
+https://embed.deha.one/d/{dashboard_id}?token=<hs256>  # dashboard
+```
+
+The token is an HS256-signed JWT that encodes:
+
+- The user ID (enforced at every layer)
+- The chart or dashboard ID
+- An expiry time
+- Optional filter set (e.g. "show only customer X's data")
+- Optional widget visibility list
+
+**Properties:**
+
+- Tokens are **revokable** — invalidate any active token from the dashboard
+- Tokens are **short-lived by default** (30 days; configurable)
+- Tokens **never carry data** — they are pure access credentials; data is fetched at view time
+- Embeds run in an **isolated iframe** — no cookies, no SDK, no cross-frame access
+
+You can use the same URL in your internal Confluence, customer portal, or partner extranet.
+
+---
+
+## Scheduled snapshots
+
+Schedule any dashboard to render to **PDF or PNG** on a cadence and deliver it to one or more destinations.
+
+| Cadence | Example use |
+|---|---|
+| Hourly | Live ops health summary for the on-call shift |
+| Daily 8:00 | Customer support digest |
+| Weekly Monday | Account-by-account growth report |
+| Monthly 1st | Executive KPI dashboard |
+| On-demand | Incident review, customer onboarding summary |
+
+Each snapshot is stored in the user artifact archive and (optionally) delivered to:
+
+- An **email distribution list** via the Mail adapter
+- A **Slack channel** via the Slack adapter
+- A **webhook** (any external system)
+- A **REST endpoint** in your own infrastructure
+- The **knowledge base** (for executive search and retrieval)
+
+---
+
+## Fleet PDF reports
+
+For teams running DEHA ONE for many sub-users (e.g. an enterprise with 200 business units, or an MSP with 50 customers), fleet reports automate the cross-user rollup.
+
+A fleet report is one PDF per sub-user, generated in parallel, with:
+
+- A standard cover page (logo, user name, period)
+- A configurable section list (KPI summary, alerts, top issues, trends)
+- User-archived copies for compliance / SLA evidence
+- Optional differential pages ("what changed since last report")
+
+Fleet reports run inside a Chromium pool with concurrency control, so a report run for 500 users finishes in minutes rather than hours.
+
+---
+
+## Retention and archive
+
+| Artifact | Default retention |
+|---|---|
+| Cached chart PNG / SVG | 30 days |
+| Saved dashboard snapshot | 90 days |
+| Fleet PDF reports | 365 days |
+| User archive (custom) | Configurable per user |
+
+You can override any of these per user or per artifact type. Long-retention artifacts can be sunk to your own S3 / object storage via [BYOD routing](/data/versioning-and-byod).
+
+---
+
+## Security model
+
+- **User isolation** at every layer — paths, render cache, artifact store, embed iframes
+- **Path traversal protection** — artifact downloads are clamped to the user's directory
+- **No public artifacts** — every download requires a signed token or a session
+- **Audit log** — every snapshot, every embed access, every download is logged with caller identity
+
+---
+
+## Example: weekly executive PDF to email
+
+```yaml
+schedule:
+  name: weekly-exec-pdf
+  cron: "0 7 * * MON"
+  timezone: Europe/Istanbul
+
+pipeline:
+  - type: render_dashboard
+    dashboard_id: executive-kpis
+    format: pdf
+    filters:
+      period: last_week
+
+  - type: publish
+    channel: mail
+    to: ["ceo@example.com", "cfo@example.com"]
+    subject: "Executive KPIs — week of {{ start_date }}"
+    body: "Please find this week's KPI snapshot attached."
+    attachments: ${previous.artifact_path}
+```
+
+DEHA can write this for you from one sentence. The PDF is rendered, attached, and emailed every Monday morning — no human in the loop.

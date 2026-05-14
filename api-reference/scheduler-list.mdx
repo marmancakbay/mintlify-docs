@@ -1,0 +1,111 @@
+---
+title: "List Schedules"
+api: "GET https://api.deha.one/scheduler/schedules"
+description: "List active schedule configurations for your user."
+---
+
+Returns all active schedule configurations for your user, including both YAML-defined and dynamically created schedules. Each schedule shows its trigger type, timing, enabled state, and associated action.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request completed successfully.
+</ResponseField>
+<ResponseField name="data.schedules" type="array">
+  Array of schedule configuration objects.
+</ResponseField>
+<ResponseField name="data.count" type="integer">
+  Total number of active schedules.
+</ResponseField>
+
+## Schedule Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `schedule_id` | string | Unique schedule identifier |
+| `name` | string | Human-readable name |
+| `trigger_type` | string | `cron`, `interval`, or `date` |
+| `trigger_value` | string | Cron expression, interval seconds, or ISO datetime |
+| `timezone` | string | IANA timezone |
+| `enabled` | boolean | Whether the schedule is active |
+| `action` | object | Action configuration with `action_type`, `pipeline_ref`, `agent_ref`, `connector_ref`, and `input_params` |
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing or invalid authentication |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/scheduler/schedules?user_id=acme_corp" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/scheduler/schedules",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    params={"user_id": "acme_corp"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/scheduler/schedules?user_id=acme_corp",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "schedules": [
+      {
+        "schedule_id": "acme_corp:daily_report",
+        "name": "daily_report",
+        "trigger_type": "cron",
+        "trigger_value": "0 9 * * *",
+        "timezone": "Europe/Istanbul",
+        "enabled": true,
+        "action": {
+          "action_type": "pipeline",
+          "pipeline_ref": "daily_sales_report",
+          "agent_ref": null,
+          "connector_ref": null,
+          "input_params": {}
+        }
+      }
+    ],
+    "count": 1
+  }
+}
+```

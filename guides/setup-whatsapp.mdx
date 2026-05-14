@@ -1,0 +1,136 @@
+---
+title: "Set Up WhatsApp"
+sidebarTitle: "WhatsApp"
+description: "Connect your WhatsApp Business account to DEHA ONE so your AI agents can chat with customers on WhatsApp."
+icon: "whatsapp"
+---
+
+## What You Will Set Up
+
+Connect your WhatsApp Business number to DEHA ONE so that incoming WhatsApp messages are handled by your AI agent automatically.
+
+<Info>
+Before you begin, you need:
+- A [Meta Business Account](https://business.facebook.com/)
+- A WhatsApp Business API phone number (verified)
+- Access to the [Meta Developer Portal](https://developers.facebook.com/)
+- A DEHA ONE workspace with at least one [agent configured](/guides/first-agent)
+</Info>
+
+---
+
+<Steps>
+
+### Create a Meta App
+
+1. Go to the [Meta Developer Portal](https://developers.facebook.com/).
+2. Click **Create App** and select **Business** type.
+3. Name your app and connect it to your Meta Business Account.
+4. Add the **WhatsApp** product to your app.
+
+### Collect Your Credentials
+
+From your Meta App's WhatsApp settings, you will need these values:
+
+| Credential | Where to Find It |
+|-----------|-----------------|
+| **Phone Number ID** | WhatsApp > Getting Started |
+| **API Token** | WhatsApp > Getting Started (use a permanent System User token for production) |
+| **Verify Token** | You create this -- any random string you choose |
+| **App Secret** | App Settings > Basic |
+| **Business Account ID** | WhatsApp > Getting Started |
+
+<Warning>
+Temporary tokens expire in 24 hours. For production use, generate a permanent token from **Business Settings > System Users** in Meta Business Manager.
+</Warning>
+
+### Add Credentials to DEHA ONE
+
+1. In the DEHA ONE dashboard, go to **Settings > Vault**.
+2. Add each credential as a secret:
+   - `whatsapp_phone_number_id`
+   - `whatsapp_api_token`
+   - `whatsapp_verify_token`
+   - `whatsapp_app_secret`
+   - `whatsapp_business_account_id`
+
+Your credentials are encrypted and stored securely. They are never exposed in plain text.
+
+### Enable the WhatsApp Channel
+
+1. Go to **Settings > Channels** in the dashboard.
+2. Enable **WhatsApp**.
+3. The credentials you stored in the vault will be linked automatically.
+4. Set the **default agent** to the agent you want handling WhatsApp messages.
+5. Optionally set a **welcome message** that new customers see.
+6. Click **Save**.
+
+### Configure the Webhook in Meta
+
+Set up the webhook so Meta sends incoming messages to DEHA ONE:
+
+1. In your Meta App, go to **WhatsApp > Configuration > Webhook**.
+2. Set the **Callback URL** to:
+   ```
+   https://api.deha.one/webhook/whatsapp/{your_workspace_id}
+   ```
+3. Set the **Verify Token** to the same value you stored in the vault.
+4. Subscribe to these webhook fields:
+   - `messages`
+   - `messaging_postbacks`
+
+<Tip>
+DEHA ONE handles webhook verification automatically. When Meta sends the verification challenge, the platform responds correctly.
+</Tip>
+
+### Publish and Test
+
+1. Go to **Settings > Configuration** and click **Publish**.
+2. Send a message to your WhatsApp Business number from any phone.
+3. Your AI agent should respond within seconds.
+
+<Check>
+Send a test message and verify the agent responds. Check the **Timeline** in the dashboard to see the full message flow.
+</Check>
+
+</Steps>
+
+---
+
+## Supported Message Types
+
+| Type | Description |
+|------|-------------|
+| Text | Plain text messages |
+| Image | Photos and images |
+| Audio | Voice notes and audio files |
+| Document | PDF, DOC, and other documents |
+| Location | Shared locations |
+| Interactive | Button replies and list selections |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Webhook verification fails">
+    Make sure the verify token in your Meta App settings matches exactly what you stored in the DEHA ONE vault. The token is case-sensitive.
+  </Accordion>
+  <Accordion title="Messages received but no response">
+    Check that your WhatsApp channel has a default agent assigned and that your configuration is published. Look at the **Timeline** in the dashboard for any error details.
+  </Accordion>
+  <Accordion title="Rate limit errors from Meta">
+    WhatsApp Cloud API has tier-based rate limits. New accounts start at Tier 1 (1,000 business-initiated conversations per day). Upgrade your tier through Meta Business Manager.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Set Up Telegram" icon="telegram" href="/guides/setup-telegram">
+    Add Telegram as another messaging channel.
+  </Card>
+  <Card title="Build a Knowledge Base" icon="book" href="/guides/build-knowledge-base">
+    Upload documents so your agent gives accurate, company-specific answers.
+  </Card>
+</CardGroup>

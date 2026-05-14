@@ -1,0 +1,93 @@
+---
+title: "Daily Usage"
+api: "GET https://api.deha.one/metering/usage/daily"
+description: "Get daily credit usage breakdown for your user."
+---
+
+Returns your user's credit usage breakdown for a specific day, grouped by event type. Useful for monitoring daily consumption patterns and identifying usage spikes.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField query="date" type="string">
+  Date in `YYYYMMDD` format. Defaults to today.
+</ParamField>
+
+## Response
+
+<ResponseField name="user_id" type="string">
+  Your user identifier.
+</ResponseField>
+<ResponseField name="date" type="string">
+  Date in `YYYYMMDD` format.
+</ResponseField>
+<ResponseField name="breakdown" type="object">
+  Credits consumed per event type for the specified day.
+</ResponseField>
+<ResponseField name="total" type="number">
+  Total credits consumed on this day.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid date format |
+| 401 | Missing or invalid authentication |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/metering/usage/daily?user_id=acme_corp&date=20260315" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/metering/usage/daily",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    params={"user_id": "acme_corp", "date": "20260315"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/metering/usage/daily?user_id=acme_corp&date=20260315",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "user_id": "acme_corp",
+  "date": "20260315",
+  "breakdown": {
+    "llm_request": 45.2,
+    "api_call": 12.0,
+    "message_sent": 8.0
+  },
+  "total": 65.2
+}
+```

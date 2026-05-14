@@ -1,0 +1,178 @@
+---
+title: "Create Your First Agent"
+sidebarTitle: "First Agent"
+description: "Build an AI agent in minutes using the DEHA AI Assistant or the dashboard, then connect it to a channel."
+icon: "robot"
+---
+
+## What You Will Build
+
+In this guide, you will create a customer support agent that can answer questions, search your knowledge base, and connect to your customers through WhatsApp, Telegram, or web chat.
+
+<Info>
+Before you begin, make sure you have:
+- A DEHA ONE account with a workspace set up
+- Access to the [DEHA ONE dashboard](https://app.deha.one)
+</Info>
+
+---
+
+<Steps>
+
+### Create Your Agent with DEHA
+
+The fastest way to create an agent is to tell the **DEHA AI Assistant** what you need. Open the DEHA chat in your dashboard and describe the agent you want.
+
+**Example prompts you can use:**
+
+> "Create a customer support bot that answers questions about our products. It should be friendly and professional."
+
+> "I need an agent that handles billing questions and can look up order status."
+
+> "Build me a technical support agent that searches our knowledge base before answering."
+
+DEHA will generate the agent configuration for you, including the personality, instructions, and tool connections. Review the result in the dashboard and click **Publish** when you are satisfied.
+
+### Create an Agent from the Dashboard
+
+If you prefer a visual approach, you can create an agent directly in the dashboard:
+
+1. Go to **Agents** in the sidebar.
+2. Click **Create Agent**.
+3. Fill in the basics:
+   - **Name** -- A short identifier (e.g., `support_agent`)
+   - **Description** -- What this agent does
+   - **Type** -- Choose "Conversational" for a chat agent
+4. Write your agent's instructions in the **System Prompt** field. This tells the agent how to behave:
+
+```
+You are a helpful customer support assistant for [Your Company].
+Be friendly, professional, and concise in your responses.
+If you cannot answer a question, suggest contacting human support.
+```
+
+5. Choose a model speed: **Fast** for quick responses, or **Quality** for more thoughtful answers.
+6. Click **Save**.
+
+### Add Tools to Your Agent
+
+Tools give your agent superpowers -- like searching your knowledge base, looking up customer records, or checking order status.
+
+In the agent settings, enable the tools you want:
+
+| Tool | What It Does |
+|------|-------------|
+| **Knowledge Search** | Searches your uploaded documents for answers |
+| **Data Query** | Looks up information in your connected data sources |
+| **External APIs** | Calls your CRM, helpdesk, or other business tools |
+| **Code Execution** | Runs calculations or data processing |
+
+<Tip>
+Start with **Knowledge Search** enabled. Once you upload your company documents (see [Build a Knowledge Base](/guides/build-knowledge-base)), your agent can answer questions using your actual content.
+</Tip>
+
+### Connect Your Agent to a Channel
+
+Assign your agent to a communication channel so customers can reach it:
+
+1. Go to **Settings > Channels** in the dashboard.
+2. Select a channel (Web Chat, WhatsApp, Telegram, or Email).
+3. Set your new agent as the **default agent** for that channel.
+4. Click **Save** and then **Publish** your configuration.
+
+For detailed channel setup instructions, see:
+- [Set Up Web Chat](/guides/setup-web-chat)
+- [Set Up WhatsApp](/guides/setup-whatsapp)
+- [Set Up Telegram](/guides/setup-telegram)
+- [Set Up Email](/guides/setup-email)
+
+### Test Your Agent
+
+Try your agent right away in the dashboard:
+
+1. Open the **Chat** panel in the dashboard.
+2. Select your agent from the dropdown.
+3. Send a test message like "Hello, what can you help me with?"
+4. Check that the response matches the personality and instructions you set.
+
+<Check>
+Your agent should respond with a helpful, on-brand message. If something feels off, go back to the agent settings and adjust the system prompt.
+</Check>
+
+### Publish Your Changes
+
+Once you are happy with your agent, make sure your configuration is published:
+
+1. Go to **Settings > Configuration**.
+2. Click **Publish**.
+3. Your agent is now live on all connected channels.
+
+</Steps>
+
+---
+
+## Tips for Great Agents
+
+- **Be specific in your instructions.** Instead of "be helpful," tell the agent exactly what topics it should cover and how it should respond.
+- **Add your knowledge base.** Agents with access to your documents give much better answers than those relying only on general knowledge.
+- **Test with real questions.** Send the kinds of questions your customers actually ask to see how the agent performs.
+- **Iterate.** Adjust the system prompt based on test results. Small wording changes can significantly improve responses.
+
+<Accordion title="Advanced: YAML configuration reference">
+
+Under the hood, agents are defined as YAML configurations. You can view and edit the YAML directly in the dashboard under **Agents > [Your Agent] > YAML Editor**.
+
+```yaml
+name: "support_agent"
+description: "Customer support assistant"
+version: "1.0.0"
+type: "agent_conversational"
+
+prompts:
+  system_main: |
+    You are a helpful customer support assistant.
+    Be friendly, professional, and concise.
+
+nodes:
+  - id: "main_llm"
+    type: "node_llm"
+    parameters:
+      model: "fast"
+      temperature: 0.3
+      max_tokens: 2048
+      prompt_ref: "system_main"
+      bind_all_tools: true
+
+  - id: "tool_executor"
+    type: "node_tool"
+    parameters:
+      allowed_tools: []
+
+edges:
+  - source: "__start__"
+    target: "main_llm"
+  - source: "main_llm"
+    target: "tool_executor"
+    condition: "state.context.has_tool_call == True"
+    priority: 1
+  - source: "tool_executor"
+    target: "main_llm"
+  - source: "main_llm"
+    target: "__end__"
+    priority: 10
+```
+
+</Accordion>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Build a Knowledge Base" icon="book" href="/guides/build-knowledge-base">
+    Upload your documents so your agent can answer questions accurately.
+  </Card>
+  <Card title="Create Your First Automation" icon="bolt" href="/guides/first-automation">
+    Set up multi-step workflows that run automatically.
+  </Card>
+</CardGroup>

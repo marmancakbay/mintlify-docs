@@ -1,0 +1,212 @@
+---
+title: "Creating with DEHA"
+sidebarTitle: "Creating with DEHA"
+description: "Build AI agents, automations, integrations, and multi-agent teams by describing what you need in plain language."
+icon: "comment"
+---
+
+DEHA lets you create anything on the platform through conversation. Instead of navigating menus or learning configuration formats, you describe what you want and DEHA builds it. This page shows you the full range of what you can create and how to get the best results.
+
+---
+
+## What you can create
+
+### AI agents
+
+Agents are intelligent assistants that interact with your customers and team members. Here are examples of what you can ask DEHA to build:
+
+<Tabs>
+  <Tab title="Customer support">
+    > **You:** Create a customer support agent for WhatsApp. It should greet customers warmly, answer FAQs about our shipping policies, and look up order status when asked.
+    >
+    > **DEHA creates:** A fully configured support agent connected to your WhatsApp channel, with a friendly personality, built-in FAQ knowledge, and order lookup capability through your existing integrations.
+  </Tab>
+  <Tab title="Sales assistant">
+    > **You:** Build a sales assistant that qualifies leads by asking about company size, budget, and timeline. Once qualified, it should create a contact in HubSpot and notify our sales team.
+    >
+    > **DEHA creates:** A conversational agent that guides prospects through qualification questions, automatically creates CRM contacts, and sends notifications to your sales team.
+  </Tab>
+  <Tab title="Data analyst">
+    > **You:** I need an agent that can answer business questions by querying our database. Things like "What were our top products last month?" or "Show me revenue trends."
+    >
+    > **DEHA creates:** A data analyst agent with database query capabilities, natural language to SQL translation, and the ability to run statistical analysis on your data.
+  </Tab>
+  <Tab title="Internal assistant">
+    > **You:** Create a Telegram bot for our team that can search our knowledge base, run Python calculations, and generate reports on demand.
+    >
+    > **DEHA creates:** An internal assistant connected to Telegram with knowledge base search, code execution, and report generation tools.
+  </Tab>
+</Tabs>
+
+### Automations and pipelines
+
+Automations run tasks on schedules or in response to events, without human involvement:
+
+<Tabs>
+  <Tab title="Scheduled report">
+    > **You:** Set up a daily pipeline that pulls our sales data every morning at 8 AM, analyzes it, and emails a summary to the management team.
+    >
+    > **DEHA creates:** A scheduled pipeline with data extraction, AI-powered analysis, and email delivery -- running automatically every day.
+  </Tab>
+  <Tab title="Event-driven workflow">
+    > **You:** Whenever a new message arrives on WhatsApp, classify it as sales, support, or general, and route it to the right agent automatically.
+    >
+    > **DEHA creates:** An event-driven pipeline that classifies incoming messages and routes them to specialized agents based on the detected topic.
+  </Tab>
+  <Tab title="Data processing">
+    > **You:** Create a weekly pipeline that syncs customer data from our CRM, cleans duplicates, and updates our analytics database.
+    >
+    > **DEHA creates:** A weekly automation with CRM data extraction, deduplication, and database loading steps.
+  </Tab>
+</Tabs>
+
+### Integrations
+
+Connect external tools and services so your agents can use them:
+
+<Tabs>
+  <Tab title="REST API">
+    > **You:** Connect our Shopify store so agents can look up orders, check inventory, and process returns.
+    >
+    > **DEHA creates:** A complete Shopify integration with endpoints for order lookup, inventory checks, and return processing -- ready for any agent to use.
+  </Tab>
+  <Tab title="CRM connection">
+    > **You:** Add our Salesforce CRM. Agents should be able to search contacts, create leads, and update opportunities.
+    >
+    > **DEHA creates:** A Salesforce integration with all the specified operations configured and authenticated.
+  </Tab>
+  <Tab title="Custom API">
+    > **You:** We have an internal API at api.internal.com that handles inventory management. Connect it with our API key.
+    >
+    > **DEHA creates:** A custom REST integration with proper authentication and endpoint definitions based on your description.
+  </Tab>
+</Tabs>
+
+### Multi-agent teams
+
+Combine multiple agents into collaborative teams:
+
+> **You:** Set up a support system with three specialists: one for billing questions, one for technical issues, and one for general inquiries. Have a smart router that figures out what the customer needs and sends them to the right specialist.
+>
+> **DEHA creates:** Four agents working together -- a smart router that classifies requests and three specialists, each optimized for their domain. The router seamlessly delegates to the right specialist without the customer noticing.
+
+---
+
+## Modifying what you have
+
+DEHA is not just for creating new things. You can also modify, enhance, and debug existing setups:
+
+<AccordionGroup>
+  <Accordion title="Add capabilities to an agent">
+    > "Add the HubSpot integration to my support agent so it can look up customer profiles."
+    >
+    > DEHA finds your existing support agent, connects the HubSpot integration, and updates the agent's instructions to mention the new capability.
+  </Accordion>
+  <Accordion title="Change agent behavior">
+    > "Make the sales bot more formal in tone and keep responses under 150 words."
+    >
+    > DEHA updates the agent's personality and response guidelines without affecting any of its other capabilities.
+  </Accordion>
+  <Accordion title="Add human review">
+    > "Add a human approval step before the support agent sends any response about refunds."
+    >
+    > DEHA adds a quality gate that pauses and waits for staff approval whenever a refund-related response is about to be sent.
+  </Accordion>
+  <Accordion title="Debug issues">
+    > "My weather bot is not returning forecast data. Can you figure out what's wrong?"
+    >
+    > DEHA examines the agent's configuration, identifies the issue (for example, a missing API integration), and offers to fix it.
+  </Accordion>
+  <Accordion title="Remove components">
+    > "Delete the old welcome bot -- we replaced it with the new support agent."
+    >
+    > DEHA will ask for your explicit confirmation before deleting anything, then cleanly remove the component.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## DEHA knows your setup
+
+When you make a request, DEHA already understands your environment:
+
+- **Your existing agents** -- names, capabilities, which channels they serve
+- **Your integrations** -- connected APIs, available tools, authentication status
+- **Your pipelines** -- active automations, schedules, data flows
+- **Your channels** -- which messaging channels are configured (WhatsApp, Telegram, Email, Web)
+- **Available AI models** -- all language models you can use for your agents
+
+This means you can make requests like "add the CRM to the support agent" without specifying every detail. DEHA knows exactly which agent and which CRM you mean.
+
+<Info>
+  When using DEHA from the dashboard, it also sees what page you are currently viewing. So you can say "fix this agent" while looking at an agent editor, and DEHA knows which one you mean.
+</Info>
+
+---
+
+## Tips for great results
+
+<AccordionGroup>
+  <Accordion title="Be specific about what you want">
+    Instead of "create a bot," describe the specific behavior:
+
+    > "Create a customer onboarding agent that collects the user's name, email, and company size, then creates a contact in our HubSpot CRM."
+
+    The more detail you provide, the closer DEHA gets to exactly what you need on the first try.
+  </Accordion>
+  <Accordion title="Name your existing resources">
+    Reference your agents, integrations, and pipelines by name:
+
+    > "Add the `weather_api` integration to the `travel_assistant` agent."
+
+    This eliminates ambiguity and lets DEHA work precisely.
+  </Accordion>
+  <Accordion title="Describe edge cases">
+    Tell DEHA how to handle unusual situations:
+
+    > "If the CRM API returns an error, apologize to the customer and suggest they try again in a few minutes. If they ask about pricing, transfer them to the sales team."
+  </Accordion>
+  <Accordion title="Build iteratively">
+    Start simple and add complexity in follow-up messages:
+
+    1. "Create a basic FAQ bot."
+    2. "Now add the ability to search our knowledge base."
+    3. "Add human handoff when the bot can't answer a question."
+    4. "Connect it to our WhatsApp channel."
+
+    Each step builds on the previous one. DEHA remembers the full conversation.
+  </Accordion>
+  <Accordion title="Ask DEHA to explain">
+    Not sure how something works? Just ask:
+
+    > "Explain how my support agent handles escalations."
+
+    DEHA will walk you through the current configuration in plain language.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Custom guidelines
+
+You can set organization-wide guidelines that DEHA follows whenever it builds something for your team. For example:
+
+- "Always use GPT-4o as the default model for new agents"
+- "All agent responses should be in English"
+- "Include error handling instructions in every agent"
+- "Keep all response lengths under 200 words"
+
+These guidelines are applied automatically to every request, ensuring consistency across your platform without repeating yourself.
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="How DEHA Works" icon="list-check" href="/deha/plan-and-execute">
+    Learn how DEHA plans, tests, and delivers your solutions safely.
+  </Card>
+  <Card title="AI Agents" icon="robot" href="/agents/overview">
+    Explore the types of AI agents you can create.
+  </Card>
+</CardGroup>

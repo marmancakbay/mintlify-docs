@@ -1,0 +1,152 @@
+---
+title: "API Overview"
+description: "Base URL, versioning, response format, error codes, rate limits, and pagination for the DEHA ONE API."
+---
+
+## Base URL
+
+All API requests are made to the DEHA ONE platform at:
+
+```
+https://api.deha.one
+```
+
+## Versioning
+
+The API uses URL-based versioning. The current stable version is **v1**:
+
+```
+https://api.deha.one/api/v1/...
+```
+
+Non-versioned endpoints (health checks, webhooks) are available at the root level.
+
+## Authentication
+
+Every request must include authentication credentials. DEHA ONE supports three credential types:
+
+| Method | Header | Use Case |
+|--------|--------|----------|
+| **JWT (Auth0)** | `Authorization: Bearer <jwt_token>` | Dashboard and interactive sessions |
+| **User API key** | `Authorization: Bearer deha_one_...` | Programmatic access — user-wide scope |
+| **Per-entity API key** | `Authorization: Bearer deha_one_...` | Programmatic access — scoped to one specific agent or pipeline |
+
+All API keys begin with the `deha_one_` prefix followed by 32 hex characters and are SHA-256 hashed at rest. See the [Authentication](/api-reference/authentication) page for details on obtaining and using credentials.
+
+## User Isolation
+
+All API operations are scoped to a user. The user is identified by:
+
+- **JWT auth**: Extracted from the `deha_one_user_id` claim in the JWT token.
+- **API key auth**: Extracted from the API key metadata stored at creation time.
+- **URL path**: Some endpoints include `{user_id}` in the URL path for explicit scoping.
+
+<Warning>
+All data is strictly isolated by user. You cannot access resources belonging to another user, even with a valid authentication token.
+</Warning>
+
+## Request Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | Bearer token (JWT or API key) |
+| `Content-Type` | For POST/PUT | `application/json` (or `multipart/form-data` for file uploads) |
+| `X-Trace-Id` | No | Custom trace ID for request correlation. Auto-generated if omitted. |
+
+## Response Format
+
+All API responses return JSON. Successful responses return the resource directly:
+
+```json
+{
+  "field1": "value1",
+  "field2": "value2"
+}
+```
+
+Error responses follow a consistent structure:
+
+```json
+{
+  "detail": "Description of the error"
+}
+```
+
+## Trace ID
+
+Every response includes an `X-Trace-Id` header for end-to-end request tracing. You can pass your own trace ID via the `X-Trace-Id` request header, or the platform will generate one automatically.
+
+```
+X-Trace-Id: 550e8400-e29b-41d4-a716-446655440000
+```
+
+Include this ID when contacting support to help diagnose issues.
+
+## Error Codes
+
+| Status Code | Description |
+|-------------|-------------|
+| `400` | Bad Request -- Invalid request body or parameters |
+| `401` | Unauthorized -- Missing or invalid authentication credentials |
+| `403` | Forbidden -- Insufficient permissions, IP not whitelisted, or user mismatch |
+| `404` | Not Found -- Resource or route does not exist |
+| `405` | Method Not Allowed -- HTTP method not supported for this endpoint |
+| `409` | Conflict -- Resource already exists or concurrent write in progress |
+| `422` | Unprocessable Entity -- Request validation failed |
+| `429` | Too Many Requests -- Rate limit exceeded |
+| `500` | Internal Server Error -- Unexpected server-side failure |
+| `502` | Bad Gateway -- Upstream service temporarily unreachable |
+| `503` | Service Unavailable -- Service temporarily degraded |
+| `504` | Gateway Timeout -- Request timed out |
+
+## Rate Limiting
+
+Requests are rate-limited using a **sliding-window** algorithm (no 2× burst flaw of fixed windows). When a rate limit is exceeded, the API returns `429 Too Many Requests` with a `Retry-After` header.
+
+| Endpoint Type | Default Limit |
+|---------------|---------------|
+| API key endpoints | 60 requests/min (configurable per key) |
+| Per-agent / per-pipeline keys | Configurable per key |
+| Webhook endpoints | Per-route configuration |
+| Proxy routes | Per-host circuit breaker (5 failures → 60s open) |
+| System endpoints | 120 requests/min |
+
+<Tip>
+You can configure custom rate limits per API key when creating or updating keys via the Dashboard. IP whitelisting is also supported per user and per entity (agent / pipeline).
+</Tip>
+
+## Per-user OpenAPI catalog
+
+Each user has a discoverable OpenAPI document covering every published agent and pipeline endpoint:
+
+```
+GET https://api.deha.one/api/v1/openapi/{user_id}.json
+```
+
+This document is regenerated whenever you deploy a config change. Point any OpenAPI-aware tool (Postman, Swagger UI, your own SDK generator) at this URL to get up-to-date schemas for every endpoint.
+
+## Pagination
+
+Endpoints that return lists support offset-based pagination:
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `offset` | integer | 0 | Number of items to skip |
+| `limit` | integer | 20 | Maximum number of items to return |
+
+Paginated responses include a `total` field indicating the total number of available items:
+
+```json
+{
+  "items": [...],
+  "total": 150
+}
+```
+
+## SDKs and Tools
+
+You can interact with the DEHA ONE API using any HTTP client. Examples in this documentation use:
+
+- **cURL** -- Command-line HTTP client
+- **Python** -- Using the `httpx` library
+- **Node.js** -- Using the native `fetch` API

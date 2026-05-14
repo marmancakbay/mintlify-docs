@@ -1,0 +1,154 @@
+---
+title: "Data Quality"
+sidebarTitle: "Data Quality"
+description: "Clean, standardize, validate, dedup, and generate synthetic data — without hand-writing transforms."
+icon: "broom"
+---
+
+Most data problems are not analytics problems — they are quality problems. DEHA ONE includes a full suite of data-quality operations you can chain into any pipeline.
+
+---
+
+## Cleaning operations
+
+| Operation | What it does |
+|---|---|
+| **Trim whitespace** | Strip leading / trailing / inner whitespace per column rule |
+| **Lowercase / uppercase / titlecase** | Normalize string case |
+| **Remove special characters** | Strip punctuation, control characters, emojis (configurable) |
+| **Standardize phone numbers** | Parse to E.164, validate region |
+| **Standardize email addresses** | Lowercase, deduplicate alias variants |
+| **Normalize date / datetime** | Convert mixed formats to ISO 8601 with explicit timezone |
+| **Fill missing values** | Constant, mean, median, mode, forward-fill, backward-fill |
+| **Drop missing rows** | Drop rows where any (or specific) field is null |
+| **Cast types** | str / int / float / bool / json / list / date / datetime |
+| **Round numerics** | Configurable decimal precision |
+| **Replace patterns** | Regex find-and-replace with column scoping |
+| **Strip diacritics** | Normalize accented characters (good for Turkish, Spanish, etc.) |
+
+Operations chain together — declare your cleaning pipeline in YAML once, and every load through the engine applies it consistently.
+
+---
+
+## Validation
+
+Every table has a **schema** (versioned via Config Service). Validation checks:
+
+- Required fields are present
+- Types match (int vs string, etc.)
+- Constraints hold (regex, enum, numeric range)
+- Foreign-key references resolve
+- Composite uniqueness (e.g. `(customer_id, order_date)` is unique)
+
+Validation runs:
+
+- Inline during loads (fail-fast or quarantine-bad-rows)
+- On a schedule as a quality report
+- On demand from the dashboard
+
+You can configure each validation rule to **stop** the pipeline, **quarantine** failing rows to a side table, or **flag and continue**.
+
+---
+
+## Deduplication & entity resolution
+
+Two levels of dedup:
+
+### Exact dedup
+
+Drop rows where a key (or composite key) is duplicated. Configurable conflict policy: keep first, keep last, keep newest by timestamp.
+
+### Fuzzy dedup with Splink
+
+For "the same customer entered with three different spellings", DEHA ONE wraps [Splink](https://moj-analytical-services.github.io/splink/), a probabilistic entity-resolution engine.
+
+| Phase | What happens |
+|---|---|
+| **Blocking** | Cheap candidate-pair generation (e.g. matching ZIP code) |
+| **Comparison** | Per-field similarity scoring (e.g. Levenshtein on names, exact match on phones) |
+| **Probabilistic match** | Bayesian model produces a match probability |
+| **Human review** | Borderline pairs go to a HITL queue for one-click yes/no |
+| **Cluster assignment** | Confirmed matches collapse into a single golden record |
+
+The output is a `(cluster_id, source_row_id)` mapping you can join back into your data.
+
+---
+
+## Synthetic data
+
+For testing pipelines, training models without leaking PII, or seeding a demo environment, the Data Engine generates synthetic rows via Faker.
+
+| Mode | What it does |
+|---|---|
+| **From scratch** | You declare the schema; the engine fills realistic values |
+| **From a table** | The engine learns from your real data and generates similar rows |
+| **From a schema** | The engine reads your user schema and respects every constraint |
+
+Synthetic data:
+
+- Never contains real PII
+- Matches your schema's types and constraints
+- Can preserve distributions (e.g., "approximate the real age distribution")
+- Is tagged in the archive so it cannot be confused with production data
+
+---
+
+## Quality reports
+
+Run quality on demand or on a schedule. Reports include:
+
+- Row counts (total, valid, quarantined)
+- Per-column null rate, type-match rate, constraint violations
+- Schema drift (new / removed / changed columns since last run)
+- Top-N values per column
+- Cardinality and uniqueness per column
+- Trend over time (when run on a schedule)
+
+Quality reports surface in the dashboard and can be auto-emailed or posted to Slack.
+
+---
+
+## Example: end-to-end quality pipeline
+
+```yaml
+pipeline: clean-customer-master
+steps:
+  - type: connector_extract
+    connector: crm-prod
+    table: customers
+
+  - type: data_transform
+    operations:
+      - trim_whitespace: [first_name, last_name]
+      - standardize_phone: { column: phone, region: TR }
+      - standardize_email: { column: email }
+      - cast: { column: signup_date, type: date }
+      - fill_missing: { column: country, value: "TR" }
+
+  - type: data_validate
+    schema: customer_v3
+    on_violation: quarantine
+
+  - type: pii_detect
+    columns: auto
+    on_finding: anonymize
+    anonymize_op: hash
+
+  - type: dedup_fuzzy
+    blocking: [postal_code]
+    compare:
+      first_name: levenshtein
+      last_name:  levenshtein
+      phone:      exact
+    threshold: 0.85
+
+  - type: data_snapshot
+    name: customer_master
+    versioned: true
+
+  - type: data_load
+    target: warehouse.customer_master
+    upsert_key: cluster_id
+```
+
+This pipeline is realistic, production-ready, and entirely declarative. DEHA can generate it from one sentence — "build me a daily customer-master pipeline that cleans, dedups, scrubs PII, snapshots, and loads to my warehouse."

@@ -1,0 +1,183 @@
+---
+title: "Analytics"
+sidebarTitle: "Analytics"
+description: "Discover trends, forecast values, detect anomalies, and segment your data with automated AI-powered analytics."
+icon: "chart-mixed"
+---
+
+DEHA ONE's analytics engine brings machine learning to your data without requiring data science expertise. Point it at your data, choose an analysis type, and get results with clear explanations -- the platform automatically selects the best approach for your data.
+
+---
+
+## What you can analyze
+
+<CardGroup cols={2}>
+  <Card title="Trend Analysis" icon="chart-line">
+    Understand how your metrics are changing over time. Direction, magnitude, statistical confidence.
+  </Card>
+  <Card title="Forecasting" icon="chart-line-up">
+    Predict future values from historical data. Auto-selects between StatsForecast, Prophet, and NeuralForecast for the series at hand. Confidence intervals included.
+  </Card>
+  <Card title="Anomaly Detection" icon="triangle-exclamation">
+    Find unusual records (IsolationForest, Z-score, IQR). Spot fraud, quality issues, or operational anomalies.
+  </Card>
+  <Card title="Clustering" icon="circle-nodes">
+    Segment data (K-Means with elbow detection, DBSCAN). Auto-determines the optimal number of groups when you do not specify.
+  </Card>
+  <Card title="Classification & Regression" icon="tags">
+    Predict categories or values. Auto-engine selection: TabPFN for ≤10K rows, LightGBM for larger datasets. SHAP explanations included.
+  </Card>
+  <Card title="Drift Detection" icon="wave-square">
+    Detect when inputs or predictions shift over time. PSI, K-S, Jensen-Shannon, Wasserstein distances with severity grading and Evidently HTML reports.
+  </Card>
+  <Card title="Survival Analysis" icon="hourglass-half">
+    Estimate time-to-event for customers, devices, contracts (lifelines). Useful for churn timing, lifetime, and reliability analysis.
+  </Card>
+  <Card title="Graph Analysis" icon="diagram-project">
+    Community detection (Louvain, Greedy, Label Propagation), centrality, and path analysis over your relational data.
+  </Card>
+  <Card title="Embeddings" icon="brain">
+    Train Word2Vec / Doc2Vec embeddings on your corpus for downstream similarity, clustering, and search.
+  </Card>
+  <Card title="Correlation & Trend" icon="arrows-left-right">
+    Discover drivers and relationships between metrics.
+  </Card>
+</CardGroup>
+
+---
+
+## Running an analysis
+
+You can run analytics from the dashboard or through your AI agents.
+
+### From the dashboard
+
+1. Go to **Data** > **Analytics**
+2. Select the table you want to analyze
+3. Choose the analysis type (trends, forecasting, anomalies, etc.)
+4. Select the columns to include
+5. Click **Run Analysis**
+
+### Through agents
+
+Your agents can run analytics as part of their workflow. For example, an agent could automatically run anomaly detection on new transaction data and flag suspicious records for review.
+
+### In automated pipelines
+
+Set up scheduled pipelines that run analytics on a regular basis. For example, a daily pipeline could forecast next week's demand and send the results to your team.
+
+---
+
+## Understanding your results
+
+Every analysis returns:
+
+- **Clear results** -- The actual findings: predictions, clusters, anomalies, trends, etc.
+- **Visualizations** -- Charts and graphs ready to display on your dashboard
+- **Confidence scores** -- How confident the model is in its predictions
+- **Plain-language explanation** -- An AI-generated summary that explains what the results mean in business terms
+
+<Tip>
+  Enable the "Include explanation" option to get an AI-generated narrative that explains the results in plain language. This is especially helpful for sharing insights with non-technical team members.
+</Tip>
+
+---
+
+## Analysis types in detail
+
+### Trend analysis
+
+Determine whether a metric is increasing, decreasing, or stable over time. Get the trend direction, rate of change, and statistical confidence.
+
+**Example:** "Is our average order value trending up or down over the last 6 months?"
+
+### Forecasting
+
+Predict future values based on historical patterns. Specify how far ahead you want to forecast, and the platform generates predictions with confidence intervals.
+
+**Example:** "Forecast daily revenue for the next 14 days."
+
+### Anomaly detection
+
+Scan your data for records that are significantly different from the norm. The platform flags anomalies and tells you what makes them unusual.
+
+**Example:** "Find unusual transactions in the last 30 days."
+
+### Clustering
+
+Group your records into natural segments without predefined categories. The platform automatically determines the optimal number of groups and describes what makes each group distinct.
+
+**Example:** "Segment our customers based on purchase behavior."
+
+### Classification
+
+Predict which category a new record belongs to, based on patterns in your historical data. See prediction confidence and which factors matter most.
+
+**Example:** "Predict churn risk for each customer based on their activity."
+
+### Correlation
+
+Find which metrics are related to each other and how strongly. Identify the top factors driving a particular outcome.
+
+**Example:** "What factors correlate most with customer satisfaction?"
+
+---
+
+## Automatic model selection
+
+You don't need to choose a specific algorithm. DEHA ONE automatically selects the best approach based on:
+
+- Your data size (TabPFN for small, LightGBM for large)
+- The type of analysis you requested
+- The nature of your columns (numeric, categorical, time-series)
+- For forecasting: seasonality, sample count, and trend signal (StatsForecast vs Prophet vs NeuralForecast)
+
+The platform chooses from multiple algorithms and falls back to alternatives if the first choice doesn't fit your data.
+
+---
+
+## MLflow model registry
+
+Trained models are registered, versioned, and promoted through a built-in **MLflow** registry:
+
+- **Train** a model from any dataset
+- **Register** it with a name and a description
+- **Promote** between stages: `Staging`, `Production`, or any custom alias
+- **Predict** against any registered version at any stage
+- **SHAP explanations** for every prediction (Tree explainer for tree models, Kernel explainer otherwise)
+- **A/B test** two model versions in production with weighted traffic
+
+You can have multiple versions of the same model coexisting -- one in production, one in staging being evaluated, and one in development being trained.
+
+---
+
+## Drift detection
+
+Once a model is in production, monitor it for drift:
+
+- **Input drift** — has the distribution of features shifted vs. the training set?
+- **Output drift** — have the predictions shifted vs. the validation set?
+- **Concept drift** — has the relationship between inputs and outputs changed?
+
+Statistical tests used:
+
+- **PSI** (Population Stability Index) — production-standard for monitoring
+- **Kolmogorov-Smirnov** — non-parametric distribution comparison
+- **Jensen-Shannon** divergence — symmetric distribution distance
+- **Wasserstein** distance — geometric distance between distributions
+
+Reports come with **severity grading** (green / yellow / red) and an Evidently HTML report you can open in the dashboard or share with stakeholders.
+
+---
+
+## Data profiling
+
+Before running an analysis, you can generate a profile of your data to understand what you are working with:
+
+- Per-column statistics (averages, ranges, distributions)
+- Missing data analysis
+- Outlier detection
+- Cardinality and uniqueness
+- Overall data quality score
+
+This helps you identify data quality issues before they affect your analysis results. See [Data Quality](/data/data-quality) for the full quality toolset.

@@ -1,0 +1,138 @@
+---
+title: "Transform Data"
+api: "POST https://api.deha.one/data/transform"
+description: "Execute a parameterized SQL transformation using Jinja2 templates."
+---
+
+Executes a parameterized SQL transformation using Jinja2 templates. Supports conditional SQL blocks, dynamic column lists, and optional result materialization to a target table.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="sql_template" type="string" required>
+  Jinja2 SQL template string.
+</ParamField>
+<ParamField body="params" type="object" default="{}">
+  Template parameters for variable substitution.
+</ParamField>
+<ParamField body="target_table" type="string">
+  If set, materializes the result into this table. When provided, `records` will be empty and `record_count` reflects rows written.
+</ParamField>
+<ParamField body="max_rows" type="integer" default="10000">
+  Maximum rows to return. Maximum allowed value is 100,000.
+</ParamField>
+
+## Jinja2 Template Features
+
+| Syntax | Description | Example |
+|--------|-------------|---------|
+| `{{ param }}` | Parameter injection | `WHERE status = '{{ status }}'` |
+| `{% if ... %}` | Conditional SQL blocks | `{% if include_deleted %}AND deleted = false{% endif %}` |
+| `{% for ... %}` | Dynamic column/filter lists | `{% for col in columns %}{{ col }},{% endfor %}` |
+| `{{ table('name') }}` | Sanitized table name reference | `FROM {{ table('orders') }}` |
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the transformation completed successfully.
+</ResponseField>
+<ResponseField name="data.status" type="string">
+  Transform status: `success` or `error`.
+</ResponseField>
+<ResponseField name="data.records" type="array">
+  Result rows. Empty when `target_table` is specified.
+</ResponseField>
+<ResponseField name="data.record_count" type="integer">
+  Number of rows returned or written.
+</ResponseField>
+<ResponseField name="data.columns" type="array">
+  Column names in the result set.
+</ResponseField>
+<ResponseField name="data.duration_ms" type="number">
+  Transformation duration in milliseconds.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid template or blocked SQL statement |
+| 401 | Missing or invalid authentication |
+| 500 | Template rendering or execution error |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/data/transform" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "sql_template": "SELECT * FROM {{ table(\"orders\") }} WHERE status = '\''{{ status }}'\''",
+    "params": {"status": "active"},
+    "target_table": "active_orders"
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/data/transform",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "sql_template": "SELECT * FROM {{ table('orders') }} WHERE status = '{{ status }}'",
+        "params": {"status": "active"},
+        "target_table": "active_orders"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/data/transform",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      sql_template: "SELECT * FROM {{ table('orders') }} WHERE status = '{{ status }}'",
+      params: { status: "active" },
+      target_table: "active_orders"
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "status": "success",
+    "records": [],
+    "record_count": 250,
+    "columns": ["id", "product", "status"],
+    "duration_ms": 45.2
+  }
+}
+```

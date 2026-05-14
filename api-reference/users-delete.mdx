@@ -1,0 +1,70 @@
+---
+title: "Delete User"
+api: "DELETE https://api.deha.one/api/v1/users/{user_id}/{user_id}"
+description: "Delete a user profile from your user."
+---
+
+Permanently deletes a user profile from your user. Requires `admin` or `owner` role. This action cannot be undone.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="user_id" type="string" required>
+  The user identifier to delete.
+</ParamField>
+
+## Response
+
+Returns `204 No Content` on successful deletion.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing or invalid authentication |
+| 403 | Admin or owner role required |
+| 404 | User not found |
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE "https://api.deha.one/api/v1/users/acme_corp/auth0%7Cxyz789" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.delete(
+    "https://api.deha.one/api/v1/users/acme_corp/auth0|xyz789",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/users/acme_corp/auth0%7Cxyz789",
+  {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>

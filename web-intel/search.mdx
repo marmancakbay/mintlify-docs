@@ -1,0 +1,122 @@
+---
+title: "Web Search"
+sidebarTitle: "Search"
+description: "Search 13 providers in parallel with one normalized result set, deduplication, and relevance reranking."
+icon: "magnifying-glass"
+---
+
+DEHA ONE's search service fans your query out to 13 providers in parallel, deduplicates URLs, and re-scores results so the most relevant ones float to the top.
+
+---
+
+## The 13 providers
+
+| Provider | Best for | Free tier? |
+|---|---|---|
+| **Tavily** | AI-native general web search optimized for LLM context | 1K queries/month |
+| **GDELT** | News and events across 65+ languages, ~3-month window | Free |
+| **Brave Search** | Independent, spam-filtered general web index | Free with key |
+| **SerpAPI - Google** | Organic Google SERP results | Paid (cheapest tier OK) |
+| **SerpAPI - Google News** | Fresh news with date filtering | Paid |
+| **SerpAPI - Google Places** | Local business listings (no reviews) | Paid |
+| **SerpAPI - Google Reviews** | Reviews for a single place | Paid |
+| **SerpAPI - Google Shopping** | Product listings with pricing | Paid |
+| **SerpAPI - Google Trends** | Time-series interest data + related queries | Paid |
+| **Twitter (TwitterAPI.io)** | Tweets with engagement metadata | Paid |
+| **YouTube (SerpAPI)** | Video listings | Paid |
+| **YouTube Data API** | Views, likes, captions, channel info | 10K units/day free |
+| **Sikayetvar** | Turkish complaint platform (scraped) | Free |
+
+You only enable the providers you have keys for. The platform skips any provider whose key is missing and proceeds with the rest.
+
+---
+
+## What a search returns
+
+Every result, regardless of provider, comes back in a unified schema:
+
+| Field | Meaning |
+|---|---|
+| `url` | The deduplicated URL (trailing slash and fragments stripped) |
+| `title` | Page title |
+| `snippet` | Provider-supplied excerpt |
+| `provider` | Which provider returned it |
+| `provider_score` | The raw score the provider gave |
+| `published_at` | When the page was published (when known) |
+| `relevance_score` | The platform's reranked score (0..1) |
+
+The reranker blends three signals:
+
+- **40%** provider score
+- **30%** keyword match against the query
+- **30%** recency (newer = higher)
+
+You can adjust the weights or disable the rerank if you want raw provider output.
+
+---
+
+## Caching
+
+Search results are cached for 30 minutes per `(user, query, provider set)` tuple. Repeated queries within the cache window do not consume credits.
+
+---
+
+## Monitor mode
+
+Long-running monitors run a query on a schedule (typically every 15 minutes to a few hours) and emit a CloudEvent whenever **new URLs** appear -- not seen in any previous run.
+
+Monitors are cheaper (2 credits each) and ideal for:
+
+- Brand mention tracking
+- Competitor watch
+- Regulatory and news alerts
+- Outage detection from social signals
+
+Pair a monitor with a [scheduled pipeline](/automations/scheduling) and a [Slack channel](/channels/slack) to get notifications without polling code.
+
+---
+
+## Example: brand watch every morning
+
+```yaml
+pipeline: brand-watch-morning
+trigger:
+  type: cron
+  expression: "0 8 * * *"
+
+steps:
+  - type: web_discover
+    query: '"DEHA ONE" OR "deha.one"'
+    providers: [tavily, google_news, twitter, sikayetvar]
+    max_per_provider: 10
+
+  - type: web_scrape
+    urls: ${previous.urls}
+    max_urls: 5
+    mode: markdown
+
+  - type: llm
+    prompt: |
+      Summarize the following mentions in 5 bullets, flag anything that
+      looks like a complaint, and identify any factual errors.
+    input: ${previous.results}
+
+  - type: publish
+    channel: slack
+    target: "#brand-watch"
+    text: ${previous.summary}
+```
+
+DEHA can generate exactly this pipeline from one sentence. Once deployed, it runs every morning, costs a handful of credits, and surfaces real signal without you doing anything.
+
+---
+
+## Bring your own keys
+
+Provider keys are vaulted per user. You can:
+
+- Use your own keys (recommended for production -- your quota, your billing)
+- Use platform-provided keys for prototyping (subject to platform rate limits)
+- Mix and match: e.g. your own SerpAPI key but platform Tavily for spillover
+
+See [Security & Vault](/security/byok-and-vault) for how vaulting works.

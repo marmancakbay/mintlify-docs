@@ -1,0 +1,68 @@
+---
+title: "Public Webhook"
+api: "POST /webhook/{user_id}/{path}"
+description: "Unauthenticated webhook ingress for external providers."
+---
+
+Receives webhook callbacks from external providers such as WhatsApp, Telegram, and custom integrations. This endpoint requires no authentication and is designed for public-facing webhook URLs that you register with third-party services.
+
+The `{path}` is matched against your user's route definitions. Only routes marked as public are accessible through this endpoint.
+
+<Note>
+All standard HTTP methods are supported: GET, POST, PUT, DELETE, PATCH, HEAD, and OPTIONS. The method used depends on the external provider's requirements.
+</Note>
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="path" type="string" required>
+  The webhook path to match against your route definitions (e.g., `whatsapp`, `telegram/events`).
+</ParamField>
+
+## Setting Up Webhooks
+
+1. Define a public route in your user configuration via the Dashboard.
+2. Register the webhook URL with your external provider using the format: `https://api.deha.one/webhook/{user_id}/{path}`
+3. The platform will automatically route incoming webhook events to the appropriate handler.
+
+## Rate Limiting
+
+Rate limiting is applied per IP address and route. The limit is configured per route in your user configuration.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `404` | No matching public route found for the given path |
+| `405` | HTTP method not allowed for the matched route |
+| `429` | Rate limit exceeded |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/webhook/acme_corp/whatsapp" \
+  -H "Content-Type: application/json" \
+  -d '{"entry": [{"changes": [{"value": {"messages": [...]}}]}]}'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/webhook/acme_corp/whatsapp",
+    json={"entry": [{"changes": [{"value": {"messages": []}}]}]}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/webhook/acme_corp/whatsapp",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ entry: [{ changes: [{ value: { messages: [] } }] }] })
+  }
+);
+```
+</CodeGroup>

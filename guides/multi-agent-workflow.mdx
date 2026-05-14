@@ -1,0 +1,112 @@
+---
+title: "Multi-Agent Workflows"
+sidebarTitle: "Multi-Agent Workflows"
+description: "Set up a team of specialized AI agents that work together, with a smart router directing questions to the right expert."
+icon: "sitemap"
+---
+
+## What You Will Build
+
+Create a team of specialized agents -- one for billing, one for technical support, one for general questions -- coordinated by a smart router agent that automatically directs each customer to the right expert.
+
+<Info>
+Before you begin, make sure you have:
+- A DEHA ONE workspace with the [first agent guide](/guides/first-agent) completed
+- An understanding of what different types of customer questions you receive
+</Info>
+
+---
+
+<Steps>
+
+### Plan Your Agent Team
+
+Start by identifying the different types of questions your customers ask. Each category becomes a specialized agent.
+
+**Example team:**
+
+| Agent | Handles |
+|-------|---------|
+| **Billing Agent** | Invoices, payments, refunds, subscriptions |
+| **Technical Agent** | Troubleshooting, bugs, configuration help |
+| **General Agent** | Company info, policies, general questions |
+| **Router Agent** | Analyzes each message and sends it to the right specialist |
+
+### Create Specialized Agents
+
+Create each specialist agent using DEHA or the dashboard (see [Create Your First Agent](/guides/first-agent)).
+
+**Using DEHA:**
+
+> "Create a billing support agent that handles invoice inquiries, payment questions, refund requests, and subscription management. It should be precise and professional."
+
+> "Create a technical support agent that helps with product troubleshooting, bug reports, and integration issues. It should ask clarifying questions and be patient."
+
+Each agent gets its own focused system prompt, so it becomes an expert in its domain.
+
+### Create the Router Agent
+
+The router agent is the front door for all customer conversations. It analyzes each message and delegates to the right specialist.
+
+**Using DEHA:**
+
+> "Create a router agent that analyzes incoming messages and delegates to the right specialist: billing_agent for payment and invoice questions, technical_agent for technical issues, and support_agent for general questions. It should handle greetings itself without delegating."
+
+The router agent uses AI to understand intent and automatically routes the conversation -- customers see a single, seamless experience without knowing multiple agents are involved.
+
+### Set the Router as Your Default Agent
+
+1. Go to **Settings > Channels** in the dashboard.
+2. For each channel (WhatsApp, Telegram, Web Chat), set the **default agent** to your router agent.
+3. **Publish** your configuration.
+
+The specialist agents do not need to be assigned to any channel directly -- the router handles calling them behind the scenes.
+
+### Test the Routing
+
+Send different types of questions through any connected channel and verify they go to the right specialist:
+
+- "I need a refund for my last invoice" -- should go to the billing agent
+- "The API is returning 500 errors" -- should go to the technical agent
+- "What are your business hours?" -- should go to the general agent
+- "Hello!" -- the router should handle this directly
+
+<Check>
+Test with at least one question for each specialist area. Check the **Timeline** in the dashboard to verify which agent handled each message.
+</Check>
+
+</Steps>
+
+---
+
+## How It Works
+
+The routing is transparent to your customers. Here is what happens behind the scenes:
+
+1. A customer sends a message through any channel.
+2. The router agent analyzes the message to understand the intent.
+3. The router delegates to the appropriate specialist agent.
+4. The specialist processes the request (using its own tools, knowledge base, etc.).
+5. The response flows back through the router to the customer.
+
+The customer sees a single, coherent conversation throughout.
+
+## Tips for Effective Multi-Agent Setups
+
+- **Keep specialist agents focused.** Each agent should have a clear, non-overlapping domain.
+- **Write clear descriptions.** The router uses the agent descriptions to decide who handles each request, so make them specific.
+- **Handle edge cases.** Tell the router what to do when a question spans multiple domains (e.g., "I have a billing question about a technical feature").
+- **Test with ambiguous questions.** Try messages that could go to multiple agents and adjust descriptions until routing is accurate.
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Human Review Gates" icon="user-check" href="/guides/human-review-gates">
+    Add human approval steps for sensitive agent responses.
+  </Card>
+  <Card title="Scheduled Automations" icon="clock" href="/guides/scheduled-automations">
+    Automate recurring tasks with scheduling.
+  </Card>
+</CardGroup>

@@ -1,0 +1,107 @@
+---
+title: "Roles and Permissions"
+description: "Manage your team with five built-in roles that control what each member can see and do."
+icon: "users"
+---
+
+DEHA ONE uses role-based access to manage what each team member can do on the platform. Every user is assigned one of five roles, each with a clear set of permissions.
+
+---
+
+## Available roles
+
+### Owner
+
+Full control over the organization. Owners can manage billing, invite and remove users, configure agents, deploy changes, and access all platform features. Every organization has at least one Owner.
+
+### Admin
+
+Full operational access. Admins can create and edit configurations, deploy changes to production, test agents, and manage day-to-day operations. Admins cannot manage billing.
+
+### Supervisor
+
+Supervisors can view and edit configurations -- agents, pipelines, channels, and data sources -- but they cannot deploy changes to production. This provides a natural review layer: Supervisors prepare changes, and Admins or Owners deploy them.
+
+### Agent
+
+Agents are your frontline team members. They can view dashboards, handle customer conversations, and respond to human review requests from AI agents. They cannot modify configurations.
+
+### Viewer
+
+Read-only access to dashboards, analytics, and reports. Viewers cannot modify anything on the platform. Use this role for managers, executives, or external partners who need visibility without edit access.
+
+---
+
+## Permissions at a glance
+
+| Permission | Owner | Admin | Supervisor | Agent | Viewer |
+|-----------|-------|-------|------------|-------|--------|
+| View dashboards and reports | Yes | Yes | Yes | Yes | Yes |
+| Handle conversations and reviews | Yes | Yes | Yes | Yes | -- |
+| Create and edit configurations | Yes | Yes | Yes | -- | -- |
+| Deploy changes to production | Yes | Yes | -- | -- | -- |
+| Test configurations | Yes | Yes | -- | -- | -- |
+| Manage team members | Yes | Yes | -- | -- | -- |
+| Manage billing | Yes | -- | -- | -- | -- |
+
+---
+
+## Managing your team
+
+### Inviting new users
+
+Owners and Admins can invite new team members:
+
+1. Go to **Settings** > **Team**
+2. Click **Invite Member**
+3. Enter their email address
+4. Select the appropriate role
+5. Send the invitation
+
+The new member will receive an email with instructions to sign in via SSO.
+
+### Changing a user's role
+
+To change an existing team member's role:
+
+1. Go to **Settings** > **Team**
+2. Find the team member
+3. Click their current role to change it
+4. Select the new role
+
+<Info>
+  The same person can have different roles in different organizations. For example, someone might be an Admin in one organization and a Viewer in another.
+</Info>
+
+### Removing a user
+
+To remove a team member:
+
+1. Go to **Settings** > **Team**
+2. Find the team member
+3. Click **Remove**
+
+Their access is revoked immediately.
+
+---
+
+## Human review permissions
+
+When an AI agent flags a response for human review, the review request may specify a minimum role level. For example, a sensitive approval might require a Supervisor or above, while a routine review could be handled by any Agent.
+
+| Required level | Who can respond |
+|---------------|----------------|
+| Agent | Agent, Supervisor, Admin, Owner |
+| Supervisor | Supervisor, Admin, Owner |
+| Admin | Admin, Owner |
+| Owner | Owner only |
+
+---
+
+## Best practices
+
+- **Follow least privilege.** Assign each team member the minimum role they need. Most team members should be Agents or Viewers.
+- **Limit Owner and Admin roles.** Only assign these to people who genuinely need full access.
+- **Use Supervisor for team leads.** Supervisors can prepare configuration changes without the risk of deploying untested changes to production.
+- **Use Viewer for stakeholders.** Give read-only access to managers and partners who need to see dashboards without the ability to change anything.
+- **Review roles regularly.** Periodically check your team list and remove or downgrade access for people who no longer need it.

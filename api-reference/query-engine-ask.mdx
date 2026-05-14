@@ -1,0 +1,147 @@
+---
+title: "Ask Question"
+api: "POST https://api.deha.one/query/ask"
+description: "Convert a natural language question to SQL and get results."
+---
+
+Converts a natural language question into a SQL query using AI, executes it against your data warehouse, and returns the results. Optionally includes an AI-generated explanation of the results.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="question" type="string" required>
+  Natural language question (e.g., "What are the top 10 best-selling products?").
+</ParamField>
+<ParamField body="explain" type="boolean" default="false">
+  Whether to include an AI-generated explanation of the results.
+</ParamField>
+<ParamField body="format" type="string" default="json">
+  Result format: `json` (array of objects), `table` (markdown table), or `summary` (text summary).
+</ParamField>
+<ParamField body="limit" type="integer" default="100">
+  Maximum number of rows to return. Maximum allowed value is 10,000.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the query completed successfully.
+</ResponseField>
+<ResponseField name="data.status" type="string">
+  Query status: `success` or `error`.
+</ResponseField>
+<ResponseField name="data.query_mode" type="string">
+  Mode used for the query (`text_to_sql`).
+</ResponseField>
+<ResponseField name="data.generated_sql" type="string">
+  The SQL query that was generated from your natural language question and executed.
+</ResponseField>
+<ResponseField name="data.records" type="array">
+  Result rows as JSON objects.
+</ResponseField>
+<ResponseField name="data.columns" type="array">
+  Column names in the result set.
+</ResponseField>
+<ResponseField name="data.total_count" type="integer">
+  Total matching rows (before LIMIT is applied).
+</ResponseField>
+<ResponseField name="data.has_more" type="boolean">
+  Whether more rows exist beyond the limit.
+</ResponseField>
+<ResponseField name="data.explanation" type="string">
+  AI-generated natural language explanation of the results. Only present when `explain` is `true`.
+</ResponseField>
+<ResponseField name="data.duration_ms" type="number">
+  Total query execution time in milliseconds.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid question or unable to generate SQL |
+| 401 | Missing or invalid authentication |
+| 500 | Query execution error |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/query/ask" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "question": "What are the top 10 best-selling products this month?",
+    "explain": true,
+    "limit": 10
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/query/ask",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "question": "What are the top 10 best-selling products this month?",
+        "explain": True,
+        "limit": 10
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/query/ask",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      question: "What are the top 10 best-selling products this month?",
+      explain: true,
+      limit: 10
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "status": "success",
+    "query_mode": "text_to_sql",
+    "generated_sql": "SELECT product_name, SUM(quantity) as total_sold FROM orders WHERE date >= '2026-03-01' GROUP BY product_name ORDER BY total_sold DESC LIMIT 10",
+    "records": [
+      {"product_name": "Widget Pro", "total_sold": 1250}
+    ],
+    "columns": ["product_name", "total_sold"],
+    "total_count": 10,
+    "has_more": false,
+    "explanation": "The top-selling product this month is Widget Pro with 1,250 units sold.",
+    "duration_ms": 230.5
+  }
+}
+```

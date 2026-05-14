@@ -1,0 +1,93 @@
+---
+title: "WebSocket"
+description: "Real-time event streaming via WebSocket connection."
+---
+
+Establishes a WebSocket connection for receiving real-time, user-scoped events from the platform. Events include HITL notifications, query results, analytics results, pipeline status updates, and agent responses.
+
+## Connection
+
+```
+wss://api.deha.one/ws/events?user_id={user_id}&user_id={user_id}
+```
+
+Both `user_id` and `user_id` are required query parameters.
+
+## Authentication
+
+The WebSocket connection requires a valid JWT token passed during the HTTP upgrade handshake via the `Authorization` header or as a query parameter.
+
+## Event Format
+
+All events are delivered as JSON messages:
+
+```json
+{
+  "type": "hitl.notification",
+  "id": "evt-uuid",
+  "timestamp": "2026-03-15T10:00:00Z",
+  "session_id": "session-abc",
+  "data": {
+    "workflow_id": "wf-001",
+    "ai_response": "Generated response text",
+    "user_message": "Original user question"
+  }
+}
+```
+
+## Event Types
+
+| Type | Description |
+|------|-------------|
+| `hitl.notification` | New HITL approval or handover notification |
+| `data.query_result` | Data query result from Data Explorer |
+| `data.profile_result` | Data profiling result |
+| `analysis.result` | Analytics/ML analysis result |
+| `pipeline.status` | Pipeline execution status update |
+| `session.status` | Session status change |
+
+## Client Messages
+
+The client can send JSON messages to the server:
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `ping` | Keepalive ping. Server responds with `{"type": "pong"}` | `{"type": "ping"}` |
+| `subscribe` | Subscribe to specific event channels | `{"type": "subscribe", "channels": ["data", "hitl"]}` |
+
+<Note>
+The WebSocket connection is user-scoped. Each connection only receives events for the authenticated user. Connections are automatically cleaned up on disconnect.
+</Note>
+
+<CodeGroup>
+```python Python
+import asyncio
+import websockets
+
+async def listen():
+    uri = "wss://api.deha.one/ws/events?user_id=acme_corp&user_id=user_123"
+    headers = {"Authorization": f"Bearer {jwt_token}"}
+    async with websockets.connect(uri, extra_headers=headers) as ws:
+        async for message in ws:
+            print(f"Event: {message}")
+
+asyncio.run(listen())
+```
+
+```javascript Node.js
+const ws = new WebSocket(
+  "wss://api.deha.one/ws/events?user_id=acme_corp&user_id=user_123"
+);
+
+ws.onopen = () => console.log("Connected");
+ws.onmessage = (event) => console.log("Event:", JSON.parse(event.data));
+ws.onclose = () => console.log("Disconnected");
+
+// Send keepalive ping every 30 seconds
+setInterval(() => {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "ping" }));
+  }
+}, 30000);
+```
+</CodeGroup>

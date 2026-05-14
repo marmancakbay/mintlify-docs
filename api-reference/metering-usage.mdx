@@ -1,0 +1,98 @@
+---
+title: "Get Usage"
+api: "GET https://api.deha.one/metering/usage"
+description: "Get monthly usage summary for your user."
+---
+
+Returns your user's monthly credit usage summary with a breakdown by event type and lifetime total.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField query="month" type="string">
+  Month in `YYYYMM` format. Defaults to the current month.
+</ParamField>
+
+## Response
+
+<ResponseField name="user_id" type="string">
+  Your user identifier.
+</ResponseField>
+<ResponseField name="month" type="string">
+  Month in `YYYYMM` format.
+</ResponseField>
+<ResponseField name="total_credits" type="number">
+  Total credits consumed during this month.
+</ResponseField>
+<ResponseField name="breakdown" type="object">
+  Credits per event type. Common types include `llm_request`, `api_call`, `vector_search`, `code_execution`, `message_sent`, `record_write`, and `record_query`.
+</ResponseField>
+<ResponseField name="all_time_credits" type="number">
+  Lifetime total credit consumption across all months.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid month format |
+| 401 | Missing or invalid authentication |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/metering/usage?user_id=acme_corp&month=202603" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/metering/usage",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    params={"user_id": "acme_corp", "month": "202603"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/metering/usage?user_id=acme_corp&month=202603",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "user_id": "acme_corp",
+  "month": "202603",
+  "total_credits": 12345.67,
+  "breakdown": {
+    "llm_request": 10000.0,
+    "api_call": 2000.0,
+    "vector_search": 300.0,
+    "message_sent": 45.67
+  },
+  "all_time_credits": 98765.43
+}
+```

@@ -1,0 +1,88 @@
+---
+title: "List Tasks"
+api: "GET https://api.deha.one/analytics/tasks"
+description: "List all supported analysis tasks and their requirements."
+---
+
+Returns a list of all supported ML analysis tasks, including which engines support each task and whether a target column is required.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Always `true` for this endpoint.
+</ResponseField>
+<ResponseField name="data.tasks" type="array">
+  Array of task objects, each containing `name`, `engine` (supported engines), and `requires_target` (whether a target column is needed).
+</ResponseField>
+
+## Supported Tasks
+
+| Task | Engines | Target Required | Description |
+|------|---------|----------------|-------------|
+| `classification` | auto, tabpfn, lightgbm | Yes | Predict categorical labels |
+| `regression` | auto, tabpfn, lightgbm | Yes | Predict continuous values |
+| `clustering` | statistical | No | Group data into clusters |
+| `anomaly_detection` | statistical | No | Detect outliers and anomalies |
+| `forecasting` | lightgbm | Yes | Time series prediction |
+| `trend_analysis` | statistical | Yes | Linear trend detection |
+| `correlation` | statistical | No | Feature correlation analysis |
+| `summarization` | statistical | No | Descriptive statistics summary |
+
+<CodeGroup>
+```bash cURL
+curl "https://api.deha.one/analytics/tasks" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.get(
+    "https://api.deha.one/analytics/tasks",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/analytics/tasks",
+  {
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "tasks": [
+      {"name": "classification", "engine": "auto/tabpfn/lightgbm", "requires_target": true},
+      {"name": "regression", "engine": "auto/tabpfn/lightgbm", "requires_target": true},
+      {"name": "clustering", "engine": "statistical", "requires_target": false},
+      {"name": "anomaly_detection", "engine": "statistical", "requires_target": false},
+      {"name": "forecasting", "engine": "lightgbm", "requires_target": true},
+      {"name": "trend_analysis", "engine": "statistical", "requires_target": true},
+      {"name": "correlation", "engine": "statistical", "requires_target": false},
+      {"name": "summarization", "engine": "statistical", "requires_target": false}
+    ]
+  }
+}
+```

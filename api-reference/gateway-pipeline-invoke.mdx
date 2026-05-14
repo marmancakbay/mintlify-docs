@@ -1,0 +1,124 @@
+---
+title: "Invoke Pipeline"
+api: "POST /api/v1/agent/{user_id}/pipeline/{pipeline_name}/invoke"
+description: "Synchronously invoke a multi-step pipeline and receive the result."
+---
+
+Invokes a named pipeline and returns the result synchronously. Pipelines orchestrate multi-step workflows that can include data processing, multiple agent calls, transformations, and integrations.
+
+The request has a **65-second timeout**. For pipelines that may take longer, consider breaking them into smaller steps or using asynchronous patterns.
+
+## Authentication
+
+Requires an API key in the `Authorization` header with the `Bearer` prefix. The key's user must match the URL `{user_id}`.
+
+## Path Parameters
+
+<ParamField path="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField path="pipeline_name" type="string" required>
+  The name of the pipeline to invoke (as defined in your pipeline configuration).
+</ParamField>
+
+## Request Body
+
+<ParamField body="message" type="string" required>
+  The input message or trigger for the pipeline.
+</ParamField>
+<ParamField body="session_id" type="string">
+  Optional session identifier. Auto-generated if omitted.
+</ParamField>
+<ParamField body="context" type="object">
+  Optional key-value context passed to the pipeline. Available to all steps during execution.
+</ParamField>
+
+## Response
+
+<ResponseField name="reply" type="string">
+  The pipeline's output text.
+</ResponseField>
+<ResponseField name="session_id" type="string">
+  The session identifier used for this execution.
+</ResponseField>
+<ResponseField name="trace_id" type="string">
+  Trace identifier for debugging and support inquiries.
+</ResponseField>
+<ResponseField name="pipeline_name" type="string">
+  The name of the pipeline that was executed.
+</ResponseField>
+<ResponseField name="model" type="string">
+  The LLM model used (if applicable).
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Invalid or missing API key |
+| `403` | API key user does not match URL user |
+| `404` | Pipeline not found |
+| `429` | Rate limit exceeded |
+| `504` | Pipeline did not complete within the 65-second timeout |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/api/v1/agent/acme_corp/pipeline/sentiment_routing/invoke" \
+  -H "Authorization: Bearer dh_live_a1b2c3d4e5f6..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Analyze customer feedback for Q1",
+    "context": {
+      "department": "sales",
+      "quarter": "Q1-2026"
+    }
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/api/v1/agent/acme_corp/pipeline/sentiment_routing/invoke",
+    headers={"Authorization": "Bearer dh_live_a1b2c3d4e5f6..."},
+    json={
+        "message": "Analyze customer feedback for Q1",
+        "context": {
+            "department": "sales",
+            "quarter": "Q1-2026"
+        }
+    },
+    timeout=65
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/agent/acme_corp/pipeline/sentiment_routing/invoke",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer dh_live_a1b2c3d4e5f6...",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Analyze customer feedback for Q1",
+      context: {
+        department: "sales",
+        quarter: "Q1-2026"
+      }
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "reply": "Sentiment analysis complete. 78% positive, 15% neutral, 7% negative. Key themes: product quality (positive), shipping speed (negative), customer service (positive).",
+  "session_id": "api-abc123",
+  "trace_id": "trc-1710000000-d4e5f6",
+  "pipeline_name": "sentiment_routing",
+  "model": "gpt-4o"
+}
+```

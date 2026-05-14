@@ -1,0 +1,84 @@
+---
+title: "Delete Schedule"
+api: "DELETE https://api.deha.one/scheduler/schedules/{id}"
+description: "Delete a dynamically created schedule."
+---
+
+Removes a dynamically created schedule. Schedules defined in your user's YAML configuration cannot be deleted through the API -- they must be removed from the configuration.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The schedule identifier to delete (e.g., `acme_corp:daily_report:a1b2c3`).
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the schedule was deleted successfully.
+</ResponseField>
+<ResponseField name="data.schedule_id" type="string">
+  The deleted schedule identifier.
+</ResponseField>
+<ResponseField name="data.message" type="string">
+  Confirmation message.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing or invalid authentication |
+| 404 | Schedule not found |
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE "https://api.deha.one/scheduler/schedules/acme_corp:daily_report:a1b2c3" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp"
+```
+
+```python Python
+import httpx
+
+response = httpx.delete(
+    "https://api.deha.one/scheduler/schedules/acme_corp:daily_report:a1b2c3",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/scheduler/schedules/acme_corp:daily_report:a1b2c3",
+  {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp"
+    }
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "schedule_id": "acme_corp:daily_report:a1b2c3",
+    "message": "Schedule removed"
+  }
+}
+```

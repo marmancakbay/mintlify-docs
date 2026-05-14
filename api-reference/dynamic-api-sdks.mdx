@@ -1,0 +1,236 @@
+---
+title: "SDK Examples"
+description: "Python and TypeScript snippets for sync, async, and streaming invocations."
+---
+
+The Dynamic API is plain HTTP — any language with an HTTP client can use it. These snippets cover the three modes with production-ready patterns (timeouts, retries, streaming parsers, webhook verification).
+
+## Python
+
+<CodeGroup>
+```python Sync
+import httpx
+
+BASE = "https://api.deha.one"
+API_KEY = "dh_live_..."
+USER = "acme_corp"
+
+def invoke_pipeline(name: str, payload: dict) -> dict:
+    with httpx.Client(timeout=65) as client:
+        r = client.post(
+            f"{BASE}/api/v1/pipelines/{USER}/{name}/invoke",
+            headers={
+                "Authorization": f"Bearer {API_KEY}",
+                "X-User-Id": USER,
+                "Content-Type": "application/json",
+            },
+            json=payload,
+        )
+        r.raise_for_status()
+        return r.json()
+
+result = invoke_pipeline("sentiment_routing", {"message": "Analyze Q1 feedback"})
+print(result["result"])
+```
+
+```python Async + polling
+import time, httpx
+
+def invoke_and_wait(name: str, payload: dict, timeout: float = 120) -> dict:
+    with httpx.Client(timeout=30) as client:
+        ack = client.post(
+            f"{BASE}/api/v1/pipelines/{USER}/{name}/invoke-async",
+            headers={"Authorization": f"Bearer {API_KEY}", "X-User-Id": USER},
+            json=payload,
+        ).raise_for_status().json()
+        trace_id = ack["trace_id"]
+
+        started = time.monotonic()
+        while time.monotonic() - started < timeout:
+            r = client.get(
+                f"{BASE}/api/v1/pipelines/{USER}/{name}/result/{trace_id}",
+                headers={"Authorization": f"Bearer {API_KEY}", "X-User-Id": USER},
+            )
+            if r.status_code == 404:
+                time.sleep(1.0); continue
+            payload = r.json()
+            if payload.get("status") in ("completed", "failed", "error", "timeout"):
+                return payload
+            time.sleep(1.0)
+        raise TimeoutError(f"Invocation {trace_id} did not finish in {timeout}s")
+```
+
+```python Streaming (SSE)
+import httpx, json
+
+def stream_tokens(name: str, payload: dict):
+    with httpx.Client(timeout=None) as client:
+        with client.stream(
+            "POST",
+            f"{BASE}/api/v1/agents/{USER}/{name}/stream",
+            headers={
+                "Authorization": f"Bearer {API_KEY}",
+                "X-User-Id": USER,
+                "Accept": "text/event-stream",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+        ) as resp:
+            resp.raise_for_status()
+            event, data = None, []
+            for line in resp.iter_lines():
+                if not line:
+                    if event and data:
+                        yield event, json.loads("\n".join(data))
+                    event, data = None, []
+                    continue
+                if line.startswith("event: "):
+                    event = line[7:].strip()
+                elif line.startswith("data: "):
+                    data.append(line[6:])
+
+for event, payload in stream_tokens("customer_support", {"message": "Hi"}):
+    if event == "token":
+        print(payload["text"], end="", flush=True)
+    elif event == "final":
+        print("\n[done]", payload["status"])
+```
+</CodeGroup>
+
+## TypeScript
+
+<CodeGroup>
+```typescript Sync
+const BASE = "https://api.deha.one";
+const API_KEY = process.env.DEHA_API_KEY!;
+const USER = "acme_corp";
+
+export async function invokePipeline<T>(name: string, body: unknown): Promise<T> {
+  const r = await fetch(`${BASE}/api/v1/pipelines/${USER}/${name}/invoke`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "X-User-Id": USER,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) throw new Error(`Pipeline ${name} failed: ${r.status}`);
+  return (await r.json()) as T;
+}
+```
+
+```typescript Async + polling
+export async function invokeAndWait<T>(name: string, body: unknown, timeoutMs = 120_000): Promise<T> {
+  const ack = await fetch(`${BASE}/api/v1/pipelines/${USER}/${name}/invoke-async`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "X-User-Id": USER,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  }).then((r) => r.json());
+
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const r = await fetch(
+      `${BASE}/api/v1/pipelines/${USER}/${name}/result/${ack.trace_id}`,
+      { headers: { Authorization: `Bearer ${API_KEY}`, "X-User-Id": USER } },
+    );
+    if (r.status === 404) {
+      await new Promise((res) => setTimeout(res, 1000));
+      continue;
+    }
+    const payload = await r.json();
+    if (["completed", "failed", "error", "timeout"].includes(payload.status)) {
+      return payload as T;
+    }
+    await new Promise((res) => setTimeout(res, 1000));
+  }
+  throw new Error(`Invocation ${ack.trace_id} timed out`);
+}
+```
+
+```typescript Streaming (SSE, browser-safe)
+export async function* streamAgent(name: string, body: unknown) {
+  const r = await fetch(`${BASE}/api/v1/agents/${USER}/${name}/stream`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "X-User-Id": USER,
+      "Accept": "text/event-stream",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!r.body) throw new Error("No response body");
+
+  const reader = r.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) return;
+    buffer += decoder.decode(value, { stream: true });
+    let sep;
+    while ((sep = buffer.indexOf("\n\n")) !== -1) {
+      const chunk = buffer.slice(0, sep);
+      buffer = buffer.slice(sep + 2);
+      let event = "message";
+      const lines: string[] = [];
+      for (const line of chunk.split("\n")) {
+        if (line.startsWith("event: ")) event = line.slice(7).trim();
+        else if (line.startsWith("data: ")) lines.push(line.slice(6));
+      }
+      if (lines.length > 0) yield { event, data: JSON.parse(lines.join("\n")) };
+    }
+  }
+}
+
+for await (const { event, data } of streamAgent("customer_support", { message: "Hi" })) {
+  if (event === "token") process.stdout.write(data.text);
+  if (event === "final") console.log("\n[done]", data.status);
+}
+```
+</CodeGroup>
+
+## Webhook verification
+
+<CodeGroup>
+```python Python
+import hmac, hashlib
+from fastapi import FastAPI, Request, HTTPException
+
+app = FastAPI()
+SECRET = "your-webhook-secret"  # from your vault
+
+@app.post("/deha/webhook")
+async def on_deha(request: Request) -> dict:
+    body = await request.body()
+    sig = request.headers.get("x-deha-signature", "")
+    expected = "sha256=" + hmac.new(SECRET.encode(), body, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, sig):
+        raise HTTPException(401, "bad signature")
+    # Idempotency: dedupe on X-Deha-Delivery-Id before side effects.
+    return {"ok": True}
+```
+
+```typescript TypeScript
+import express from "express";
+import { createHmac, timingSafeEqual } from "node:crypto";
+
+const app = express();
+const SECRET = process.env.DEHA_WEBHOOK_SECRET!;
+
+app.post("/deha/webhook", express.raw({ type: "application/json" }), (req, res) => {
+  const expected = "sha256=" + createHmac("sha256", SECRET).update(req.body).digest("hex");
+  const got = String(req.header("x-deha-signature") ?? "");
+  const ok = got.length === expected.length &&
+             timingSafeEqual(Buffer.from(expected), Buffer.from(got));
+  if (!ok) return res.status(401).send("bad signature");
+  // Idempotency: dedupe on x-deha-delivery-id before side effects.
+  res.json({ ok: true });
+});
+```
+</CodeGroup>

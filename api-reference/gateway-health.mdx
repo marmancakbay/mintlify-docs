@@ -1,0 +1,50 @@
+---
+title: "Health Check"
+api: "GET /health"
+description: "Check the health status of the DEHA ONE API."
+---
+
+Returns the current health status of the DEHA ONE API, including uptime and version information. This endpoint requires no authentication and can be used to verify API availability.
+
+## Response
+
+<ResponseField name="service" type="string">
+  Service identifier.
+</ResponseField>
+<ResponseField name="version" type="string">
+  Current API version.
+</ResponseField>
+<ResponseField name="status" type="string">
+  Health status (`healthy` or `unhealthy`).
+</ResponseField>
+<ResponseField name="uptime_seconds" type="number">
+  Time in seconds since the service started.
+</ResponseField>
+
+<CodeGroup>
+```bash cURL
+curl https://api.deha.one/health
+```
+
+```python Python
+import httpx
+
+response = httpx.get("https://api.deha.one/health")
+print(response.json())
+```
+
+```javascript Node.js
+const response = await fetch("https://api.deha.one/health");
+const data = await response.json();
+console.log(data);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "service": "gateway",
+  "version": "1.2.0",
+  "status": "healthy",
+  "uptime_seconds": 3600
+}
+```

@@ -1,0 +1,277 @@
+---
+title: "Step Types"
+sidebarTitle: "Step Types"
+description: "Every action you can include in your automations -- 27 step types covering agents, data, ML, web, IoT, and integration."
+icon: "list-check"
+---
+
+Each step in an automation performs one action. The platform supports **27 step types** organized into seven families. You compose them in any order to build the workflow you need.
+
+<Info>
+  Steps run sequentially by default. Use `fan_out` and `condition` for parallel and conditional flows. Side-effect steps (REST writes, data loads, IoT commands) can be marked with a `compensate` action so they roll back if the pipeline aborts mid-flight.
+</Info>
+
+---
+
+## Family map
+
+| Family | Step types |
+|---|---|
+| **AI & agents** | `agent`, `llm`, `human_review`, `deha` |
+| **Data** | `data_extract`, `data_load`, `data_transform`, `data_query`, `data_validate`, `data_export`, `data_vectorize`, `data_profile`, `dedup`, `schema_map`, `analyze` |
+| **Tools & code** | `rest_api`, `python_code`, `mcp_tool` |
+| **Control flow** | `transform`, `condition`, `fan_out`, `validate` |
+| **Web** | `web_scrape`, `web_discover` |
+| **Optimization** | `optimize` |
+| **Integration** | `publish` |
+
+---
+
+## AI & agents
+
+### `agent` — Run an AI agent
+
+Send a task to one of your AI agents and use its response in later steps.
+
+| Setting | Description |
+|---|---|
+| `agent_name` | Which agent to invoke |
+| `input_mapping` | How to map step inputs to agent payload |
+| `timeout` | Max seconds to wait (default 60) |
+| `wait_for_result` | Sync (default) or fire-and-forget |
+
+### `llm` — Direct LLM call
+
+Skip the agent abstraction and call an LLM directly. Useful for one-shot classification, extraction, or summarization. Supports JSON schema validation on the response.
+
+### `human_review` — Pause for approval
+
+Insert a human-in-the-loop gate. Configurable AI-judge or manual modes, timeout with default action, escalation rules. See [Human review](/automations/human-review).
+
+### `deha` — Embed the DEHA assistant
+
+Use DEHA inside a pipeline. Most common modes: generate / heal a sub-config, answer a platform question, or apply an inventory query inline.
+
+---
+
+## Data
+
+### `data_extract` — Pull from a connector
+
+Run a connector extract (REST API, PostgreSQL, MongoDB, SFTP, file, webhook, etc.). Supports full refresh, incremental, and CDC modes.
+
+### `data_load` — Write into the warehouse
+
+Append, replace, or upsert records into a target table. Honors schema validation if a schema is defined.
+
+### `data_transform` — Reshape data
+
+YAML-driven transformations: extract, map, template, cast, filter, merge, split, validate. The same operations available in the [Transformer service](/data/transformations).
+
+### `data_query` — Run a SQL or text-to-SQL query
+
+Returns rows for downstream steps. Choose between text-to-SQL, direct SQL, semantic, or hybrid mode.
+
+### `data_validate` — Schema validation
+
+Validate rows against a user schema. On violation: stop, quarantine to a side table, or flag-and-continue.
+
+### `data_export` — Push out to a destination
+
+Export to S3, Parquet, CSV, JSON, or directly into a BYOD sink (your warehouse, Mongo, Qdrant).
+
+### `data_vectorize` — Embed and store
+
+Embed rows or text columns and write the vectors to your knowledge base. Field-selective and deduplicated.
+
+### `data_profile` — Profile a table
+
+Per-column statistics, distributions, nulls, outliers, quality scores. Useful as a quality gate before downstream steps.
+
+### `dedup` — Deduplicate
+
+Exact or fuzzy (Splink). Fuzzy mode supports blocking rules, per-field comparators, threshold-based clustering, and optional HITL review of borderline cases. See [Data quality](/data/data-quality).
+
+### `schema_map` — Map between schemas
+
+Heuristic and LLM-assisted field mapping. The platform suggests `source.field → target.field` mappings based on names, types, and example values.
+
+### `analyze` — Run ML
+
+Classification, regression, clustering, forecasting, anomaly, drift, survival, graph. Auto-engine selection per task. See [Analytics](/data/analytics).
+
+---
+
+## Tools & code
+
+### `rest_api` — Call a REST API
+
+Dispatches through the [Integrations](/integrations/overview) service. Auth, retry, vault-resolved credentials. The endpoint must be pre-defined as a `rest_tool` (no inline code).
+
+### `python_code` — Run sandboxed Python
+
+Executes in a Docker sandbox with `standard`, `data`, or `ml` runtime profile. Read-only root FS, no network by default, configurable memory and CPU limits. See [Code execution](/integrations/code-execution).
+
+### `mcp_tool` — Call an MCP tool
+
+Invoke a tool from a connected Model Context Protocol server. See [MCP protocol](/integrations/mcp-protocol).
+
+---
+
+## Control flow
+
+### `transform` — Stateless transform
+
+In-memory transform of step output. Identical operations to `data_transform` but without going through the Data Engine — faster for small payloads.
+
+### `condition` — Branch
+
+Evaluate an expression and pick a branch. Multiple result values map to multiple downstream step IDs.
+
+### `fan_out` — Parallel branches
+
+Run several sub-flows in parallel. Optionally collect their results (fan-in) or fire-and-forget.
+
+### `validate` — Generic validation
+
+Validate the current step output against a JSON schema or business rules.
+
+---
+
+## Web
+
+### `web_scrape` — Fetch and extract
+
+Pull a URL or batch of URLs. Modes: clean markdown, CSS-selector extraction, or LLM-based extraction. See [Web scraping](/web-intel/scraping).
+
+### `web_discover` — Search the web
+
+Fan a query across 13 providers, deduplicate, rerank. Returns a normalized result set. See [Web search](/web-intel/search).
+
+---
+
+## Optimization
+
+### `optimize` — Solve an OR-Tools problem
+
+Linear programming, MIP, vehicle routing, scheduling, assignment, bin packing, or network flow. Returns the solution, a chart, and a plain-English summary. See [Optimization](/optimization/overview).
+
+---
+
+## Integration
+
+### `publish` — Send to a channel or stream
+
+Deliver content to one destination: a channel (WhatsApp, Telegram, Slack, Email, Web), a Redis stream, a webhook, or a saved chart / dashboard render target.
+
+For multi-destination delivery, use `fan_out` with `publish` sub-steps.
+
+---
+
+## Saga compensation
+
+Side-effect steps can declare a **compensate** action. If the pipeline aborts after the step runs, the compensate action is executed in reverse order. Steps that support compensation:
+
+| Step | Default compensate |
+|---|---|
+| `rest_api` | Calls a configured rollback endpoint (if defined) |
+| `publish` | Sends a retraction message (e.g., "ignore the previous notification") |
+| `data_load` (upsert/append) | Deletes inserted rows by idempotency key |
+| `data_export` | Removes exported objects (e.g., S3 keys) |
+
+Read-only steps need no compensation. See the [pipeline checkpoints & saga](/automations/overview) section for how to think about this.
+
+---
+
+## A realistic example using many steps
+
+```yaml
+pipeline: morning-brand-watch
+trigger:
+  type: cron
+  expression: "0 8 * * *"
+  timezone: Europe/Istanbul
+
+steps:
+  - id: search
+    type: web_discover
+    query: '"DEHA ONE" OR "deha.one"'
+    providers: [tavily, google_news, twitter, sikayetvar]
+
+  - id: scrape
+    type: web_scrape
+    urls: ${search.urls[:10]}
+    mode: markdown
+
+  - id: classify
+    type: llm
+    prompt: "Classify each mention as positive, neutral, negative, or complaint."
+    input: ${scrape.results}
+
+  - id: complaints
+    type: condition
+    expression: "len([m for m in classify.output if m.label == 'complaint']) > 0"
+    branches:
+      "true":  notify_complaints
+      "false": archive
+
+  - id: notify_complaints
+    type: publish
+    channel: slack
+    target: "#brand-watch"
+    text: "{{ classify.complaints | count }} new complaints this morning."
+
+  - id: archive
+    type: data_load
+    target: brand_mentions
+    upsert_key: url
+    records: ${classify.output}
+```
+
+DEHA can generate this from one sentence: *"every morning at 8, search for DEHA ONE mentions across Tavily, Google News, Twitter, and Sikayetvar, scrape the top 10, classify them, post complaints to Slack, and archive everything to a warehouse table."*
+
+---
+
+## Combining steps into powerful workflows
+
+The real power of automations comes from combining these steps. The platform handles checkpoints, retries, idempotency, and saga compensation so you don't have to write the plumbing yourself.
+
+<Steps>
+  <Step title="Customer sends a message">
+    Trigger: incoming WhatsApp message
+  </Step>
+  <Step title="Extract message details">
+    `transform` pulls out the message text and customer ID.
+  </Step>
+  <Step title="Check urgency">
+    `condition` uses an LLM transform to classify as urgent / normal / informational.
+  </Step>
+  <Step title="Route to the right agent">
+    `agent` step sends to either the priority or standard support agent.
+  </Step>
+  <Step title="Run a query if needed">
+    If the agent needs order data, a `data_query` step pulls it from the warehouse.
+  </Step>
+  <Step title="Review the response">
+    `human_review` uses an AI judge to score the response quality.
+  </Step>
+  <Step title="Deliver results">
+    `fan_out` sends the approved reply to the customer and a `publish` step archives it.
+  </Step>
+</Steps>
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Automations" icon="plus" href="/automations/creating-automations">
+    Build your first automation step by step.
+  </Card>
+  <Card title="Scheduling" icon="clock" href="/automations/scheduling">
+    All the trigger types and how to schedule pipelines.
+  </Card>
+  <Card title="Human Review" icon="user-check" href="/automations/human-review">
+    Approval gates with AI judge or manual review.
+  </Card>
+</CardGroup>

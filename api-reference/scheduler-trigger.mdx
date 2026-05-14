@@ -1,0 +1,102 @@
+---
+title: "Manual Trigger"
+api: "POST https://api.deha.one/scheduler/trigger"
+description: "Manually trigger a schedule execution."
+---
+
+Manually triggers a schedule to fire immediately, bypassing its normal cron/interval timing. The condition is still evaluated -- if the condition is not met, the trigger is skipped. Useful for testing schedules or forcing an immediate execution.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="schedule_name" type="string" required>
+  The schedule name to trigger.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the trigger was initiated successfully.
+</ResponseField>
+<ResponseField name="data.message" type="string">
+  Confirmation message.
+</ResponseField>
+
+## Credit Cost
+
+Each manual trigger consumes **1 credit**.
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Schedule not found |
+| 401 | Missing or invalid authentication |
+| 500 | Trigger execution error |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/scheduler/trigger" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "schedule_name": "daily_report"
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/scheduler/trigger",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "schedule_name": "daily_report"
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/scheduler/trigger",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      schedule_name: "daily_report"
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "message": "Schedule 'daily_report' triggered manually"
+  }
+}
+```

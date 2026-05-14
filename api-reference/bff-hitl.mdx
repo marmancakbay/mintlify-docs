@@ -1,0 +1,168 @@
+---
+title: "HITL Respond"
+api: "POST https://api.deha.one/api/v1/hitl/{workflow_id}/respond"
+description: "Respond to a pending Human-in-the-Loop approval request."
+---
+
+Respond to a pending HITL (Human-in-the-Loop) workflow. The decision determines whether the AI-generated response is approved, rejected, revised, or the session is taken over by a human operator.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier. Automatically set by the gateway from your JWT.
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Staff user identifier. Automatically set by the gateway from your JWT.
+</ParamField>
+
+## Path Parameters
+
+<ParamField path="workflow_id" type="string" required>
+  The HITL workflow identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="decision" type="string" required>
+  Decision: `approve` (accept AI response), `reject` (discard AI response), `revise` (provide alternative), or `takeover` (human takes control of session).
+</ParamField>
+<ParamField body="message" type="string">
+  Optional message from the staff member.
+</ParamField>
+<ParamField body="content" type="string">
+  Optional replacement text for the AI response. Used with `revise` decision.
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="string">
+  Operation status (`ok`).
+</ResponseField>
+<ResponseField name="workflow_id" type="string">
+  The workflow identifier.
+</ResponseField>
+<ResponseField name="decision" type="string">
+  The decision that was made.
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 401 | Missing authentication headers |
+| 403 | Workflow belongs to a different user |
+| 404 | Workflow not found |
+| 409 | Workflow is no longer pending (already resolved) |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/api/v1/hitl/wf-001/respond" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "X-User-Id: user_123" \
+  -H "Content-Type: application/json" \
+  -d '{"decision": "approve", "message": "Looks good"}'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/api/v1/hitl/wf-001/respond",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp",
+        "X-User-Id": "user_123"
+    },
+    json={"decision": "approve", "message": "Looks good"}
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/api/v1/hitl/wf-001/respond",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "X-User-Id": "user_123",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ decision: "approve", message: "Looks good" })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "status": "ok",
+  "workflow_id": "wf-001",
+  "decision": "approve"
+}
+```
+
+---
+
+## List Pending Requests
+
+`GET https://api.deha.one/api/v1/hitl/pending`
+
+Returns all pending HITL requests for your user.
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `offset` | integer | 0 | Pagination offset |
+| `limit` | integer | 20 | Maximum items per page |
+
+### Response
+
+```json
+{
+  "items": [
+    {
+      "workflow_id": "wf-123",
+      "user_id": "acme_corp",
+      "session_id": "sess-456",
+      "status": "pending",
+      "hitl_type": "approval",
+      "ai_response": "I recommend...",
+      "user_message": "What should I do?",
+      "judge_score": 0.75,
+      "judge_reason": "Low confidence",
+      "required_role": "agent",
+      "channel": "whatsapp",
+      "created_at": 1710000000.0
+    }
+  ],
+  "total": 42
+}
+```
+
+---
+
+## Session Takeover
+
+`POST https://api.deha.one/api/v1/hitl/{workflow_id}/takeover`
+
+Takes over a session from AI control to human control. The session is locked to the staff member.
+
+### Request Body
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `reason` | string | Optional reason for the takeover |
+
+---
+
+## Release Session
+
+`POST https://api.deha.one/api/v1/hitl/{workflow_id}/release`
+
+Releases a session back to AI control after a human takeover.

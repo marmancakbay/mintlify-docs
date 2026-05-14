@@ -1,0 +1,151 @@
+---
+title: "Web Scraping"
+sidebarTitle: "Scraping"
+description: "Fetch any URL and turn it into clean markdown, CSS-extracted JSON, or LLM-extracted structured data."
+icon: "spider-web"
+---
+
+Once you know which URL you want, scraping turns it into something your agents and pipelines can actually use. DEHA ONE's scraper wraps Crawl4AI's Chromium pool with user isolation, per-domain rate limits, content caching, and three extraction strategies.
+
+---
+
+## Three extraction modes
+
+<CardGroup cols={3}>
+  <Card title="Markdown" icon="paragraph">
+    Clean markdown via `fit_markdown` — roughly 67% fewer tokens than raw HTML. Best for agent context.
+    **2 credits / URL**
+  </Card>
+  <Card title="CSS selectors" icon="code">
+    Deterministic, zero-LLM extraction using CSS selectors. Best for known-structure sites.
+    **5 credits / URL**
+  </Card>
+  <Card title="LLM extraction" icon="sparkles">
+    Natural-language extraction prompt with optional JSON schema validation. Best for varied or unknown layouts.
+    **10 credits / URL**
+  </Card>
+</CardGroup>
+
+---
+
+## Built-in profiles
+
+For common page types you do not need to write a single selector. The platform ships profiles that already know what to extract.
+
+| Profile | Fields extracted |
+|---|---|
+| `news_article` | title, content, author, publish date, category |
+| `blog_post` | title, content, author, publish date, tags |
+
+You can extend these or create your own.
+
+---
+
+## Batch mode
+
+Hand the scraper a list of up to 50 URLs and it processes them in parallel, respecting per-domain rate limits. Default pool size is 3 concurrent pages per worker; you can crank this up for high-volume jobs.
+
+Failed URLs do not stop the batch — you get a partial result with success/failure per URL.
+
+---
+
+## Rate limits
+
+Polite by default:
+
+| Domain category | Default limit |
+|---|---|
+| Most sites | 2 requests/second |
+| Twitter / X | 0.5 requests/second |
+| LinkedIn | 0.5 requests/second |
+
+You can override per-domain limits in your user config. Rate limits are enforced with a sliding window per `(user, domain)` pair.
+
+---
+
+## Caching
+
+Each URL response is cached for 1 hour by default (configurable per user). Repeated scrapes of the same URL within the cache window do not consume credits.
+
+---
+
+## Example: structured product extraction
+
+```yaml
+pipeline: extract-product-listings
+steps:
+  - type: web_scrape
+    urls:
+      - "https://example.com/products/category/widgets"
+    mode: css
+    selectors:
+      list: "div.product-card"
+      title: ".product-card .name"
+      price: ".product-card .price"
+      sku:   ".product-card [data-sku]"
+      url:   ".product-card a@href"
+
+  - type: data_load
+    target: product_catalog
+    upsert_key: sku
+    records: ${previous.results.list}
+```
+
+This pipeline scrapes a category page and upserts every product into your data warehouse — zero LLM tokens consumed, fully deterministic.
+
+---
+
+## Example: LLM extraction with schema
+
+```yaml
+pipeline: extract-event-from-page
+steps:
+  - type: web_scrape
+    urls: ${input.url}
+    mode: llm
+    prompt: "Extract the event name, date, venue, and ticket price."
+    schema:
+      event_name:    { type: string, required: true }
+      event_date:    { type: datetime, required: true }
+      venue:         { type: string }
+      ticket_price:  { type: number }
+```
+
+Use LLM extraction when:
+
+- The site layout changes often
+- You only have a few URLs
+- You want fuzzy field matching (e.g. "the venue might be in the page title or in a sidebar")
+
+For high-volume runs, CSS selectors are cheaper and more reliable.
+
+---
+
+## What you can NOT do
+
+- **Bulk web crawling** — the scraper is designed for known URL lists. For crawling sitemaps, use a separate orchestration that feeds URLs into batch mode.
+- **Captcha solving** — pages behind aggressive bot protection may fail. The scraper does not auto-solve captchas.
+- **Authentication beyond simple bearer/cookie injection** — for OAuth-protected content, scrape from a logged-in proxy you control or use a REST API instead.
+
+---
+
+## Combining search + scrape
+
+The most common pattern is **search → top-N URLs → scrape**:
+
+```yaml
+- type: web_discover
+  query: ${input.topic}
+  providers: [tavily, google_news]
+  max_per_provider: 5
+
+- type: web_scrape
+  urls: ${previous.urls[:5]}
+  mode: markdown
+
+- type: vector_ingest
+  collection: news-watch
+  documents: ${previous.results}
+```
+
+This builds a fresh, topic-scoped knowledge base every time it runs — useful for current-events agents that need to answer "what happened today?".

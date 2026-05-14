@@ -1,0 +1,154 @@
+---
+title: "Connecting Data Sources"
+sidebarTitle: "Connecting Data"
+description: "Import data from databases, REST APIs, file uploads, and webhooks into DEHA ONE."
+icon: "plug"
+---
+
+DEHA ONE can pull data from a variety of sources. Whether your data lives in a database, behind an API, in spreadsheet files, or arrives via webhooks, you can connect it to the platform and make it available to your agents and analytics.
+
+---
+
+## Supported data sources
+
+<Tabs>
+  <Tab title="REST APIs">
+    Connect to any REST API to import data. DEHA ONE handles pagination, authentication, and response parsing automatically.
+
+    **Best for:** SaaS platforms, third-party services, custom internal APIs.
+
+    **Supported authentication:**
+    - Bearer token
+    - API key (header or query string)
+    - Basic auth
+    - OAuth2 (with automatic token lifecycle management)
+    - Signed requests (HMAC)
+
+    **Pagination support:** Offset-based, cursor-based, page numbers, and link-header pagination — auto-detected when possible.
+  </Tab>
+  <Tab title="Databases">
+    Connect directly to your relational or document database and read tables, views, or aggregation pipelines.
+
+    **Best for:** Importing structured data from your existing databases. With BYOD, DuckDB can query live without copying.
+
+    **Supported databases:**
+    - **PostgreSQL** 12+
+    - **MySQL** 5.7+
+    - **MSSQL** (SQL Server)
+    - **Oracle**
+    - **SQLite**
+    - **MongoDB** 4.4+ (with aggregation pipelines, read + write)
+  </Tab>
+  <Tab title="Files & SFTP">
+    Upload files directly, point at an S3 bucket, or pull from SFTP with glob patterns.
+
+    **Best for:** One-time imports, spreadsheet data, daily / weekly file drops, partner data exchange.
+
+    **Supported formats:**
+
+    | Format | File types |
+    |--------|-----------|
+    | CSV | `.csv` |
+    | Excel | `.xls`, `.xlsx` |
+    | JSON | `.json` |
+    | JSONL | `.jsonl` |
+    | Parquet | `.parquet` |
+
+    **Transports:** Direct upload, SFTP (with glob, e.g. `/inbox/orders_*.csv`), S3-compatible buckets.
+  </Tab>
+  <Tab title="Webhooks">
+    Receive data pushed to your DEHA ONE endpoint by external systems. The platform verifies HMAC-SHA256 signatures and enforces per-source rate limits.
+
+    **Best for:** Real-time data from systems that push updates (Stripe, GitHub, Shopify, custom services).
+  </Tab>
+</Tabs>
+
+### Bidirectional connectors
+
+Many connectors are bidirectional — you can both **pull** from them and **push** results back. Push modes:
+
+- **Append** — add new records
+- **Replace** — truncate-and-load
+- **Upsert** — insert or update by key
+
+Common use cases:
+
+- Pull from a CRM, transform, push cleaned customer master back to the same CRM
+- Read from a warehouse, run analytics, write predictions to a "scoring" table for downstream apps
+- Sync data between two systems with DEHA ONE as the orchestrator
+
+---
+
+## How to connect a data source
+
+<Steps>
+  <Step title="Choose your source type">
+    From the dashboard, go to **Data** > **Connections** and select the type of data source you want to connect (API, database, file upload, or webhook).
+  </Step>
+  <Step title="Configure the connection">
+    Provide the connection details: URL, credentials, and any specific settings. API keys and passwords are stored securely in your encrypted vault.
+  </Step>
+  <Step title="Test the connection">
+    DEHA ONE will test the connection and confirm it can reach your data source. If there is an issue, you will see a clear error message with troubleshooting guidance.
+  </Step>
+  <Step title="Review the detected schema">
+    The platform automatically detects the structure of your data -- field names, data types, and relationships. You can review and adjust the detected schema before importing.
+  </Step>
+  <Step title="Import your data">
+    Choose your sync mode and start the import. Your data will be loaded into your organization's isolated database.
+  </Step>
+</Steps>
+
+---
+
+## Schema auto-detection
+
+When you connect to a new data source, DEHA ONE automatically analyzes a sample of your data and detects:
+
+- Field names and data types (text, numbers, dates, etc.)
+- Which fields can be empty (nullable)
+- Suggested primary keys
+
+You can use the detected schema as-is or customize it to match your needs before importing.
+
+---
+
+## Sync modes
+
+Choose how your data stays up to date:
+
+| Mode | How it works | Best for |
+|------|-------------|----------|
+| **One-time import** | Pull all records once | Initial data loads, file uploads, reference data |
+| **Incremental** | Pull new and changed records using a persistent cursor (e.g. `updated_at`) | Most production cases |
+| **CDC (change data capture)** | Subscribe to row-level changes from the source (Postgres logical decoding, MySQL binlog, Mongo change streams) | Low-latency, low-overhead sync from supported databases |
+| **Full refresh** | Replace all records on each sync | Small reference datasets that change entirely between syncs |
+
+<Tip>
+  For most production use cases, incremental sync is the best choice. Cursors persist across runs so a failed sync resumes where it left off, and only changed records are pulled.
+</Tip>
+
+### BYOD: skip the import entirely
+
+For databases the platform supports natively (PostgreSQL, MySQL, MongoDB, SQLite), DuckDB can query your warehouse **without copying data into the platform**. You configure the connection once and queries run against your live tables. This is the BYOD model — see [Versioning & BYOD](/data/versioning-and-byod) for details.
+
+---
+
+## Credentials and security
+
+Connection credentials -- API keys, database passwords, OAuth tokens -- are stored in your organization's encrypted vault. They are never exposed in configuration files and are only accessed securely at runtime.
+
+For connectors that use OAuth2, DEHA ONE manages the full token lifecycle, including automatic refresh when tokens expire.
+
+---
+
+## Monitoring your connections
+
+After setting up a connection, you can monitor its status from the dashboard:
+
+- **Last sync time** -- When the most recent import ran
+- **Records imported** -- How many records were pulled in the last sync
+- **Status** -- Whether the connection is healthy or has errors
+- **Sync history** -- A log of all previous sync runs
+
+If a sync fails, DEHA ONE provides diagnostic information to help you identify and fix the issue.

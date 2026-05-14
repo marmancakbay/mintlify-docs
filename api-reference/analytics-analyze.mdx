@@ -1,0 +1,204 @@
+---
+title: "Run Analysis"
+api: "POST https://api.deha.one/analytics/analyze"
+description: "Run an ML analysis task such as classification, regression, clustering, or anomaly detection."
+---
+
+Executes a machine learning analysis task on your data. Supports classification, regression, clustering, anomaly detection, forecasting, trend analysis, correlation, and summarization. The ML engine is selected automatically based on dataset size, or can be specified manually.
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token. `Bearer {your_token}`
+</ParamField>
+<ParamField header="X-User-Id" type="string" required>
+  Your user identifier.
+</ParamField>
+
+## Request Body
+
+<ParamField body="user_id" type="string" required>
+  Your user identifier.
+</ParamField>
+<ParamField body="task" type="string" required>
+  Analysis task: `classification`, `regression`, `clustering`, `anomaly_detection`, `forecasting`, `trend_analysis`, `correlation`, or `summarization`.
+</ParamField>
+<ParamField body="engine" type="string" default="auto">
+  Engine selection: `auto` (selects best engine based on data size), `tabpfn` (zero-shot, up to 10k rows), `lightgbm` (gradient boosting, any size), or `statistical` (SciPy-based).
+</ParamField>
+<ParamField body="table" type="string">
+  Table name to analyze from your data warehouse.
+</ParamField>
+<ParamField body="input_data" type="array">
+  Inline data rows as an array of objects. Use as an alternative to `table`.
+</ParamField>
+<ParamField body="features" type="array">
+  Feature column names to use for analysis.
+</ParamField>
+<ParamField body="target" type="string">
+  Target column name. Required for supervised tasks (classification, regression, forecasting, trend_analysis).
+</ParamField>
+<ParamField body="config" type="object">
+  Task-specific configuration. See configuration options below.
+</ParamField>
+<ParamField body="include_probabilities" type="boolean" default="false">
+  Include per-class probabilities in classification predictions.
+</ParamField>
+<ParamField body="include_explanation" type="boolean" default="false">
+  Generate an AI-powered natural language report of the analysis results.
+</ParamField>
+
+## Task-Specific Configuration
+
+| Task | Config Key | Type | Default | Description |
+|------|-----------|------|---------|-------------|
+| clustering | `n_clusters` | integer | auto (elbow method) | Number of clusters for K-Means |
+| clustering | `algorithm` | string | `kmeans` | Algorithm: `kmeans` or `dbscan` |
+| clustering | `eps` | number | 0.5 | DBSCAN maximum distance |
+| clustering | `min_samples` | integer | 5 | DBSCAN minimum samples |
+| anomaly_detection | `method` | string | `isolation_forest` | Method: `isolation_forest`, `zscore`, or `iqr` |
+| anomaly_detection | `contamination` | number | 0.1 | Expected anomaly ratio (0 to 0.5) |
+| anomaly_detection | `zscore_threshold` | number | 3.0 | Z-score threshold |
+| forecasting | `horizon` | integer | 10 | Number of future steps to forecast |
+| forecasting | `n_lags` | integer | auto | Number of lag features |
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the analysis completed successfully.
+</ResponseField>
+<ResponseField name="data.request_id" type="string">
+  Unique identifier for this analysis request.
+</ResponseField>
+<ResponseField name="data.task" type="string">
+  The analysis task performed.
+</ResponseField>
+<ResponseField name="data.engine" type="string">
+  The ML engine that was used (may differ from requested if `auto` was selected).
+</ResponseField>
+<ResponseField name="data.status" type="string">
+  Result status: `success` or `error`.
+</ResponseField>
+<ResponseField name="data.metrics" type="object">
+  Task-specific metrics. For classification: `accuracy`, `f1_weighted`. For regression: `rmse`, `mae`, `r2`. For clustering: `silhouette_score`, `calinski_harabasz`, `davies_bouldin`.
+</ResponseField>
+<ResponseField name="data.predictions" type="array">
+  Per-record predictions with task-specific fields.
+</ResponseField>
+<ResponseField name="data.feature_importance" type="object">
+  Feature importance scores as `{feature_name: importance_value}`.
+</ResponseField>
+<ResponseField name="data.summary" type="string">
+  AI-generated analysis report. Only present when `include_explanation` is `true`.
+</ResponseField>
+<ResponseField name="data.visualization_data" type="object">
+  Chart-ready JSON for dashboard rendering, containing a `charts` array with chart type, title, and data.
+</ResponseField>
+<ResponseField name="data.duration_ms" type="number">
+  Total analysis duration in milliseconds.
+</ResponseField>
+
+## Credit Costs
+
+| Task | Credits |
+|------|---------|
+| classification | 5 |
+| regression | 5 |
+| forecasting | 4 |
+| clustering | 3 |
+| anomaly_detection | 3 |
+| trend_analysis | 2 |
+| correlation | 2 |
+| summarization | 2 |
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid task, missing target column, or no data available |
+| 401 | Missing or invalid authentication |
+| 500 | Analysis execution error |
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.deha.one/analytics/analyze" \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..." \
+  -H "X-User-Id: acme_corp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "acme_corp",
+    "task": "classification",
+    "table": "customers",
+    "features": ["age", "income", "purchase_count"],
+    "target": "segment",
+    "include_explanation": true
+  }'
+```
+
+```python Python
+import httpx
+
+response = httpx.post(
+    "https://api.deha.one/analytics/analyze",
+    headers={
+        "Authorization": f"Bearer {jwt_token}",
+        "X-User-Id": "acme_corp"
+    },
+    json={
+        "user_id": "acme_corp",
+        "task": "classification",
+        "table": "customers",
+        "features": ["age", "income", "purchase_count"],
+        "target": "segment",
+        "include_explanation": True
+    }
+)
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://api.deha.one/analytics/analyze",
+  {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "X-User-Id": "acme_corp",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      user_id: "acme_corp",
+      task: "classification",
+      table: "customers",
+      features: ["age", "income", "purchase_count"],
+      target: "segment",
+      include_explanation: true
+    })
+  }
+);
+```
+</CodeGroup>
+
+```json Example Response
+{
+  "success": true,
+  "data": {
+    "request_id": "req-a1b2c3",
+    "task": "classification",
+    "engine": "lightgbm",
+    "status": "success",
+    "metrics": {"accuracy": 0.92, "f1_weighted": 0.91},
+    "feature_importance": {"income": 0.45, "purchase_count": 0.35, "age": 0.20},
+    "predictions": [
+      {"index": 0, "prediction": "premium", "confidence": 0.89}
+    ],
+    "summary": "The model achieved 92% accuracy in classifying customer segments...",
+    "visualization_data": {
+      "charts": [
+        {"type": "pie", "title": "Class Distribution", "data": {}},
+        {"type": "bar", "title": "Feature Importance", "data": {}}
+      ]
+    },
+    "duration_ms": 1250.5
+  }
+}
+```
