@@ -5,7 +5,7 @@ description: "Build multi-step workflows that run automatically -- route message
 icon: "wand-magic-sparkles"
 ---
 
-Automations are multi-step workflows that run automatically when something happens in your workspace. They connect AI agents, channels, data sources, optimization, web search, IoT, and business logic into repeatable processes that work around the clock.
+Automations are multi-step workflows that run automatically when something happens in your workspace. They connect AI agents, channels, data sources, optimization, web search, and business logic into repeatable processes that work around the clock.
 
 Instead of manually handling every incoming message or running reports by hand, you define an automation once and let DEHA ONE take care of the rest.
 
@@ -14,7 +14,7 @@ Instead of manually handling every incoming message or running reports by hand, 
 </Info>
 
 <Info>
-  Automations are **durable**. Failures, restarts, and timeouts are handled automatically with retries, failure recovery, and rollback — side-effect steps (REST writes, data loads, publishes, IoT commands) can be reversed if the automation aborts mid-flight.
+  Automations are **durable**. Failures, restarts, and timeouts are handled automatically with retries, failure recovery, and rollback — side-effect steps (REST writes, data loads, publishes) can be reversed if the automation aborts mid-flight.
 </Info>
 
 ---
@@ -74,7 +74,7 @@ Every automation starts with a trigger -- the event that kicks off the workflow.
 | **Cron** | A specific time or recurring interval | Every weekday at 9 AM |
 | **Interval** | Fixed-period repetition | Every 5 minutes |
 | **Date** | One-shot at a specific datetime | At 2026-06-01 14:00 UTC |
-| **Event** | Match on any platform event | A new IoT telemetry frame from sensor X |
+| **Event** | Match on any platform event | A customer message arrives on any channel |
 | **Data change** | Hash / row-count / percentage change on a SQL query | When the `orders` table grows by >5% |
 | **Threshold** | A SQL query crosses a numeric threshold | When daily revenue exceeds 100K |
 | **Webhook** | An external system POSTs to a signed URL | Stripe payment-succeeded event |

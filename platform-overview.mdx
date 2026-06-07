@@ -20,12 +20,10 @@ flowchart TB
     subgraph You["You and your customers"]
         User[Your team & customers]
         Devs[Developers / Apps]
-        Things[IoT devices]
     end
 
     subgraph Entry["How work comes in"]
         Channels[Channels & Web Chat]
-        IoT[IoT inputs]
         API[Your APIs & webhooks]
     end
 
@@ -46,10 +44,8 @@ flowchart TB
     end
 
     User --> Channels
-    Things --> IoT
     Devs --> API
     Channels --> Agents
-    IoT --> Pipelines
     API --> Agents
     API --> Pipelines
     DEHA -.builds.-> Agents
@@ -58,7 +54,7 @@ flowchart TB
     Pipelines <--> Capability
 ```
 
-Every way work comes in -- a customer message, a device reading, an API call -- flows into the **Agents** or **Automations** layer. From there, your agents and automations compose any of the platform's capabilities to get the job done.
+Every way work comes in -- a customer message, a scheduled job, an API call -- flows into the **Agents** or **Automations** layer. From there, your agents and automations compose any of the platform's capabilities to get the job done.
 
 ---
 
@@ -81,7 +77,6 @@ Every way work comes in -- a customer message, a device reading, an API call -- 
 | Call your REST APIs, run Python, or expose tools via MCP | [Integrations](/integrations/overview) |
 | Pause for human approval mid-workflow | [Human Review](/automations/human-review) |
 | Run scheduled or event-driven jobs | [Scheduling](/automations/scheduling) |
-| Ingest sensor data over MQTT, OPC-UA, or Modbus | [IoT Gateway](/iot/overview) |
 | Reach customers on WhatsApp, Telegram, Slack, Email, or Web | [Channels](/channels/overview) |
 
 ---
@@ -110,7 +105,7 @@ DEHA ONE processes data but does not own it. Your business data lives on your ow
 | **Workspaces** | Hard isolation across every layer: data, knowledge, credentials, lineage, billing, and logs. Cross-workspace access is structurally impossible. |
 | **Models** | Pick a model per agent or per call. Use simple aliases (`fast`, `smart`, `cheap`, `reasoning`) and the platform routes -- with cross-provider fallback. |
 | **Versions** | Run multiple versions of an agent at once with weighted traffic. Returning users stay on the same variant. |
-| **Always live** | Every change deploys with zero downtime. Agents, automations, schedules, channels, and devices reconfigure live. |
+| **Always live** | Every change deploys with zero downtime. Agents, automations, schedules, and channels reconfigure live. |
 | **Channels** | One agent serves every channel with the same context, knowledge, and tools, wherever the customer messaged from. |
 
 ---
@@ -143,7 +138,6 @@ DEHA ONE processes data but does not own it. Your business data lives on your ow
 | **Optimization** | Routing, scheduling, assignment, packing, and more | [Optimization →](/optimization/overview) |
 | **Web Intelligence** | Multi-provider search + clean content extraction | [Web Intel →](/web-intel/overview) |
 | **Integrations** | REST tools, sandboxed Python, and MCP | [Integrations →](/integrations/overview) |
-| **IoT & Devices** | MQTT / OPC-UA / Modbus / HTTP / webhook inputs | [IoT →](/iot/overview) |
 | **Channels** | WhatsApp, Telegram, Email, Slack, Web -- unified | [Channels →](/channels/overview) |
 | **Billing & Usage** | Credits, quotas, forecasts, and cost attribution | [Billing →](/billing/overview) |
 | **Security & Trust** | SSO, roles, API keys, vault, isolation, audit | [Security →](/security/overview) |

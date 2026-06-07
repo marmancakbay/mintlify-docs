@@ -1,14 +1,14 @@
 ---
 title: "Building Blocks"
 sidebarTitle: "Building Blocks"
-description: "Every action you can include in your automations -- 60+ building blocks covering agents, data, ML, web, IoT, and integration."
+description: "Every action you can include in your automations -- 60+ building blocks covering agents, data, ML, web, and integration."
 icon: "list-check"
 ---
 
 Each step in an automation performs one action. The platform offers 60+ building blocks organized into seven families. You compose them in any order to build the workflow you need.
 
 <Info>
-  Steps run sequentially by default. Use `fan_out` and `condition` for parallel and conditional flows. Side-effect steps (REST writes, data loads, IoT commands) can be marked with a `compensate` action so they roll back automatically if the automation aborts mid-flight.
+  Steps run sequentially by default. Use `fan_out` and `condition` for parallel and conditional flows. Side-effect steps (REST writes, data loads, publishes) can be marked with a `compensate` action so they roll back automatically if the automation aborts mid-flight.
 </Info>
 
 ---

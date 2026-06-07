@@ -118,15 +118,6 @@
             ]
           },
           {
-            "group": "IoT & Devices",
-            "pages": [
-              "iot/overview",
-              "iot/protocols",
-              "iot/devices-and-schemas",
-              "iot/commands-and-control"
-            ]
-          },
-          {
             "group": "Channels",
             "pages": [
               "channels/overview",
@@ -190,7 +181,6 @@
               "guides/api-access",
               "guides/custom-integrations",
               "guides/optimize-routes-and-schedules",
-              "guides/connect-iot-device",
               "guides/build-dashboard"
             ]
           },
