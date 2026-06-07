@@ -118,9 +118,9 @@ Once you are happy with your agent, make sure your configuration is published:
 - **Test with real questions.** Send the kinds of questions your customers actually ask to see how the agent performs.
 - **Iterate.** Adjust the system prompt based on test results. Small wording changes can significantly improve responses.
 
-<Accordion title="Advanced: YAML configuration reference">
+<Accordion title="Advanced: configuration reference">
 
-Under the hood, agents are defined as YAML configurations. You can view and edit the YAML directly in the dashboard under **Agents > [Your Agent] > YAML Editor**.
+Behind the scenes, every agent is defined as a portable configuration. You can view and fine-tune it directly in the dashboard under **Agents > [Your Agent] > Configuration** using the built-in editor.
 
 ```yaml
 name: "support_agent"
@@ -133,33 +133,12 @@ prompts:
     You are a helpful customer support assistant.
     Be friendly, professional, and concise.
 
-nodes:
-  - id: "main_llm"
-    type: "node_llm"
-    parameters:
-      model: "fast"
-      temperature: 0.3
-      max_tokens: 2048
-      prompt_ref: "system_main"
-      bind_all_tools: true
+model: "fast"
+temperature: 0.3
+max_tokens: 2048
 
-  - id: "tool_executor"
-    type: "node_tool"
-    parameters:
-      allowed_tools: []
-
-edges:
-  - source: "__start__"
-    target: "main_llm"
-  - source: "main_llm"
-    target: "tool_executor"
-    condition: "state.context.has_tool_call == True"
-    priority: 1
-  - source: "tool_executor"
-    target: "main_llm"
-  - source: "main_llm"
-    target: "__end__"
-    priority: 10
+tools:
+  bind_all: true
 ```
 
 </Accordion>

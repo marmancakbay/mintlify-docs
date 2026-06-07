@@ -24,7 +24,7 @@ When you build an AI agent in DEHA ONE, it works the same way regardless of how 
 
 ## Built-in Channels
 
-DEHA ONE comes with ready-to-use adapters for the most popular messaging platforms. All four run in a single host process, share resilience features (retry, circuit breakers, DLQ), and reuse the same agent / pipeline routing.
+DEHA ONE comes with ready-to-use connections for the most popular messaging platforms. They all reuse the same agent and automation routing, with reliable, automatic delivery -- so one agent serves every channel.
 
 <CardGroup cols={2}>
   <Card title="WhatsApp" icon="whatsapp" href="/channels/whatsapp">
@@ -49,7 +49,7 @@ DEHA ONE comes with ready-to-use adapters for the most popular messaging platfor
 DEHA ONE's channel system is designed to be **open and extensible**. The five built-in channels are just the starting point -- any messaging platform, communication tool, or custom interface can be connected as a new channel.
 
 <Info>
-  Every channel normalizes inbound traffic into a single internal **CloudEvent** format. Your agents, automations, and routing rules work with any channel without modification. Adding a new channel is purely a translation problem.
+  Every channel feeds into the same agents, automations, and routing rules, so your setup works across any channel without modification. Adding a new channel never changes the agents you've already built.
 </Info>
 
 ### Channels that can be added

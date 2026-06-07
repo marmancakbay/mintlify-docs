@@ -8,14 +8,14 @@ icon: "shield-halved"
 Privacy regulation (GDPR, KVKK, CCPA) requires you to **know** where personal information lives in your data and **control** how it flows. DEHA ONE includes a managed PII pipeline you can plug into any workflow.
 
 <Info>
-  PII handling runs entirely inside your user. Detection models and rules execute against your data without sending it to any external service.
+  PII handling runs entirely inside your isolated workspace. Detection models and rules execute against your data without sending it to any external service.
 </Info>
 
 ---
 
 ## What gets detected
 
-PII detection is powered by Microsoft Presidio with platform-managed augmentations.
+Automatic PII detection runs across your data, with platform-managed augmentations for additional entity types and locales.
 
 | Entity | Detected as |
 |---|---|
@@ -48,7 +48,7 @@ Once detected, choose how to handle each entity:
 | **Redact** | Remove entirely |
 | **Hash** | One-way hash (SHA-256) — same input always hashes to same output |
 | **Mask** | Show partial (e.g. `0532***45 67`) |
-| **Encrypt** | Two-way symmetric encryption with the user's vault key (reversible) |
+| **Encrypt** | Two-way symmetric encryption with your vault key (reversible) |
 | **Pseudonymize** | Replace with a stable fake (same person → same fake name everywhere) |
 | **Tokenize** | Replace with a vault-stored token that can be detokenized when authorized |
 

@@ -1,14 +1,14 @@
 ---
 title: "Commands & Control"
 sidebarTitle: "Commands & Control"
-description: "Send commands back to devices over MQTT, OPC-UA, or Modbus -- with idempotency, retries, and result tracking."
+description: "Send commands back to devices over MQTT, OPC-UA, or Modbus -- with single-fire guarantees, retries, and result tracking."
 icon: "paper-plane"
 ---
 
 DEHA ONE is not just an inbound platform. For bidirectional protocols you can also send commands to actuators, write to PLC registers, or push notifications back to a device fleet.
 
 <Warning>
-  Commands are real actions on real hardware. Treat them like database writes -- always include an idempotency key and consider human approval (HITL) gates for high-stakes actions.
+  Commands are real actions on real hardware. Treat them like database writes -- always include a single-fire key and consider human-approval gates for high-stakes actions.
 </Warning>
 
 ---
@@ -30,19 +30,19 @@ DEHA ONE is not just an inbound platform. For bidirectional protocols you can al
 ```mermaid
 sequenceDiagram
     participant Pipeline
-    participant Gateway as IoT Gateway
+    participant IoT as IoT layer
     participant Device
-    participant Result as stream:iot:command:result
+    participant Result as Command result
 
-    Pipeline->>Gateway: command (device_id, action, args, idempotency_key)
-    Gateway->>Gateway: Idempotency check (24h TTL)
-    Gateway->>Device: Native protocol frame
-    Device-->>Gateway: ACK or error
-    Gateway->>Result: CloudEvent (success / failure / timeout)
+    Pipeline->>IoT: command (device_id, action, args, single-fire key)
+    IoT->>IoT: Single-fire check (24h window)
+    IoT->>Device: Native protocol frame
+    Device-->>IoT: ACK or error
+    IoT->>Result: Result event (success / failure / timeout)
     Result->>Pipeline: Downstream listeners react
 ```
 
-Every command is wrapped in a CloudEvent with `user_id`, `idempotency_key`, and a `correlation_id` that links it to the result event.
+Every command carries a `user_id`, a single-fire key, and a correlation ID that links it to the result event.
 
 ---
 
@@ -50,9 +50,9 @@ Every command is wrapped in a CloudEvent with `user_id`, `idempotency_key`, and 
 
 | Guarantee | How it works |
 |---|---|
-| **Idempotency** | Same `idempotency_key` within 24 hours = no double-fire. The Gateway returns the first result. |
+| **Single-fire** | Same single-fire key within 24 hours = no double-fire. The first result is returned. |
 | **Timeouts** | Default 30 seconds. Configurable per command. After timeout, a `command.timeout` event is emitted. |
-| **Retries** | Up to 3 retries with exponential backoff for transient protocol errors. Application-level errors (e.g. invalid Modbus address) are not retried. |
+| **Retries** | Up to 3 retries with automatic backoff for transient protocol errors. Application-level errors (e.g. invalid Modbus address) are not retried. |
 | **Authorization** | Only commands declared in the device's `allowed_commands` list are accepted. Anything else returns `command.rejected`. |
 | **Audit** | Every command attempt is logged with caller identity, args (with secrets redacted), result, and timing. |
 

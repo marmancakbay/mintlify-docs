@@ -23,8 +23,8 @@ When a customer asks a question, here is what happens behind the scenes:
   <Step title="Vector search retrieves candidates">
     The vector is compared against every chunk in the collection. The top-N most similar chunks are returned as candidates.
   </Step>
-  <Step title="Reranker re-scores the candidates">
-    A cross-encoder reranker (`ms-marco-MiniLM-L-6-v2`) reads each candidate together with the question and produces a more accurate relevance score. This typically lifts top-1 accuracy by 15-30% over vector similarity alone.
+  <Step title="Semantic reranking re-scores the candidates">
+    Semantic reranking reads each candidate together with the question and produces a more accurate relevance score. This typically lifts top-1 accuracy by 15-30% over similarity alone.
   </Step>
   <Step title="Agent crafts a response">
     Your agent reads the top-scored chunks and uses them to write an answer. The response can include citations back to the source documents so users see where the information came from.
@@ -49,7 +49,7 @@ Different models suit different content. You can configure per-collection embedd
 | **Custom** | Anything in the embedding marketplace | Bring your own model |
 
 <Info>
-  Switching embedding models on an existing collection triggers a **blue-green re-index** — the platform builds the new index in the background, runs a comparison, and only flips reads once the new index is healthy. Zero downtime, zero stale results.
+  Switching embedding models on an existing collection triggers a **zero-downtime re-index** — the platform builds the new index in the background, runs a comparison, and only flips reads once the new index is healthy. Zero downtime, zero stale results.
 </Info>
 
 ---

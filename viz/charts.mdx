@@ -19,8 +19,8 @@ A chart is a single visual — one bar chart, one line chart, one scatter plot. 
 
     Behind the scenes the platform:
 
-    1. Resolves your data source via the Query Engine
-    2. Generates a Vega-Lite spec
+    1. Resolves your data source
+    2. Generates an interactive chart spec
     3. Validates field types and aggregations
     4. Renders the result
     5. Returns both the chart and the spec, so you can tweak or save it
@@ -42,11 +42,11 @@ A chart is a single visual — one bar chart, one line chart, one scatter plot. 
     }
     ```
 
-    Vega-Lite is the platform's native spec format. Best for: precise control, version-controlled chart definitions.
+    Vega-Lite gives you precise, version-controlled chart definitions. Best for: exact control over every encoding.
   </Tab>
 
   <Tab title="Plotly spec">
-    Hand authoring a Plotly figure works too — the renderer normalizes it to Vega-Lite under the hood:
+    Hand authoring a Plotly figure works too — the renderer normalizes it for you:
 
     ```python
     fig = px.line(df, x="month", y="users", title="Monthly Active Users")
@@ -61,7 +61,7 @@ A chart is a single visual — one bar chart, one line chart, one scatter plot. 
 
 ## Chart types supported
 
-Any chart Vega-Lite supports renders out of the box. The most common:
+A wide range of chart types render out of the box. The most common:
 
 | Family | Examples |
 |---|---|
@@ -82,7 +82,7 @@ Any chart Vega-Lite supports renders out of the box. The most common:
 | **PNG** | Email attachments, Slack messages, static reports |
 | **SVG** | Web embeds where you want crisp scaling |
 | **PDF** | Single-page exports, slide decks |
-| **HTML (Vega embed)** | Interactive in-browser rendering with tooltips and zoom |
+| **HTML (interactive embed)** | Interactive in-browser rendering with tooltips and zoom |
 
 You request the format you need; the platform renders and caches it.
 
@@ -103,9 +103,9 @@ Hand-authored specs always win over defaults — you can override anything per c
 
 ## Saving and embedding
 
-A chart you save gets a unique ID, a slug, and a versioned definition stored in the Config Service. From there:
+A chart you save gets a unique ID, a slug, and a versioned definition with full version history. From there:
 
-- **Embed**: `https://embed.deha.one/c/{chart_id}?token=<hs256>` — signed, expiring, revokable
+- **Embed**: `https://embed.deha.one/c/{chart_id}?token=<signed-token>` — signed, expiring, revokable
 - **Reference from an agent**: agents can fetch a saved chart by name and include it in a response
 - **Re-render programmatically**: hit the renderer API with the saved chart ID and a format
 - **Diff across versions**: see exactly what changed between any two versions

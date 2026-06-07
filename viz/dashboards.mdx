@@ -36,7 +36,7 @@ A dashboard is a collection of widgets — charts, tables, big numbers, text blo
 
 Every widget pulls from one of:
 
-- A **SQL query** via the Query Engine
+- A **SQL query** against your data
 - A **saved pipeline result** (refreshed on the pipeline's own cadence)
 - A **knowledge-base search**
 - A **REST API call** via an integration
@@ -64,12 +64,12 @@ You explicitly mark which widgets a filter applies to. Unbound widgets (e.g. a s
 
 ## Versioning
 
-Every dashboard definition is a config artifact under the hood:
+Every dashboard definition is fully versioned:
 
 - Each save creates a new version
 - You can diff any two versions side-by-side
 - Rollback to any previous version with one click
-- Hot reload — viewers see the new version on next refresh without losing scroll position or filter selections
+- Live updates — viewers see the new version on next refresh without losing scroll position or filter selections
 
 ---
 
@@ -78,7 +78,7 @@ Every dashboard definition is a config artifact under the hood:
 Saved dashboards get signed embed URLs that work in any frontend:
 
 ```
-https://embed.deha.one/d/{dashboard_id}?token=<hs256>
+https://embed.deha.one/d/{dashboard_id}?token=<signed-token>
 ```
 
 You control:

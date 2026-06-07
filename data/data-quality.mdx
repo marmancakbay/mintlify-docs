@@ -26,13 +26,13 @@ Most data problems are not analytics problems — they are quality problems. DEH
 | **Replace patterns** | Regex find-and-replace with column scoping |
 | **Strip diacritics** | Normalize accented characters (good for Turkish, Spanish, etc.) |
 
-Operations chain together — declare your cleaning pipeline in YAML once, and every load through the engine applies it consistently.
+Operations chain together — declare your cleaning pipeline in the configuration once, and every load applies it consistently.
 
 ---
 
 ## Validation
 
-Every table has a **schema** (versioned via Config Service). Validation checks:
+Every table has a **schema** (versioned). Validation checks:
 
 - Required fields are present
 - Types match (int vs string, etc.)
@@ -58,9 +58,9 @@ Two levels of dedup:
 
 Drop rows where a key (or composite key) is duplicated. Configurable conflict policy: keep first, keep last, keep newest by timestamp.
 
-### Fuzzy dedup with Splink
+### Fuzzy dedup with intelligent record matching
 
-For "the same customer entered with three different spellings", DEHA ONE wraps [Splink](https://moj-analytical-services.github.io/splink/), a probabilistic entity-resolution engine.
+For "the same customer entered with three different spellings", DEHA ONE applies intelligent record matching — a probabilistic entity-resolution capability.
 
 | Phase | What happens |
 |---|---|
@@ -76,7 +76,7 @@ The output is a `(cluster_id, source_row_id)` mapping you can join back into you
 
 ## Synthetic data
 
-For testing pipelines, training models without leaking PII, or seeding a demo environment, the Data Engine generates synthetic rows via Faker.
+For testing pipelines, training models without leaking PII, or seeding a demo environment, the platform generates realistic synthetic rows.
 
 | Mode | What it does |
 |---|---|

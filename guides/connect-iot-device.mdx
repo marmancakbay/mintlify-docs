@@ -14,9 +14,9 @@ This guide takes you from "I have a sensor" to "my pipeline reacts when the sens
 ```mermaid
 flowchart LR
     Sensor[Sensor / PLC] --> Broker[MQTT broker]
-    Broker --> Gateway[IoT Gateway<br/>user-aware ingest]
+    Broker --> Gateway[DEHA ONE<br/>secure ingest]
     Gateway --> Schema[Validate schema]
-    Schema --> Stream[stream:iot:telemetry]
+    Schema --> Stream[Telemetry feed]
     Stream --> Pipeline[Your pipeline]
 ```
 
@@ -30,9 +30,9 @@ Connections are user-scoped. The simplest path is to ask DEHA:
 
 > "Add an MQTT connection at `mqtts://broker.example.com:8883` named `factory-floor`. Auth with username `mqtt-user-a` and the password from `$vault:factory_mqtt_pwd`. Subscribe to topic `factory/+/telemetry`."
 
-DEHA generates the YAML, vaults the password, and deploys it. The Gateway opens the MQTT connection live -- no restart.
+DEHA generates the configuration, vaults the password, and deploys it. The platform opens the MQTT connection live -- no restart.
 
-The generated YAML looks roughly like:
+The generated configuration looks roughly like:
 
 ```yaml
 iot_connections:
@@ -67,7 +67,7 @@ iot_devices:
       spindle_rpm:    { type: integer, min: 0 }
 ```
 
-Deploy this via DEHA or the dashboard. The device is now expected -- frames matching the schema flow in; frames that don't are tagged and routed to a DLQ.
+Deploy this via DEHA or the dashboard. The device is now expected -- frames matching the schema flow in; frames that don't are tagged and quarantined for review.
 
 ---
 
@@ -77,7 +77,7 @@ In the dashboard:
 
 1. **IoT → Devices** → `cnc-line-3`
 2. Watch the live telemetry counter; the device should turn **online** as soon as the first valid frame arrives
-3. If frames are coming in but failing schema, the **DLQ** tab will show why (missing required field, wrong type, out-of-range value)
+3. If frames are coming in but failing schema, the **Rejected** tab will show why (missing required field, wrong type, out-of-range value)
 
 Common gotchas:
 
@@ -95,7 +95,7 @@ Now build a pipeline that fires on a vibration spike:
 pipeline: vibration-spike-alert
 trigger:
   type: event
-  stream: stream:iot:telemetry
+  source: iot:telemetry
   filter: data.device_id == 'cnc-line-3' && data.vibration_rms > 6.0
   cooldown_seconds: 300
 
@@ -112,7 +112,6 @@ steps:
   - id: anomaly
     type: analyze
     task: anomaly
-    method: isolation_forest
     series: ${window.rows}
 
   - id: gate
@@ -150,7 +149,7 @@ For bidirectional protocols (MQTT, OPC-UA, Modbus), you can also send commands. 
   idempotency_key: "throttle-line-3-${trigger.window_id}"
 ```
 
-The platform deduplicates by `idempotency_key`, so retries do not double-fire the actuator. The command result lands on `stream:iot:command:result`.
+The platform deduplicates by `idempotency_key`, so retries do not double-fire the actuator. The command result is reported back to your pipeline and the device's command history.
 
 See [Commands & Control](/iot/commands-and-control) for the full safety story.
 
@@ -176,4 +175,4 @@ Everything else -- schemas, rate limits, heartbeats, pipelines -- works exactly 
 - **Use tags** (`factory: izmir`, `line: a3`) to filter dashboards and group devices in queries
 - **Set rate limits per device** based on its actual reporting rate (with some headroom). A noisy sensor with a 1 Hz limit cannot DoS the platform.
 - **Use heartbeat events** as pipeline triggers — pipelines that need to "react when a critical sensor goes silent" should listen to the `device.offline` event
-- **Monitor the DLQ** in the IoT dashboard tab. If a device suddenly starts dumping into DLQ, the schema may have drifted (firmware change, hardware swap).
+- **Monitor the Rejected tab** in the IoT dashboard. If a device suddenly starts dumping rejected frames, the schema may have drifted (firmware change, hardware swap).

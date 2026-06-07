@@ -14,11 +14,11 @@ Once you have charts and dashboards, you usually want to **share** them — eith
 Every saved chart and dashboard gets a signed embed URL:
 
 ```
-https://embed.deha.one/c/{chart_id}?token=<hs256>      # chart
-https://embed.deha.one/d/{dashboard_id}?token=<hs256>  # dashboard
+https://embed.deha.one/c/{chart_id}?token=<signed-token>      # chart
+https://embed.deha.one/d/{dashboard_id}?token=<signed-token>  # dashboard
 ```
 
-The token is an HS256-signed JWT that encodes:
+The token is a signed credential that encodes:
 
 - The user ID (enforced at every layer)
 - The chart or dashboard ID
@@ -51,8 +51,8 @@ Schedule any dashboard to render to **PDF or PNG** on a cadence and deliver it t
 
 Each snapshot is stored in the user artifact archive and (optionally) delivered to:
 
-- An **email distribution list** via the Mail adapter
-- A **Slack channel** via the Slack adapter
+- An **email distribution list**
+- A **Slack channel**
 - A **webhook** (any external system)
 - A **REST endpoint** in your own infrastructure
 - The **knowledge base** (for executive search and retrieval)
@@ -70,7 +70,7 @@ A fleet report is one PDF per sub-user, generated in parallel, with:
 - User-archived copies for compliance / SLA evidence
 - Optional differential pages ("what changed since last report")
 
-Fleet reports run inside a Chromium pool with concurrency control, so a report run for 500 users finishes in minutes rather than hours.
+Fleet reports run with managed concurrency control, so a report run for 500 users finishes in minutes rather than hours.
 
 ---
 

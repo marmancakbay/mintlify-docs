@@ -26,9 +26,9 @@ api:
 
 - **Retries** — up to 3 attempts with exponential backoff (1 s → 3 s → 9 s, each with ±25 % jitter).
 - **Retryable conditions** — 5xx responses, 408, 429, and transport/timeout errors.
-- **Non-retryable** — any other 4xx / 3xx status. The message is dead-lettered.
-- **Dead letter** — permanent failures land in the `stream:bff:webhook_dlq` Redis stream.
-- **SSRF guard** — URLs are re-validated on every send (private/loopback/metadata ranges are refused even if DNS is spoofed).
+- **Non-retryable** — any other 4xx / 3xx status. Delivery stops.
+- **Permanent failures** — recorded and surfaced in your dashboard for inspection, so nothing is silently lost.
+- **SSRF guard** — destination URLs are re-validated on every send (private/loopback/internal ranges are refused even if DNS is spoofed).
 
 ## Request headers
 

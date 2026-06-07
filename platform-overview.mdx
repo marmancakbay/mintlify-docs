@@ -7,6 +7,10 @@ icon: "diagram-project"
 
 DEHA ONE is a single platform with many capabilities. This page is the map -- read it once to understand the whole platform, then dive into the section you need.
 
+<Tip>
+  Prefer the story behind the platform? Read [The DEHA ONE Model](/concepts) -- one continuous flow from your intent to a finished outcome.
+</Tip>
+
 ---
 
 ## The big picture
@@ -14,50 +18,47 @@ DEHA ONE is a single platform with many capabilities. This page is the map -- re
 ```mermaid
 flowchart TB
     subgraph You["You and your customers"]
-        User[Customers]
-        Team[Your team]
+        User[Your team & customers]
         Devs[Developers / Apps]
         Things[IoT devices]
     end
 
-    subgraph Edge["Edge"]
-        Channels[Channels<br/>WhatsApp / Telegram / Slack / Email / Web]
-        IoT[IoT Gateway<br/>MQTT / OPC-UA / Modbus / HTTP / Webhook]
-        Gateway[API Gateway<br/>Auth0 + API keys + rate limits]
+    subgraph Entry["How work comes in"]
+        Channels[Channels & Web Chat]
+        IoT[IoT inputs]
+        API[Your APIs & webhooks]
     end
 
     subgraph Brain["Intelligence"]
-        Agents[AI Agents<br/>LangGraph runtime]
-        DEHA[DEHA Assistant<br/>NL to YAML]
-        Pipelines[Automations & Pipelines<br/>27 step types]
+        DEHA[DEHA<br/>your AI assistant]
+        Agents[AI Agents<br/>plan & act]
+        Pipelines[Automations<br/>& pipelines]
     end
 
     subgraph Capability["Capabilities"]
-        Data[Data Engine<br/>SQL / Transform / Profile / PII]
-        Query[Query Engine<br/>Text-to-SQL]
-        Analytics[Analytics<br/>ML / Forecast / Drift]
-        Knowledge[Knowledge Base<br/>RAG]
-        Optimize[Optimizer<br/>OR-Tools]
-        Web[Web Search & Scraping]
-        Tools[Integrations<br/>REST / MCP / Code]
-        Viz[Renderer<br/>Charts / Dashboards / PDF]
+        Idrak[İDRAK<br/>living data map]
+        Data[Data & Analytics<br/>connect / ask / predict]
+        Knowledge[Knowledge Base]
+        Optimize[Optimization]
+        Web[Web Intelligence]
+        Tools[Integrations]
+        Sunu[Reports & Presentations]
     end
 
     User --> Channels
     Things --> IoT
-    Team --> Channels
-    Devs --> Gateway
+    Devs --> API
     Channels --> Agents
     IoT --> Pipelines
-    Gateway --> Agents
-    Gateway --> Pipelines
+    API --> Agents
+    API --> Pipelines
     DEHA -.builds.-> Agents
     DEHA -.builds.-> Pipelines
     Agents <--> Capability
     Pipelines <--> Capability
 ```
 
-Every external entry point (channel, device, API call) flows into the **Agents** or **Pipelines** layer. From there, agents and pipelines compose any of the platform's capabilities to do their job.
+Every way work comes in -- a customer message, a device reading, an API call -- flows into the **Agents** or **Automations** layer. From there, your agents and automations compose any of the platform's capabilities to get the job done.
 
 ---
 
@@ -65,93 +66,94 @@ Every external entry point (channel, device, API call) flows into the **Agents**
 
 | If you want to ... | Use ... |
 |---|---|
-| Talk to customers on WhatsApp / Telegram / Slack / Email / Web | [Channels](/channels/overview) + [Agents](/agents/overview) |
+| Build all of the below by describing it in plain language | [DEHA Assistant](/deha/overview) |
+| See all your data in one map and ask questions across it | [İDRAK -- Living Data Map](/idrak/overview) |
 | Build a multi-step workflow with retries, branching, and rollback | [Automations & Pipelines](/automations/overview) |
-| Ask questions about your database in plain English | [Query Engine -- text-to-SQL](/data/querying-data) |
-| Forecast next quarter's demand or detect anomalies | [Analytics](/data/analytics) |
-| Track when your model's predictions start drifting | [Drift detection](/guides/forecast-and-drift) |
-| Clean, validate, dedup, scrub PII, or generate synthetic data | [Data Engine](/data/data-quality) + [Privacy & PII](/data/privacy-and-pii) |
+| Have agents plan, use tools, and act on your behalf | [AI Agents](/agents/overview) |
+| Ask questions about your database in plain language | [Ask your data](/data/querying-data) |
+| Forecast demand or detect anomalies | [Analytics](/data/analytics) |
+| Clean, validate, deduplicate, or protect personal data | [Data Quality](/data/data-quality) + [Privacy & PII](/data/privacy-and-pii) |
 | Snapshot data with rollback (time-travel) | [Data versioning & BYOD](/data/versioning-and-byod) |
-| Answer questions from PDFs, DOCX, spreadsheets, or webpages | [Knowledge Base](/knowledge-base/overview) |
-| Ingest sensor data over MQTT, OPC-UA, or Modbus | [IoT Gateway](/iot/overview) |
+| Answer questions from documents, spreadsheets, or webpages | [Knowledge Base](/knowledge-base/overview) |
 | Solve routing, scheduling, assignment, or packing problems | [Optimization](/optimization/overview) |
-| Search the web (Google, Tavily, Brave, YouTube, complaints sites) | [Web Search](/web-intel/search) |
-| Scrape webpages into clean markdown or structured JSON | [Web Scraping](/web-intel/scraping) |
-| Generate charts from plain English or export PDF dashboards | [Visualizations & Reports](/viz/overview) |
+| Search the web and turn any link into clean content | [Web Intelligence](/web-intel/overview) |
+| Generate charts, dashboards, and polished PDF reports | [Reports & Presentations](/viz/overview) |
 | Call your REST APIs, run Python, or expose tools via MCP | [Integrations](/integrations/overview) |
 | Pause for human approval mid-workflow | [Human Review](/automations/human-review) |
-| Run scheduled jobs (cron, intervals, events, data changes) | [Scheduling](/automations/scheduling) |
-| Build all of the above by chatting in plain English | [DEHA Assistant](/deha/overview) |
+| Run scheduled or event-driven jobs | [Scheduling](/automations/scheduling) |
+| Ingest sensor data over MQTT, OPC-UA, or Modbus | [IoT Gateway](/iot/overview) |
+| Reach customers on WhatsApp, Telegram, Slack, Email, or Web | [Channels](/channels/overview) |
 
 ---
 
 ## Bring Your Own Data and Keys
 
-DEHA ONE processes data but does not own it. Your business data lives in your warehouse.
+DEHA ONE processes data but does not own it. Your business data lives on your own infrastructure.
 
 **BYOD (Bring Your Own Data)**
-- Connectors: PostgreSQL, MySQL, MSSQL, Oracle, SQLite, MongoDB, REST, SFTP, CSV / Excel / JSON / Parquet, Webhooks
-- External vector store: route to your own Qdrant
-- External archive: store events in your own MongoDB
-- Snapshot sink: time-travel versioning with rollback
+- Connect databases, REST APIs, cloud storage, and files (CSV, Excel, JSON, Parquet) and webhooks
+- Results sink back to your own databases and storage -- the platform keeps only the operational layer
+- Route to your own vector store and your own archive
+- Snapshot versioning with time-travel and rollback
 
 **BYOK (Bring Your Own Keys)**
-- LLM providers: OpenAI, Anthropic, Google (including Vertex AI with your GCP service account), DeepSeek, self-hosted
-- Embedding providers: OpenAI, Google, HuggingFace, custom
-- Tool credentials: OAuth2, API keys, signed webhooks -- all vaulted and never logged
+- Bring your own AI provider credentials, including self-hosted models
+- Embeddings, completions, and tools run on your accounts
+- Tool credentials (OAuth2, API keys, signed webhooks) are vaulted and never logged
 
 ---
 
-## Multi-channel, multi-user, multi-model
+## Multi-user, multi-model, always live
 
 | Dimension | How it works |
 |---|---|
-| **Channels** | One agent serves every channel. Same context, same knowledge, same tools, regardless of where the user messaged from. |
-| **Users** | Hard isolation across every layer: data, vectors, vault, lineage, billing, logs. Cross-user access is structurally impossible. |
-| **Models** | Pick a model per agent or per call. Use semantic aliases (`fast`, `smart`, `cheap`, `reasoning`) and the platform routes -- with cross-provider fallback chains. |
-| **Versions** | Run multiple versions of an agent simultaneously with weighted traffic. Sticky routing keeps a returning user on the same variant. |
-| **Hot reload** | Every config change deploys atomically with zero downtime. Pipeline endpoints, schedules, channels, IoT devices all reconfigure live. |
+| **Workspaces** | Hard isolation across every layer: data, knowledge, credentials, lineage, billing, and logs. Cross-workspace access is structurally impossible. |
+| **Models** | Pick a model per agent or per call. Use simple aliases (`fast`, `smart`, `cheap`, `reasoning`) and the platform routes -- with cross-provider fallback. |
+| **Versions** | Run multiple versions of an agent at once with weighted traffic. Returning users stay on the same variant. |
+| **Always live** | Every change deploys with zero downtime. Agents, automations, schedules, channels, and devices reconfigure live. |
+| **Channels** | One agent serves every channel with the same context, knowledge, and tools, wherever the customer messaged from. |
 
 ---
 
 ## Built-in trust
 
-| Concern | Mitigation |
+| Concern | How DEHA ONE handles it |
 |---|---|
-| Unauthorized access | Auth0 JWT (RS256) + per-user API keys + per-entity keys + IP whitelist (user + per-agent) |
-| Credential leaks | SOPS + age encrypted vault, `$vault:` references, never logged, dual-write to Mongo for durability |
-| Runaway costs | Per-user credit limits, alert thresholds (80% default), overage actions (alert / throttle / block), sliding-window rate limits |
-| Bad agent output | AI judge with 6-dimensional scoring, optional human review gates, full audit log |
-| Data leakage between users | User ID on every record, lineage namespace enforcement, distributed locks, dedicated DuckDB files |
-| Lost messages | Consumer groups, idempotency keys (24h TTL), dead-letter queues, pipeline checkpoints with saga compensation |
-| LLM hallucination | Knowledge base with citations, cross-encoder reranking, judge agents, deterministic JSON schema outputs |
+| Unauthorized access | Single sign-on, per-user and per-entity API keys, IP allow-lists |
+| Credential leaks | Encrypted vault, secure vault references, never logged |
+| Runaway costs | Per-user credit limits, alert thresholds, overage actions (alert / throttle / block), rate limits |
+| Bad agent output | Automatic quality scoring, optional human review gates, full audit log |
+| Data leakage between users | Full per-workspace isolation enforced at every layer |
+| Lost messages | Reliable delivery with automatic retries, failure recovery, and rollback |
+| AI hallucination | Cited answers from your knowledge and data map, semantic reranking, and review gates |
 
 ---
 
 ## What's in the box
 
-| Layer | What it does | Read more |
+| Capability | What it does | Read more |
 |---|---|---|
-| **DEHA Assistant** | Builds and heals platform configurations from natural language | [DEHA →](/deha/overview) |
-| **AI Agents** | LangGraph-based runtime with 19+ node types, interrupts, HITL, multi-agent delegation | [Agents →](/agents/overview) |
-| **Automations & Pipelines** | 27 step types, scheduling, human review, checkpoint / saga | [Automations →](/automations/overview) |
-| **Channels** | WhatsApp, Telegram, Email, Slack, Web -- unified inbound/outbound | [Channels →](/channels/overview) |
-| **Data & Analytics** | Connectors, DuckDB OLAP, text-to-SQL, ML, drift, PII, entity resolution | [Data →](/data/overview) |
-| **Knowledge Base (RAG)** | Multi-format parsing (Docling), embeddings, reranking, BYOD Qdrant | [Knowledge →](/knowledge-base/overview) |
-| **IoT & Devices** | MQTT / OPC-UA / Modbus / HTTP / Webhook with per-device schemas | [IoT →](/iot/overview) |
-| **Optimization** | OR-Tools: routing, scheduling, assignment, packing, network flow | [Optimization →](/optimization/overview) |
-| **Web Intelligence** | 13-provider search + Crawl4AI scraping | [Web Intel →](/web-intel/overview) |
-| **Visualizations & Reports** | Vega-Lite charts, embeds, PDF dashboards, fleet reports | [Viz →](/viz/overview) |
-| **Integrations** | REST tools, sandboxed Python, MCP servers, per-agent MCP endpoints | [Integrations →](/integrations/overview) |
-| **Billing & Usage** | Credits, quotas, forecasts, CSV ledger, cost attribution | [Billing →](/billing/overview) |
-| **Security & Access** | Auth0, RBAC, API keys, vault, IP whitelist, audit | [Security →](/security/overview) |
+| **DEHA Assistant** | Builds and heals your setup from plain language | [DEHA →](/deha/overview) |
+| **İDRAK -- Living Data Map** | One living map of all your data and what it means | [İDRAK →](/idrak/overview) |
+| **AI Agents** | Agents that plan, use tools, act, and delegate | [Agents →](/agents/overview) |
+| **Automations & Pipelines** | A rich library of building blocks, scheduling, human review, automatic recovery | [Automations →](/automations/overview) |
+| **Data & Analytics** | Connectors, ask-your-data, ML, forecasting, drift, privacy & PII | [Data →](/data/overview) |
+| **Knowledge Base** | Multi-format documents into instant, cited answers | [Knowledge →](/knowledge-base/overview) |
+| **Reports & Presentations** | Charts, dashboards, and polished PDF / Word reports | [Reports →](/viz/overview) |
+| **Optimization** | Routing, scheduling, assignment, packing, and more | [Optimization →](/optimization/overview) |
+| **Web Intelligence** | Multi-provider search + clean content extraction | [Web Intel →](/web-intel/overview) |
+| **Integrations** | REST tools, sandboxed Python, and MCP | [Integrations →](/integrations/overview) |
+| **IoT & Devices** | MQTT / OPC-UA / Modbus / HTTP / webhook inputs | [IoT →](/iot/overview) |
+| **Channels** | WhatsApp, Telegram, Email, Slack, Web -- unified | [Channels →](/channels/overview) |
+| **Billing & Usage** | Credits, quotas, forecasts, and cost attribution | [Billing →](/billing/overview) |
+| **Security & Trust** | SSO, roles, API keys, vault, isolation, audit | [Security →](/security/overview) |
 
 ---
 
 ## How to learn the platform
 
-1. **Read the [Quickstart](/quickstart)** -- create your first agent and connect a channel.
+1. **Read the [Quickstart](/quickstart)** -- build your first agent or automation.
 2. **Skim each section's Overview** -- the cards above link to one-page intros.
-3. **Build something small with DEHA** -- describe a use case in plain English and watch it deploy.
+3. **Build something small with DEHA** -- describe a use case in plain language and watch it deploy.
 4. **Walk through a Guide** -- step-by-step tutorials for common scenarios: [Guides →](/guides/first-agent).
 5. **Reference the API** when you start integrating: [API Reference →](/api-reference/overview).

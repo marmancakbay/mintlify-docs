@@ -5,7 +5,7 @@ description: "Bring your own LLM, embedding, and integration keys. Store every c
 icon: "key"
 ---
 
-DEHA ONE is designed to run on **your** API keys and **your** credentials. The vault is the encrypted, user-isolated store that makes this safe.
+DEHA ONE is designed to run on **your** API keys and **your** credentials. The vault is the encrypted, fully isolated store that makes this safe.
 
 ---
 
@@ -45,10 +45,10 @@ At runtime, each service resolves `$vault:<key>` to the actual secret value, wit
 
 ## How it is stored
 
-- **At rest**: AES-256-GCM encryption using SOPS + age
-- **In transit**: TLS to every service
-- **In Redis cache**: short-lived (per request), user-scoped key, never durable
-- **Backup**: dual-written to MongoDB for restart resilience
+- **At rest**: AES-256-GCM encryption in an encrypted vault
+- **In transit**: TLS everywhere
+- **In cache**: short-lived (per request), workspace-scoped, never durable
+- **Backup**: durably replicated for restart resilience
 - **Audit**: every read and every write is logged with caller identity, but the value itself is never recorded
 
 The encryption layer is **content-agnostic** — it works for short tokens, long passphrases, and multi-line JSON blobs (e.g., a full Vertex AI service-account JSON).
@@ -72,7 +72,7 @@ There is no length cap on values. You can paste a full Vertex AI service-account
 
 ### LLM BYOK
 
-Users can supply their own LLM credentials. Once vaulted, the platform compiles them into per-user LiteLLM entries:
+You can supply your own LLM credentials. Once vaulted, the platform compiles them into your own private provider routes:
 
 ```yaml
 llm_providers:
@@ -87,7 +87,7 @@ llm_providers:
     service_account_json: $vault:my_vertex_sa_json
 ```
 
-At call time, the agent uses `smart` or `smart_vertex` and the platform routes via the user's account. Cost: zero platform credits, paid directly to the LLM provider.
+At call time, the agent uses `smart` or `smart_vertex` and the platform routes via your account. Cost: zero platform credits, paid directly to the LLM provider.
 
 ### Embedding BYOK
 
@@ -116,7 +116,7 @@ Beyond vault entries, the platform issues **API keys** for accessing your own ag
 
 | Key scope | What it can access |
 |---|---|
-| **User API key** | Every agent and pipeline for the user |
+| **Account API key** | Every agent and pipeline in your workspace |
 | **Per-agent API key** | Only that one agent |
 | **Per-pipeline API key** | Only that one pipeline |
 

@@ -1,41 +1,30 @@
 ---
-title: "Security"
-description: "How DEHA ONE protects your data, authenticates users, and keeps your account secure."
+title: "Security & Trust"
+description: "How DEHA ONE protects your data, controls access, and keeps your account secure."
 icon: "shield-halved"
 ---
 
-DEHA ONE is built with security at its core. Your data is isolated, your access is controlled, and your credentials are encrypted. This page gives you an overview of how DEHA ONE keeps your account safe.
+DEHA ONE is built with security at its core. Your data stays on your own infrastructure, your workspace is fully isolated, your access is controlled, and your credentials are encrypted. This page is an overview of how DEHA ONE keeps your account safe.
+
+<Info>
+  **Your data. Your cloud. Your rules.** DEHA ONE is built around data sovereignty -- the data side runs on your own infrastructure and the platform keeps only the operational layer. See [Bring Your Own Data](/data/versioning-and-byod).
+</Info>
 
 ---
 
-## Your data is isolated
+## Your workspace is fully isolated
 
-Every organization on DEHA ONE operates in its own isolated environment. User isolation is enforced at every layer:
-
-| Layer | Mechanism |
-|---|---|
-| **Authentication** | JWT carries `user_id`; verified at the Zero-Trust gateway and propagated downstream |
-| **Configuration** | Per-user YAML directory; no cross-user config references |
-| **Data warehouse** | One DuckDB file per user; no shared connections |
-| **MongoDB** | Every query filters on `user_id`; compound indexes enforce it |
-| **Vector store** | Per-user Qdrant collections with mandatory `user_id` filter |
-| **IoT** | Per-user Redis keys, rate limiters, schemas |
-| **Rate limiting** | Per-user counters, per-route, per-entity |
-| **Billing** | Independent credit counters, alerts, quotas per user |
-| **Vault** | User-scoped key namespace `vault:{user_id}:*` |
-| **Streams** | Every event carries `user_id`; routing is user-aware |
-| **Lineage** | Marquez namespace enforced as `deha.user.{user_id}`; cross-user emissions dropped |
+Every organization on DEHA ONE operates in its own isolated workspace. Isolation is enforced at every layer -- your data, your knowledge, your credentials, your configuration, your usage, and your activity history are all kept separate. **Cross-workspace access is structurally impossible**, so one customer can never see another's data, results, or settings.
 
 ---
 
 ## How you sign in
 
-DEHA ONE uses **Auth0** for identity and **Single Sign-On (SSO)** for dashboard access.
+DEHA ONE uses **single sign-on (SSO)** for dashboard access, built on open identity standards (OIDC).
 
-- Sign in through your company's identity provider (Google, Microsoft, Okta, SAML, OIDC)
-- Auth0 JWT (RS256) is verified on every request with a cached JWKS
-- Sessions expire automatically after a period of inactivity
-- New users are auto-provisioned in your user on first sign-in (configurable per role)
+- Sign in through your company's identity provider
+- Sessions are verified on every request and expire automatically after a period of inactivity
+- New team members can be auto-provisioned on first sign-in (configurable per role)
 
 For programmatic access (your apps, CI/CD, integrations), use API keys instead -- see [API Keys](/security/api-keys).
 
@@ -47,7 +36,7 @@ Every team member is assigned a role that determines what they can see and do. D
 
 | Role | What they can do |
 |------|-----------------|
-| **Owner** | Everything, including billing and user management |
+| **Owner** | Everything, including billing and team management |
 | **Admin** | Manage configurations, deploy changes, full operational access |
 | **Supervisor** | Edit configurations (cannot deploy to production) |
 | **Agent** | Handle conversations and human review tasks |
@@ -59,47 +48,45 @@ See [Roles and Permissions](/security/roles-and-permissions) for the full breakd
 
 ## API keys for programmatic access
 
-When you need to connect external systems to DEHA ONE -- such as automation tools, custom applications, or backend services -- you can create API keys from the dashboard. Three scopes are supported:
+When you need to connect external systems to DEHA ONE -- automation tools, custom applications, or backend services -- create API keys from the dashboard. Three scopes are supported:
 
 | Scope | What it can access |
 |---|---|
-| **User key** | Every agent and pipeline for your user |
+| **Account key** | Every agent and pipeline in your workspace |
 | **Per-agent key** | Only one specific agent |
 | **Per-pipeline key** | Only one specific pipeline |
 
 Every key:
 
-- Is SHA-256 hashed at rest (the raw key is shown only once on creation)
-- Honors per-key sliding-window rate limits
-- Supports per-key IP whitelist (user-wide or per-entity)
+- Is securely hashed at rest (the raw key is shown only once, on creation)
+- Honors per-key rate limits
+- Supports a per-key IP allow-list
 - Can be rotated or revoked instantly
-- Is logged with caller-identity audit on every use
+- Is recorded in an audit log on every use
 
 See [API Keys](/security/api-keys) for setup instructions.
 
 ---
 
-## IP whitelist
+## IP allow-lists
 
-Each user and each agent / pipeline can have an IP whitelist. Whitelisted IPs are stored as exact addresses or CIDR ranges (e.g., `203.0.113.42` or `10.0.0.0/24`). Requests from any other IP are rejected at the gateway.
+Your workspace and each individual agent or pipeline can have an IP allow-list, set as exact addresses or ranges. Requests from any other address are rejected before they reach your setup.
 
-- User-level whitelist applies to every endpoint for the user
-- Per-entity whitelist scopes further (only addresses allowed for that agent / pipeline)
-- Max 1000 entries per user (safety cap)
-- Can be managed from the dashboard or via API
+- Account-level allow-lists apply to everything in your workspace
+- Per-agent and per-pipeline allow-lists scope further
+- Manage them from the dashboard or via the API
 
 ---
 
 ## How we protect your credentials
 
-All sensitive values -- API tokens, database passwords, OAuth credentials, GCP service-account JSON, certificates -- are stored in an encrypted vault. Your agents and integrations reference these secrets by name, so the actual values never appear in configuration files.
+All sensitive values -- API tokens, database passwords, OAuth credentials, certificates -- are stored in an encrypted vault. Your agents and integrations reference these secrets by name, so the actual values never appear in your configuration.
 
-- AES-256-GCM encryption at rest via SOPS + age
-- Dual-write to MongoDB for restart resilience
-- Vault references resolved at call time, never logged or traced
-- Per-user audit log of every vault read
+- Strong encryption at rest (AES-256)
+- Secrets are resolved only at the moment they're needed, and are never logged
+- Every vault access is recorded in an audit log
 
-See [BYOK & Vault](/security/byok-and-vault) for the full model, including bringing your own LLM keys.
+See [BYOK & Vault](/security/byok-and-vault) for the full model, including bringing your own AI provider keys.
 
 ---
 
@@ -107,14 +94,14 @@ See [BYOK & Vault](/security/byok-and-vault) for the full model, including bring
 
 All communication with DEHA ONE is encrypted:
 
-- **In transit**: All traffic uses HTTPS (TLS encryption)
-- **At rest**: Sensitive data and secrets are encrypted in storage
+- **In transit**: all traffic uses HTTPS (TLS)
+- **At rest**: sensitive data and secrets are encrypted in storage
 
 ---
 
-## Webhook security
+## Auditable by default
 
-If you receive messages from external channels (WhatsApp, Telegram, Email), each channel uses its own signature verification method to ensure messages are authentic and have not been tampered with.
+Every action, result, and AI decision is recorded and traceable, so you can answer any auditor and adopt AI with confidence. Webhooks from external channels are signature-verified to ensure messages are authentic and untampered.
 
 ---
 
@@ -122,12 +109,12 @@ If you receive messages from external channels (WhatsApp, Telegram, Email), each
 
 <CardGroup cols={2}>
   <Card title="API Keys" icon="key" href="/security/api-keys">
-    Create and manage user, per-agent, and per-pipeline API keys.
+    Create and manage account, per-agent, and per-pipeline API keys.
   </Card>
   <Card title="Roles and Permissions" icon="users" href="/security/roles-and-permissions">
     Understand what each role can do and how to manage your team.
   </Card>
   <Card title="BYOK & Vault" icon="key" href="/security/byok-and-vault">
-    Bring your own LLM, embedding, and integration keys with a fully audited vault.
+    Bring your own AI provider and integration keys with a fully audited vault.
   </Card>
 </CardGroup>

@@ -101,36 +101,36 @@ The evaluator provides a **pass** or **fail** verdict with a clear explanation o
 
 ---
 
-## Self-healing: the Smart Healer
+## Self-healing
 
-When a test fails or a validation error is detected, DEHA's **Smart Healer** kicks in. It owns its own LLM call and has its own playbook of repair strategies — not just "try again," but actual structural fixes informed by what went wrong.
+When a test fails or a validation error is detected, DEHA's **self-healing** kicks in. It does not just "try again" — it diagnoses what went wrong and applies an actual structural fix informed by the failure.
 
-### Seven repair strategies
+### How DEHA fixes issues
 
-| Strategy | When it's used |
+| Fix | When it's used |
 |---|---|
-| **Rephrase prompts** | Agent gave a generic / off-topic response — prompt was too vague |
-| **Adjust tool bindings** | Agent picked the wrong tool — narrow the tool whitelist |
-| **Split into smaller steps** | A pipeline step did too much — break it into smaller, validatable steps |
+| **Rephrase instructions** | Agent gave a generic / off-topic response — its instructions were too vague |
+| **Adjust tool access** | Agent picked the wrong tool — narrow which tools it can use |
+| **Split into smaller steps** | An automation step did too much — break it into smaller, checkable steps |
 | **Add a condition gate** | A step ran when it should not have — insert a precondition |
-| **Retry with backoff** | A transient failure — add a retry policy with jitter |
+| **Retry automatically** | A transient failure — add a retry policy |
 | **Adjust timeouts** | A step took longer than expected — increase the timeout |
-| **Insert an error-recovery node** | An uncaught failure — wrap with `node_error_recovery` |
+| **Add error recovery** | An uncaught failure — wrap the step with a recovery path |
 
 ### Healing memory
 
-Every successful fix is stored as a `(symptom → fix)` pair in a user-scoped memory. The next time a similar failure happens, the Healer tries the proven fix first. Over time, your platform "learns" what tends to fix what.
+Every successful fix is remembered for your workspace. The next time a similar failure happens, DEHA tries the proven fix first. Over time, your platform "learns" what tends to fix what.
 
-### The judge
+### Automatic quality scoring
 
-Before any fix is applied, the **Judge** scores it on six dimensions: relevance, safety, accuracy, compliance, performance, and bias. A fix that scores below threshold on any dimension is rejected and the Healer tries another strategy.
+Before any fix is applied, DEHA scores it for quality — checking relevance, safety, accuracy, compliance, performance, and bias. A fix that falls below the quality bar on any of these is rejected, and DEHA tries another approach.
 
 ### What happens if self-healing fails?
 
 If DEHA cannot fix an issue after several attempts, it will:
 
 1. Report the problem to you with a clear explanation of what was tried
-2. Show you the failed test output and the judge's scores
+2. Show you the failed test output and the quality scores
 3. Suggest next steps or alternative approaches
 4. Offer to roll back any changes that were partially made
 

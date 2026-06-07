@@ -5,7 +5,7 @@ description: "Linear programming, MIP, vehicle routing, scheduling, assignment, 
 icon: "shapes"
 ---
 
-DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools solver tuned for that family. You pick the type that fits your problem; the solver, visualization, and summary are wired up automatically.
+DEHA ONE supports seven problem types out of the box, each backed by an industrial-grade solver tuned for that family. You pick the type that fits your problem; the solver, visualization, and summary are wired up automatically.
 
 ---
 
@@ -15,7 +15,7 @@ DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools
 
 | Aspect | Detail |
 |---|---|
-| **Solver** | GLOP (Simplex / Barrier) |
+| **Method** | Linear programming (Simplex / Barrier) |
 | **Variables** | Continuous |
 | **Speed** | Very fast even for tens of thousands of variables |
 | **Typical problems** | Blending, production planning, transportation, budget allocation |
@@ -31,7 +31,7 @@ DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools
 
 | Aspect | Detail |
 |---|---|
-| **Solver** | SCIP / CBC (branch-and-bound) |
+| **Method** | Mixed-integer programming (branch-and-bound) |
 | **Variables** | Continuous + integer/binary |
 | **Speed** | Hard problems may take time; the platform enforces a 120-second cap |
 | **Typical problems** | Facility location, capital budgeting, crew rostering, inventory with batch sizes |
@@ -47,7 +47,7 @@ DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools
 
 | Aspect | Detail |
 |---|---|
-| **Solver** | Constraint solver with guided local search (CP) |
+| **Method** | Constraint solver with guided local search |
 | **Capabilities** | Capacity, time windows, multi-depot, pickup-and-delivery, dropping nodes with penalties |
 | **Visualization** | Map view (if coordinates) or route diagram |
 | **Typical problems** | Last-mile delivery, field service, waste collection, paratransit |
@@ -63,7 +63,7 @@ DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools
 
 | Aspect | Detail |
 |---|---|
-| **Solver** | CP-SAT (constraint programming with SAT learning) |
+| **Method** | Constraint programming |
 | **Capabilities** | Precedence, no-overlap, cumulative resources, skill matching, shift caps |
 | **Visualization** | Gantt chart |
 | **Typical problems** | Job shop, employee shifts, classroom timetabling, surgery scheduling |
@@ -79,7 +79,7 @@ DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools
 
 | Aspect | Detail |
 |---|---|
-| **Solver** | Hungarian algorithm (`O(n³)`) |
+| **Method** | Optimal assignment matching |
 | **Speed** | Instant for hundreds of items |
 | **Typical problems** | Worker-to-task, driver-to-vehicle, applicant-to-interview, mentor-to-mentee |
 
@@ -94,7 +94,7 @@ DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools
 
 | Aspect | Detail |
 |---|---|
-| **Solver** | CP-SAT with symmetry breaking |
+| **Method** | Constraint programming with symmetry breaking |
 | **Capabilities** | Multiple bin sizes, item incompatibility constraints, weight + volume |
 | **Visualization** | Stacked bin diagram |
 | **Typical problems** | Truck loading, server consolidation, cutting stock, container packing |
@@ -110,7 +110,7 @@ DEHA ONE supports seven problem types out of the box, each backed by an OR-Tools
 
 | Aspect | Detail |
 |---|---|
-| **Solver** | Successive shortest path (min-cost flow) |
+| **Method** | Minimum-cost network flow |
 | **Speed** | Linear in problem size for typical graphs |
 | **Typical problems** | Supply chain, telecom routing, energy grid, transportation networks |
 
@@ -145,4 +145,4 @@ flowchart TD
 - **Use time limits.** A near-optimal solution in 5 seconds usually beats an optimal one in 5 minutes.
 - **Warm start when possible.** If you optimize daily, seed today's run with yesterday's solution.
 - **Soft constraints beat infeasibility.** Adding a penalty for "drop this customer" lets the solver return a useful plan even when demand exceeds capacity.
-- **Validate the input.** Bad data is the most common cause of bad solutions -- use the [Data Engine](/data/data-quality) to clean and validate first.
+- **Validate the input.** Bad data is the most common cause of bad solutions -- use [data quality](/data/data-quality) to clean and validate first.

@@ -24,10 +24,10 @@
         "groups": [
           {
             "group": "Welcome",
-            "pages": ["introduction", "quickstart", "platform-overview"]
+            "pages": ["introduction", "concepts", "platform-overview", "quickstart"]
           },
           {
-            "group": "DEHA AI Assistant",
+            "group": "DEHA · The Assistant",
             "pages": [
               "deha/overview",
               "deha/natural-language-config",
@@ -35,7 +35,16 @@
             ]
           },
           {
-            "group": "AI Agents",
+            "group": "İDRAK · Living Data Map",
+            "pages": [
+              "idrak/overview",
+              "idrak/living-data-map",
+              "idrak/ask-your-data",
+              "idrak/links-and-discovery"
+            ]
+          },
+          {
+            "group": "KURUL · AI Agents",
             "pages": [
               "agents/overview",
               "agents/creating-agents",
@@ -45,24 +54,13 @@
             ]
           },
           {
-            "group": "Automations & Pipelines",
+            "group": "EYLEM · Automations & Pipelines",
             "pages": [
               "automations/overview",
               "automations/creating-automations",
               "automations/step-types",
               "automations/scheduling",
               "automations/human-review"
-            ]
-          },
-          {
-            "group": "Channels",
-            "pages": [
-              "channels/overview",
-              "channels/whatsapp",
-              "channels/telegram",
-              "channels/email",
-              "channels/slack",
-              "channels/web-chat"
             ]
           },
           {
@@ -87,12 +85,12 @@
             ]
           },
           {
-            "group": "IoT & Devices",
+            "group": "SUNU · Reports & Presentations",
             "pages": [
-              "iot/overview",
-              "iot/protocols",
-              "iot/devices-and-schemas",
-              "iot/commands-and-control"
+              "viz/overview",
+              "viz/charts",
+              "viz/dashboards",
+              "viz/embeds-and-reports"
             ]
           },
           {
@@ -111,15 +109,6 @@
             ]
           },
           {
-            "group": "Visualizations & Reports",
-            "pages": [
-              "viz/overview",
-              "viz/charts",
-              "viz/dashboards",
-              "viz/embeds-and-reports"
-            ]
-          },
-          {
             "group": "Integrations",
             "pages": [
               "integrations/overview",
@@ -129,19 +118,39 @@
             ]
           },
           {
-            "group": "Billing & Usage",
+            "group": "IoT & Devices",
             "pages": [
-              "billing/overview",
-              "billing/credits-and-quotas"
+              "iot/overview",
+              "iot/protocols",
+              "iot/devices-and-schemas",
+              "iot/commands-and-control"
             ]
           },
           {
-            "group": "Security & Access",
+            "group": "Channels",
+            "pages": [
+              "channels/overview",
+              "channels/whatsapp",
+              "channels/telegram",
+              "channels/email",
+              "channels/slack",
+              "channels/web-chat"
+            ]
+          },
+          {
+            "group": "Security & Trust",
             "pages": [
               "security/overview",
               "security/api-keys",
               "security/roles-and-permissions",
               "security/byok-and-vault"
+            ]
+          },
+          {
+            "group": "Billing & Usage",
+            "pages": [
+              "billing/overview",
+              "billing/credits-and-quotas"
             ]
           }
         ]
@@ -154,16 +163,6 @@
             "pages": [
               "guides/first-agent",
               "guides/first-automation"
-            ]
-          },
-          {
-            "group": "Channel Setup",
-            "pages": [
-              "guides/setup-whatsapp",
-              "guides/setup-telegram",
-              "guides/setup-email",
-              "guides/setup-slack",
-              "guides/setup-web-chat"
             ]
           },
           {
@@ -194,6 +193,16 @@
               "guides/connect-iot-device",
               "guides/build-dashboard"
             ]
+          },
+          {
+            "group": "Channel Setup",
+            "pages": [
+              "guides/setup-whatsapp",
+              "guides/setup-telegram",
+              "guides/setup-email",
+              "guides/setup-slack",
+              "guides/setup-web-chat"
+            ]
           }
         ]
       },
@@ -208,6 +217,15 @@
             ]
           },
           {
+            "group": "Your Agents & Pipelines as APIs",
+            "pages": [
+              "api-reference/gateway-pipeline-invoke",
+              "api-reference/gateway-agent-invoke",
+              "api-reference/gateway-webhook",
+              "api-reference/gateway-mcp-endpoint"
+            ]
+          },
+          {
             "group": "Dynamic API",
             "pages": [
               "api-reference/dynamic-api-overview",
@@ -215,91 +233,6 @@
               "api-reference/dynamic-api-agent",
               "api-reference/dynamic-api-webhooks",
               "api-reference/dynamic-api-sdks"
-            ]
-          },
-          {
-            "group": "Agents & Pipelines",
-            "pages": [
-              "api-reference/gateway-agent-invoke",
-              "api-reference/gateway-pipeline-invoke",
-              "api-reference/gateway-webhook",
-              "api-reference/gateway-mcp-endpoint",
-              "api-reference/gateway-proxy",
-              "api-reference/gateway-health"
-            ]
-          },
-          {
-            "group": "Configuration",
-            "pages": [
-              "api-reference/config-list",
-              "api-reference/config-get",
-              "api-reference/config-create",
-              "api-reference/config-deploy",
-              "api-reference/config-validate",
-              "api-reference/config-diff",
-              "api-reference/config-rollback"
-            ]
-          },
-          {
-            "group": "Dashboard (BFF)",
-            "pages": [
-              "api-reference/bff-chat",
-              "api-reference/bff-hitl",
-              "api-reference/bff-vault",
-              "api-reference/bff-api-keys",
-              "api-reference/bff-websocket"
-            ]
-          },
-          {
-            "group": "Knowledge Base",
-            "pages": [
-              "api-reference/vector-ingest",
-              "api-reference/vector-search",
-              "api-reference/vector-collections",
-              "api-reference/vector-maintenance"
-            ]
-          },
-          {
-            "group": "Data & Analytics",
-            "pages": [
-              "api-reference/data-engine-query",
-              "api-reference/data-engine-transform",
-              "api-reference/data-engine-export",
-              "api-reference/data-engine-profile",
-              "api-reference/query-engine-ask",
-              "api-reference/query-engine-sql",
-              "api-reference/query-engine-train",
-              "api-reference/analytics-analyze",
-              "api-reference/analytics-tasks",
-              "api-reference/connector-extract",
-              "api-reference/connector-upload",
-              "api-reference/connector-status"
-            ]
-          },
-          {
-            "group": "Billing",
-            "pages": [
-              "api-reference/metering-usage",
-              "api-reference/metering-credits",
-              "api-reference/metering-quotas"
-            ]
-          },
-          {
-            "group": "Scheduling",
-            "pages": [
-              "api-reference/scheduler-create",
-              "api-reference/scheduler-list",
-              "api-reference/scheduler-delete",
-              "api-reference/scheduler-trigger"
-            ]
-          },
-          {
-            "group": "Users",
-            "pages": [
-              "api-reference/users-list",
-              "api-reference/users-create",
-              "api-reference/users-update-role",
-              "api-reference/users-delete"
             ]
           }
         ]

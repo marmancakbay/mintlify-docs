@@ -1,15 +1,15 @@
 ---
 title: "Web Search"
 sidebarTitle: "Search"
-description: "Search 13 providers in parallel with one normalized result set, deduplication, and relevance reranking."
+description: "Search many leading providers in parallel with one normalized result set, deduplication, and relevance reranking."
 icon: "magnifying-glass"
 ---
 
-DEHA ONE's search service fans your query out to 13 providers in parallel, deduplicates URLs, and re-scores results so the most relevant ones float to the top.
+DEHA ONE's search fans your query out to many leading providers in parallel, deduplicates URLs, and re-scores results so the most relevant ones float to the top.
 
 ---
 
-## The 13 providers
+## The providers
 
 | Provider | Best for | Free tier? |
 |---|---|---|
@@ -63,7 +63,7 @@ Search results are cached for 30 minutes per `(user, query, provider set)` tuple
 
 ## Monitor mode
 
-Long-running monitors run a query on a schedule (typically every 15 minutes to a few hours) and emit a CloudEvent whenever **new URLs** appear -- not seen in any previous run.
+Long-running monitors run a query on a schedule (typically every 15 minutes to a few hours) and emit an event whenever **new URLs** appear -- not seen in any previous run.
 
 Monitors are cheaper (2 credits each) and ideal for:
 

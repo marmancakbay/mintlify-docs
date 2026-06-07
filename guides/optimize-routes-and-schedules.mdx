@@ -188,7 +188,7 @@ For 50-100 stops, expect 5-30 seconds. For 500+, you may need to relax `time_lim
 
 ## Variations
 
-- **Live re-optimization**: replace cron trigger with an event trigger on `stream:orders:new` to re-plan in flight
+- **Live re-optimization**: replace the cron trigger with an event trigger on new incoming orders to re-plan in flight
 - **Multi-day rolling plans**: extend horizon to 7 days, with stops floating to the best day in the window
 - **Multi-depot**: declare multiple depots; solver picks the best one per vehicle
 - **Pickup and delivery pairs**: useful for paratransit, courier services, manufacturing logistics

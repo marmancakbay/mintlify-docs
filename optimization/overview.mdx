@@ -5,7 +5,7 @@ description: "Solve routing, scheduling, assignment, packing, and network-flow p
 icon: "route"
 ---
 
-Some problems are too combinatorial for an LLM and too structured for a database query. **Optimization** is where DEHA ONE plugs in Google OR-Tools to solve them properly -- and then summarizes the solution in plain English with a chart.
+Some problems are too combinatorial for an LLM and too structured for a database query. **Optimization** is where DEHA ONE plugs in industrial-grade optimization solvers to solve them properly -- and then summarizes the solution in plain English with a chart.
 
 <Info>
   Every optimization run is a regular pipeline step. You can chain it: pull demand from your warehouse → forecast next week → optimize routes → push the plan to your dispatcher → notify drivers on WhatsApp.
@@ -43,8 +43,8 @@ Some problems are too combinatorial for an LLM and too structured for a database
 | You want to ... | Use this problem type |
 |---|---|
 | Minimize total drive time across a fleet that has capacity and time-window constraints | Vehicle Routing |
-| Decide which employees work which shifts, respecting skills, hours, and preferences | Scheduling (CP-SAT) |
-| Pair drivers, cases, or applicants 1:1 by lowest aggregate cost | Assignment (Hungarian) |
+| Decide which employees work which shifts, respecting skills, hours, and preferences | Scheduling |
+| Pair drivers, cases, or applicants 1:1 by lowest aggregate cost | Assignment |
 | Stuff items into trucks, bins, or pallets without overflow | Bin Packing |
 | Maximize profit subject to budget and resource limits | LP or MIP |
 | Route cargo or telecom traffic through a graph with capacities | Min-Cost Network Flow |
@@ -77,12 +77,12 @@ Optimization is rarely the first step or the last step -- it sits in the middle 
 
 ```mermaid
 flowchart LR
-    Data[Connector<br/>Pull orders / shifts / capacities] --> Clean[Data Engine<br/>Clean & validate]
-    Clean --> Forecast[Analytics<br/>Forecast demand]
-    Forecast --> Optimize[Optimizer<br/>Plan routes / schedules]
-    Optimize --> Render[Renderer<br/>Chart + PDF report]
+    Data[Connect<br/>Pull orders / shifts / capacities] --> Clean[Clean & validate]
+    Clean --> Forecast[Forecast demand]
+    Forecast --> Optimize[Optimize<br/>Plan routes / schedules]
+    Optimize --> Render[Render<br/>Chart + PDF report]
     Optimize --> Notify[Agents / Channels<br/>WhatsApp / Email / Slack]
-    Optimize --> Export[Connector<br/>Write back to ERP]
+    Optimize --> Export[Connect<br/>Write back to ERP]
 ```
 
 DEHA can wire this entire pipeline up for you from a sentence like *"every Sunday night, plan next week's delivery routes for the warehouse and send each driver their stops by WhatsApp"*.
@@ -95,8 +95,8 @@ DEHA can wire this entire pipeline up for you from a sentence like *"every Sunda
 |---|---|
 | **Time limit** | Maximum time the solver may run (capped at 120 s by the platform). Smaller limit = faster reply, possibly suboptimal. |
 | **Objective tolerance** | Stop once the optimality gap is below a threshold. |
-| **Strategy** | For VRPs: `guided_local_search`, `tabu`, `cheapest_arc`, etc. The platform sets sensible defaults. |
-| **Warm start** | For MIPs: provide a previous solution to speed up convergence. |
+| **Strategy** | For routing: choose among several search strategies. The platform sets sensible defaults. |
+| **Warm start** | For mixed-integer problems: provide a previous solution to speed up convergence. |
 
 You can also pass solver hints (initial routes, fixed assignments) when you already know part of the answer.
 

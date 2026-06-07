@@ -119,7 +119,7 @@ Here is a summary of the key settings available for every agent:
 | **AI model** | Model selection, temperature, response limits, fallback models |
 | **Personality** | System prompt with instructions, tone, rules, and guidelines |
 | **Tools** | API integrations, code execution, data queries, delegate agents |
-| **Knowledge** | Document collections for RAG search, similarity thresholds |
+| **Knowledge** | Document collections for knowledge search, similarity thresholds |
 | **Channels** | WhatsApp, Telegram, Email, Web deployment |
 | **Quality** | Human-in-the-loop review, judge-based scoring, approval thresholds |
 | **Routing** | Conditional logic, intent-based routing, multi-agent delegation |
@@ -155,8 +155,8 @@ Here is a summary of the key settings available for every agent:
 
 ---
 
-<Accordion title="Advanced: YAML configuration reference">
-  For advanced users who want direct control, agents are defined as YAML files. Here is a complete example:
+<Accordion title="Advanced: configuration reference">
+  For advanced users who want direct control, agents can be defined as configuration files. Here is a complete example:
 
   ```yaml
   name: "support_agent"
@@ -166,10 +166,6 @@ Here is a summary of the key settings available for every agent:
 
   persistence_enabled: true
   retention_days: 7
-
-  event_routing:
-    execute_types: ["message.inbound", "agent.request", "text"]
-    resume_suffixes: [".result", ".error"]
 
   prompts:
     system_main: |
@@ -182,11 +178,10 @@ Here is a summary of the key settings available for every agent:
       type: "node_llm"
       parameters:
         model: "gpt-4o"
-        provider: "litellm"
         temperature: 0.3
         max_tokens: 2048
         prompt_ref: "system_main"
-        bind_all_tools: true
+        bind_all_pipelines: true
 
     - id: "tool_executor"
       type: "node_tool"
@@ -198,7 +193,7 @@ Here is a summary of the key settings available for every agent:
       target: "main_llm"
     - source: "main_llm"
       target: "tool_executor"
-      condition: "state.context.has_tool_call == True"
+      condition: "has_tool_call"
       priority: 1
     - source: "tool_executor"
       target: "main_llm"
@@ -207,7 +202,7 @@ Here is a summary of the key settings available for every agent:
       priority: 10
   ```
 
-  For the complete YAML schema, see [Node Types](/agents/node-types) for all available node configurations.
+  For the complete configuration reference, see [Building Blocks](/agents/node-types) for all available building blocks.
 </Accordion>
 
 ---

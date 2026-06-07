@@ -14,7 +14,7 @@ DEHA ONE turns data into visuals at three levels:
 Every visual is rendered server-side. You get PNG, SVG, PDF, or an embeddable HTML iframe — no frontend code required.
 
 <Info>
-  All renders are user-scoped, cached by content hash, and stored in a per-user artifact volume. Sharing is via signed iframe links (HS256) that expire and are revokable.
+  All renders are user-scoped, cached by content, and stored in a per-user artifact store. Sharing is via signed iframe links that expire and are revokable.
 </Info>
 
 ---
@@ -23,16 +23,16 @@ Every visual is rendered server-side. You get PNG, SVG, PDF, or an embeddable HT
 
 <CardGroup cols={2}>
   <Card title="Chart from plain English" icon="sparkles">
-    "Plot monthly revenue for the last 12 months as a line chart with a 3-month moving average." DEHA writes the Vega-Lite spec and renders it.
+    "Plot monthly revenue for the last 12 months as a line chart with a 3-month moving average." DEHA writes the chart spec and renders it.
   </Card>
   <Card title="Chart from a spec" icon="code">
-    Hand-author Vega-Lite or Plotly specs for full control. The renderer normalizes either input.
+    Hand-author interactive chart specs (Vega-Lite or Plotly) for full control. The renderer normalizes either input.
   </Card>
   <Card title="Build dashboards" icon="table-cells-large">
     Up to 48 widgets per dashboard, each with its own data source, filter binding, and refresh cadence.
   </Card>
   <Card title="Embed anywhere" icon="square-arrow-up-right">
-    HS256-signed iframe URLs embed charts and dashboards in your internal tools — without exposing data or credentials.
+    Signed iframe URLs embed charts and dashboards in your internal tools — without exposing data or credentials.
   </Card>
   <Card title="Auto-render PDF reports" icon="file-pdf">
     Schedule daily/weekly/monthly PDF snapshots of any dashboard, with optional cover pages and table of contents.
@@ -48,15 +48,15 @@ Every visual is rendered server-side. You get PNG, SVG, PDF, or an embeddable HT
 
 ```mermaid
 flowchart LR
-    Source[Data source<br/>SQL / pipeline / agent] --> Spec[Vega-Lite or Plotly spec]
-    Spec --> Render[vl-convert Rust<br/>Headless Chromium]
-    Render --> Cache[Render cache<br/>user + spec + format hash]
+    Source[Data source<br/>SQL / pipeline / agent] --> Spec[Chart spec]
+    Spec --> Render[Server-side renderer]
+    Render --> Cache[Render cache<br/>user + spec + format]
     Cache --> Out[PNG / SVG / PDF / HTML iframe]
 ```
 
-- **Single charts** render in a Rust process (no browser, very fast).
-- **Dashboards and PDF reports** render in a Chromium pool with Jinja2 templates.
-- Outputs are cached by a SHA-256 of the spec, format, and dimensions — repeated requests are instant.
+- **Single charts** render in a fast, browser-free path.
+- **Dashboards and PDF reports** render in a managed browser pool with templated layouts.
+- Outputs are cached by the spec, format, and dimensions — repeated requests are instant.
 
 ---
 
@@ -67,7 +67,7 @@ You can save a chart or dashboard definition under a name. Once saved, you can:
 - Embed it in your app with a single iframe URL
 - Render it to PDF on a schedule
 - Reference it from an agent ("show me the active alerts dashboard")
-- Diff its definition across versions (full audit trail via Config Service)
+- Diff its definition across versions (full audit trail with versioning and rollback)
 
 ---
 
@@ -79,8 +79,8 @@ The fastest way to get a chart is to describe it:
 
 The platform:
 
-1. Resolves the data source (your warehouse via the Query Engine)
-2. Generates a Vega-Lite spec
+1. Resolves the data source (your warehouse)
+2. Generates an interactive chart spec
 3. Validates it (safe SQL, correct field types)
 4. Renders it
 5. Returns the chart and the spec — so you can save, tweak, or re-use
@@ -94,7 +94,7 @@ If anything goes wrong (e.g. the requested column does not exist), the platform 
 Saved charts and dashboards get signed embed URLs:
 
 ```
-https://embed.deha.one/c/{chart_id}?token=<hs256>
+https://embed.deha.one/c/{chart_id}?token=<signed-token>
 ```
 
 - The token encodes user ID, expiry, and (optionally) a filter set

@@ -24,7 +24,7 @@ DEHA ONE supports eight trigger types. Pick the one that matches how your work a
     Runs once at a specific date and time. Ideal for reminders, one-off tasks, or scheduled deployments.
   </Card>
   <Card title="Event" icon="bolt">
-    Listens to a Redis Stream (any CloudEvent) and fires when a matching event arrives. JMESPath filtering supported.
+    Listens for platform events and fires when a matching event arrives. Flexible filtering supported.
   </Card>
   <Card title="Data change" icon="wave-square">
     Polls a SQL query and fires when the result changes (hash, row count, or percentage delta).
@@ -105,7 +105,7 @@ Sometimes you want a scheduled automation to run only when certain conditions ar
 | **Always** | Runs every time the schedule triggers (default) |
 | **SQL** | Runs a query and proceeds only if the boolean / numeric result is truthy |
 | **Threshold** | Runs a query and proceeds only if the value crosses a limit |
-| **LLM** | Asks an LLM yes/no whether to proceed, with the current data as context |
+| **AI** | Asks an AI model yes/no whether to proceed, with the current data as context |
 | **Composite** | AND / OR / NOT of multiple sub-conditions, recursively |
 | **Data changed** | Hash-based change detection — proceeds only if the underlying data changed since the last run |
 | **Time window** | Only fires during configured hours / weekdays (with timezone) |
@@ -201,8 +201,8 @@ Daylight saving time transitions are handled automatically. Your "9 AM" schedule
   <Card title="Creating Automations" icon="plus" href="/automations/creating-automations">
     Build your first automation.
   </Card>
-  <Card title="Step Types" icon="list-check" href="/automations/step-types">
-    Explore all available step types.
+  <Card title="Building Blocks" icon="list-check" href="/automations/step-types">
+    Explore all available building blocks.
   </Card>
   <Card title="Human Review" icon="user-check" href="/automations/human-review">
     Add approval gates to scheduled workflows.

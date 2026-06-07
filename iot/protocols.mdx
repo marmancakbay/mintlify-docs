@@ -22,7 +22,7 @@ The most widely-used pub/sub protocol for IoT. Use it when your devices already 
 | **QoS** | 0, 1, or 2 per subscription |
 
 <Tip>
-  Use MQTTS (TLS) in production. The Gateway resolves client certs and credentials from the encrypted vault -- they never appear in YAML.
+  Use MQTTS (TLS) in production. Client certs and credentials are resolved from the encrypted vault at runtime -- they never appear in your configuration.
 </Tip>
 
 ---
@@ -45,7 +45,7 @@ OPC-UA is bidirectional -- you can both read monitored nodes and write to writab
 
 ## Modbus (TCP and RTU)
 
-For legacy industrial devices that speak Modbus. The Gateway supports both Modbus TCP (Ethernet) and Modbus RTU (serial).
+For legacy industrial devices that speak Modbus. DEHA ONE supports both Modbus TCP (Ethernet) and Modbus RTU (serial).
 
 | Setting | What it is |
 |---|---|
@@ -56,14 +56,14 @@ For legacy industrial devices that speak Modbus. The Gateway supports both Modbu
 | **Registers** | List of read addresses with function code, length, and Python type mapping |
 
 <Info>
-  Modbus values are raw 16-bit registers. The Gateway converts them to typed values (int16, uint16, int32 BE/LE, float32, etc.) using the type map you define per device.
+  Modbus values are raw 16-bit registers. They are converted to typed values (int16, uint16, int32 BE/LE, float32, etc.) using the type map you define per device.
 </Info>
 
 ---
 
 ## HTTP Polling
 
-For devices that expose an HTTP endpoint but cannot push. The Gateway pulls on a fixed cadence.
+For devices that expose an HTTP endpoint but cannot push. DEHA ONE pulls on a fixed cadence.
 
 | Setting | What it is |
 |---|---|
@@ -94,13 +94,13 @@ Webhooks are inbound-only -- they cannot send commands back to the device.
 
 ## What every protocol gets for free
 
-Regardless of which protocol you choose, the Gateway adds:
+Regardless of which protocol you choose, DEHA ONE adds:
 
-- **Per-user isolation** -- no device can spill into another user's stream
-- **Per-device rate limiting** -- a chatty device cannot DoS the platform
-- **Exponential-backoff reconnect** -- transient outages recover automatically
+- **Per-user isolation** -- no device can spill into another user's data
+- **Per-device rate limiting** -- a chatty device cannot overwhelm the platform
+- **Automatic reconnection** -- transient outages recover on their own
 - **Schema validation** -- typed checks before the event hits your pipelines
-- **Offline detection** -- heartbeat sweep marks silent devices offline
-- **DLQ** -- bad frames are routed to a dead-letter stream for inspection
-- **Hot reload** -- add/remove/edit devices live, no restart needed
-- **Audit log** -- every command and config change is recorded
+- **Offline detection** -- a heartbeat sweep marks silent devices offline
+- **Failed-frame handling** -- bad frames are set aside for inspection instead of breaking the stream
+- **Live config updates** -- add/remove/edit devices live, no restart needed
+- **Audit log** -- every command and configuration change is recorded

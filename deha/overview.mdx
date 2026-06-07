@@ -18,16 +18,16 @@ DEHA is the AI assistant at the heart of DEHA ONE. Instead of navigating complex
     Create intelligent agents that handle customer support, answer questions, analyze data, or automate tasks -- deployed to WhatsApp, Telegram, Slack, Email, or Web in minutes.
   </Card>
   <Card title="Set up automations & pipelines" icon="gears">
-    Design 27-step pipelines that extract data, transform, optimize, analyze, scrape the web, or generate reports -- on schedules, events, or webhooks.
+    Design multi-step pipelines that extract data, transform, optimize, analyze, scrape the web, or generate reports -- on schedules, events, or webhooks.
   </Card>
   <Card title="Connect your tools" icon="plug">
-    Integrate your CRM, helpdesk, databases, analytics platforms, IoT devices, and any REST API. DEHA configures connections, vaults credentials, and exposes them as pipeline endpoints.
+    Integrate your CRM, helpdesk, databases, analytics platforms, IoT devices, and any REST API. DEHA configures the connections, securely vaults the credentials, and makes them available to your agents and pipelines.
   </Card>
   <Card title="Answer platform questions" icon="circle-question">
     "What do I have?", "How much am I spending?", "Why did this pipeline fail yesterday?" -- DEHA reads your user inventory and answers in plain English.
   </Card>
-  <Card title="Test, judge, and self-heal" icon="circle-check">
-    Every solution is automatically tested. A 6-dimensional judge scores quality. If something fails, the **Smart Healer** auto-fixes using 7 repair strategies and a learned healing memory.
+  <Card title="Test, score, and self-heal" icon="circle-check">
+    Every solution is automatically tested and its quality scored. If something fails, DEHA self-heals -- it diagnoses the problem, fixes it, and learns from what worked.
   </Card>
   <Card title="Iterate with you" icon="comments">
     Refine your solution through conversation. Ask DEHA to add features, change behavior, or fix issues -- it remembers your context across the session and builds on previous work.
@@ -35,27 +35,24 @@ DEHA is the AI assistant at the heart of DEHA ONE. Instead of navigating complex
   <Card title="Stay safe with approvals" icon="shield-check">
     DEHA shows a plan with a diff and a risk assessment before making changes. You review, approve, modify, or reject. Auto-rollback on failure.
   </Card>
-  <Card title="Explain your configs" icon="book-open-cover">
-    Give DEHA an agent or pipeline name and ask "what does this do?" -- it generates a plain-English explanation of the YAML.
+  <Card title="Explain your setup" icon="book-open-cover">
+    Give DEHA an agent or pipeline name and ask "what does this do?" -- it generates a clear, plain-English explanation of how it works.
   </Card>
 </CardGroup>
 
 ---
 
-## How DEHA is built
+## One assistant, many skills
 
-Under the hood, DEHA is a **multi-agent team** orchestrated by a single brain.
+You only ever talk to **one** assistant. Behind that single conversation, DEHA brings together everything it needs to get your request done:
 
-| Component | Role |
-|---|---|
-| **Cortex** | The router and brain. Parses intent, decomposes the request, picks which sub-agent(s) to engage, and synthesizes the final reply. |
-| **Commander** | Handles configuration changes: create / update / delete agents, pipelines, routes, channels, vault entries. Validates against schemas, applies atomically. |
-| **Analyst** | Handles data queries: text-to-SQL, profiling, ML, anomaly, forecasting -- anything that reads or computes over your data. |
-| **Communicator** | Handles platform Q&A: feature explanations, credit usage, costs, status, what-do-I-have. |
-| **Smart Healer** | Owns its own LLM call. When tests fail, applies repair strategies (rephrase prompts, adjust tools, split steps, retry with backoff, etc.) and remembers what worked. |
-| **Judge** | Scores every response on 6 dimensions: relevance, safety, accuracy, compliance, performance, bias. |
+- **Understands what you mean** -- it reads your intent, your existing setup, and your data before it acts.
+- **Builds and changes things** -- create, update, or remove agents, pipelines, integrations, and channels, validated and applied safely.
+- **Works with your data** -- ask questions, profile, forecast, and analyze, drawing on your [living data map](/idrak/overview).
+- **Answers platform questions** -- what you have, what it costs, and why something happened.
+- **Checks its own work** -- automatic quality scoring on every result, and self-healing when something fails.
 
-You only ever talk to one assistant. The orchestration is invisible.
+The coordination is invisible. To you, it's just one assistant that gets things done.
 
 ---
 

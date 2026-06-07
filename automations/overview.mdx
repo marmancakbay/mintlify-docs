@@ -5,16 +5,16 @@ description: "Build multi-step workflows that run automatically -- route message
 icon: "wand-magic-sparkles"
 ---
 
-Automations (also called **pipelines** in the platform) are multi-step workflows that run automatically when something happens in your workspace. They connect AI agents, channels, data sources, optimization, web search, IoT, and business logic into repeatable processes that work around the clock.
+Automations are multi-step workflows that run automatically when something happens in your workspace. They connect AI agents, channels, data sources, optimization, web search, IoT, and business logic into repeatable processes that work around the clock.
 
 Instead of manually handling every incoming message or running reports by hand, you define an automation once and let DEHA ONE take care of the rest.
 
 <Info>
-  **Pipeline-First architecture**: every automation is also a callable endpoint. Once deployed, your pipeline becomes accessible via REST API (with its own API key, rate limit, and OpenAPI spec) and can be invoked from any agent, any other pipeline, or any external system. See [Dynamic API](/api-reference/dynamic-api-overview).
+  **Automation-first**: every automation is also a callable endpoint. Once deployed, your automation becomes accessible via REST API (with its own API key, rate limit, and OpenAPI spec) and can be invoked from any agent, any other automation, or any external system. See [Dynamic API](/api-reference/dynamic-api-overview).
 </Info>
 
 <Info>
-  Automations are **durable**. Failures, restarts, and timeouts are handled with checkpoints and saga compensation — side-effect steps (REST writes, data loads, publishes, IoT commands) can be reversed if the pipeline aborts mid-flight.
+  Automations are **durable**. Failures, restarts, and timeouts are handled automatically with retries, failure recovery, and rollback — side-effect steps (REST writes, data loads, publishes, IoT commands) can be reversed if the automation aborts mid-flight.
 </Info>
 
 ---
@@ -74,7 +74,7 @@ Every automation starts with a trigger -- the event that kicks off the workflow.
 | **Cron** | A specific time or recurring interval | Every weekday at 9 AM |
 | **Interval** | Fixed-period repetition | Every 5 minutes |
 | **Date** | One-shot at a specific datetime | At 2026-06-01 14:00 UTC |
-| **Event** | Match on any Redis Stream event (CloudEvent format) | A new IoT telemetry frame from sensor X |
+| **Event** | Match on any platform event | A new IoT telemetry frame from sensor X |
 | **Data change** | Hash / row-count / percentage change on a SQL query | When the `orders` table grows by >5% |
 | **Threshold** | A SQL query crosses a numeric threshold | When daily revenue exceeds 100K |
 | **Webhook** | An external system POSTs to a signed URL | Stripe payment-succeeded event |
@@ -86,7 +86,7 @@ Conditions you can attach to any trigger:
 - `always` — unconditional
 - `sql` — a SQL query that returns boolean / number
 - `threshold` — SQL value above / below a threshold
-- `llm` — an LLM yes/no decision
+- `llm` — an AI yes/no decision
 - `composite` — AND / OR / NOT of other conditions
 - `data_changed` — change-detection on a SQL query
 - `time_window` — only fire during certain hours / weekdays
@@ -150,7 +150,7 @@ The most powerful pattern is to use an **automation as the overall workflow** an
   <Card title="Create an Automation" icon="plus" href="/automations/creating-automations">
     Learn how to build your first automation step by step.
   </Card>
-  <Card title="Step Types" icon="list-check" href="/automations/step-types">
+  <Card title="Building Blocks" icon="list-check" href="/automations/step-types">
     Explore all the actions you can include in your automations.
   </Card>
   <Card title="Scheduling" icon="clock" href="/automations/scheduling">

@@ -6,14 +6,14 @@ description: "Synchronously invoke an AI agent and receive a response."
 
 Invokes an AI agent by name and returns the response synchronously. This is the primary endpoint for programmatic interaction with your configured AI agents.
 
-The request has a **65-second timeout**. For long-running tasks, consider using pipelines or asynchronous patterns via WebSocket.
+The request has a **65-second timeout**. For long-running tasks, use pipelines or the [asynchronous API](/api-reference/dynamic-api-overview).
 
 ## Authentication
 
 Requires an API key in the `Authorization` header with the `Bearer` prefix. The key's user must match the URL `{user_id}`.
 
 <Note>
-This endpoint is designed for API key authentication. For interactive sessions, use the [WebSocket endpoint](/api-reference/bff-websocket) instead.
+This endpoint is designed for API key authentication. For interactive, in-browser sessions, use [Web Chat](/channels/web-chat) in the dashboard instead.
 </Note>
 
 ## Path Parameters

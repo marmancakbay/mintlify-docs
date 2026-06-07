@@ -5,7 +5,7 @@ description: "Fetch any URL and turn it into clean markdown, CSS-extracted JSON,
 icon: "spider-web"
 ---
 
-Once you know which URL you want, scraping turns it into something your agents and pipelines can actually use. DEHA ONE's scraper wraps Crawl4AI's Chromium pool with user isolation, per-domain rate limits, content caching, and three extraction strategies.
+Once you know which URL you want, scraping turns it into something your agents and pipelines can actually use. DEHA ONE's scraper combines clean content extraction with user isolation, per-domain rate limits, content caching, and three extraction strategies.
 
 ---
 
@@ -13,7 +13,7 @@ Once you know which URL you want, scraping turns it into something your agents a
 
 <CardGroup cols={3}>
   <Card title="Markdown" icon="paragraph">
-    Clean markdown via `fit_markdown` — roughly 67% fewer tokens than raw HTML. Best for agent context.
+    Clean, content-focused markdown — roughly 67% fewer tokens than raw HTML. Best for agent context.
     **2 credits / URL**
   </Card>
   <Card title="CSS selectors" icon="code">
@@ -43,7 +43,7 @@ You can extend these or create your own.
 
 ## Batch mode
 
-Hand the scraper a list of up to 50 URLs and it processes them in parallel, respecting per-domain rate limits. Default pool size is 3 concurrent pages per worker; you can crank this up for high-volume jobs.
+Hand the scraper a list of up to 50 URLs and it processes them in parallel, respecting per-domain rate limits. You can raise the concurrency for high-volume jobs.
 
 Failed URLs do not stop the batch — you get a partial result with success/failure per URL.
 

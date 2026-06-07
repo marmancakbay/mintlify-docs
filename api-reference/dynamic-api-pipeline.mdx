@@ -21,7 +21,7 @@ The API key is user-scoped — it must match the path `{user_id}` or the request
   User identifier.
 </ParamField>
 <ParamField path="name" type="string" required>
-  Compiled pipeline name (matches the file name under `configs/users/{user}/pipelines/`).
+  The name of your pipeline.
 </ParamField>
 
 ## Request body
@@ -84,11 +84,11 @@ curl -N -X POST "$BASE/api/v1/pipelines/acme_corp/sentiment_routing/stream" \
 Server-Sent Events body:
 
 ```
-event: node.started
-data: {"node":"extract","trace_id":"trc-..."}
+event: step.started
+data: {"step":"extract","trace_id":"trc-..."}
 
-event: node.completed
-data: {"node":"extract","output_keys":["feedback"]}
+event: step.completed
+data: {"step":"extract","output_keys":["feedback"]}
 
 event: final
 data: {"status":"completed","result":{...}}
@@ -100,13 +100,13 @@ Switch the `Accept` header to `application/x-ndjson` to receive newline-delimite
 
 | Status | Code | Reason |
 |--------|------|--------|
-| 400 | `BFF-API-400` | Malformed body / schema validation failure |
-| 403 | `BFF-USER-403` | User header does not match path |
-| 404 | `BFF-PIPELINE-404` | Pipeline not found or disabled |
-| 406 | `BFF-API-406` | `Accept` header not supported by endpoint |
-| 409 | `BFF-API-409a` | Mode not declared for this endpoint |
-| 409 | `BFF-API-409b` | Idempotent invocation already in flight |
-| 415 | `BFF-API-415` | `Content-Type` not supported |
-| 429 | `BFF-API-429` | Rate limit exceeded |
-| 502 | `BFF-API-502` | Upstream pipeline step failed |
-| 504 | `BFF-API-504` | Timeout |
+| 400 | `API-400` | Malformed body / schema validation failure |
+| 403 | `AUTH-403` | Workspace mismatch between credentials and path |
+| 404 | `PIPELINE-404` | Pipeline not found or disabled |
+| 406 | `API-406` | `Accept` header not supported by endpoint |
+| 409 | `API-409a` | Mode not declared for this endpoint |
+| 409 | `API-409b` | Idempotent invocation already in flight |
+| 415 | `API-415` | `Content-Type` not supported |
+| 429 | `API-429` | Rate limit exceeded |
+| 502 | `API-502` | A pipeline step failed |
+| 504 | `API-504` | Timeout |

@@ -5,7 +5,7 @@ description: "Connect physical devices, sensors, and gateways to DEHA ONE. Strea
 icon: "microchip"
 ---
 
-The IoT Gateway is the bridge between the physical world and your DEHA ONE agents and pipelines. It speaks the protocols industrial devices already speak -- **MQTT, OPC-UA, Modbus, HTTP polling, and inbound webhooks** -- and turns their telemetry into events your platform can react to.
+DEHA ONE's IoT layer is the bridge between the physical world and your agents and pipelines. It speaks the protocols industrial devices already speak -- **MQTT, OPC-UA, Modbus, HTTP polling, and inbound webhooks** -- and turns their telemetry into events your platform can react to.
 
 <Info>
   Every connection is per-user isolated. A device registered to one user cannot send data into another, and rate limits, schemas, and offline detection are scoped accordingly.
@@ -20,7 +20,7 @@ The IoT Gateway is the bridge between the physical world and your DEHA ONE agent
     Sensors, PLCs, gateways, and any HTTP-capable device can push readings to DEHA ONE at any rate. The platform normalizes every reading into a single internal event format.
   </Card>
   <Card title="Send commands" icon="paper-plane">
-    Trigger actuators, write Modbus coils, call OPC-UA methods, or push MQTT messages back to devices -- with idempotency keys and result timeouts.
+    Trigger actuators, write Modbus coils, call OPC-UA methods, or push MQTT messages back to devices -- with single-fire guarantees and result timeouts.
   </Card>
   <Card title="Validate against schemas" icon="circle-check">
     Each device has a typed schema (booleans, integers, floats, strings, timestamps, objects). Bad readings are flagged before they reach your pipelines.
@@ -28,11 +28,11 @@ The IoT Gateway is the bridge between the physical world and your DEHA ONE agent
   <Card title="Detect offline devices" icon="plug-circle-xmark">
     Per-device heartbeats and a sweep job mark devices offline after a configurable silence threshold. Your pipelines can react to the offline event.
   </Card>
-  <Card title="Hot-reload device configs" icon="rotate">
-    Add, remove, or reconfigure devices in YAML -- live, no restart. Existing connections rebind to the new config automatically.
+  <Card title="Update device configs live" icon="rotate">
+    Add, remove, or reconfigure devices -- live, no restart. Existing connections rebind to the new configuration automatically.
   </Card>
   <Card title="Trigger pipelines from devices" icon="bolt">
-    Every telemetry event is a CloudEvent. Match it in your pipeline's trigger config and run any of the 27 step types in response.
+    Every telemetry reading becomes an event. Match it in your pipeline's trigger configuration and run any pipeline building block in response.
   </Card>
 </CardGroup>
 
@@ -50,7 +50,7 @@ DEHA ONE talks to devices in their native wire protocols. Pick the one your hard
 | **HTTP polling** | Inbound | Devices that expose a status endpoint but cannot push |
 | **Inbound webhooks** | Inbound | Devices or gateways that can POST JSON, raw bytes, or CSV |
 
-Each connection runs as its own asyncio task with exponential-backoff reconnect, per-device rate limiting, and an isolated DLQ for messages that fail validation. See [Protocols](/iot/protocols) for setup details.
+Each connection runs independently with automatic reconnection, per-device rate limiting, and isolated handling of messages that fail validation. See [Protocols](/iot/protocols) for setup details.
 
 ---
 
@@ -59,20 +59,20 @@ Each connection runs as its own asyncio task with exponential-backoff reconnect,
 ```mermaid
 sequenceDiagram
     participant Device
-    participant Gateway as IoT Gateway
+    participant IoT as IoT layer
     participant Schema
-    participant Stream as stream:iot:telemetry
+    participant Events as Telemetry events
     participant Pipeline
 
-    Device->>Gateway: Raw frame (MQTT / OPC-UA / Modbus / HTTP / webhook)
-    Gateway->>Schema: Validate fields & types
-    Schema-->>Gateway: ok / flagged
-    Gateway->>Stream: Publish CloudEvent (user + device id)
-    Stream->>Pipeline: Trigger (match on event type / source)
+    Device->>IoT: Raw frame (MQTT / OPC-UA / Modbus / HTTP / webhook)
+    IoT->>Schema: Validate fields & types
+    Schema-->>IoT: ok / flagged
+    IoT->>Events: Publish event (user + device id)
+    Events->>Pipeline: Trigger (match on event type / source)
     Pipeline->>Pipeline: Run steps (transform, query, agent, optimize, etc.)
 ```
 
-Once the telemetry is on the stream, **anything in the platform can react to it** -- alerts via Slack, anomaly detection, forecasting, dashboard updates, agent escalation, or commands back to the device.
+Once the telemetry is flowing, **anything in the platform can react to it** -- alerts via Slack, anomaly detection, forecasting, dashboard updates, agent escalation, or commands back to the device.
 
 ---
 
@@ -86,7 +86,7 @@ Every device belongs to a user and has:
 - A **heartbeat interval** (when no traffic arrives, the device is marked offline)
 - A list of allowed **commands** (for bidirectional protocols)
 
-See [Devices & Schemas](/iot/devices-and-schemas) for the YAML reference and validation rules.
+See [Devices & Schemas](/iot/devices-and-schemas) for the configuration reference and validation rules.
 
 ---
 
@@ -100,7 +100,7 @@ For MQTT, OPC-UA, and Modbus connections, you can send commands from your pipeli
 - **HTTP**: not supported (HTTP polling is read-only)
 - **Webhook**: not supported (webhooks are inbound only)
 
-Every command carries an idempotency key (so retries do not double-fire actuators), a result timeout, and ends up on `stream:iot:command:result` for downstream listeners. See [Commands & Control](/iot/commands-and-control).
+Every command carries a single-fire guarantee (so retries do not double-fire actuators), a result timeout, and emits a result event for downstream listeners. See [Commands & Control](/iot/commands-and-control).
 
 ---
 
@@ -111,13 +111,13 @@ Every command carries an idempotency key (so retries do not double-fire actuator
     Modbus TCP pulls vibration and temperature from each machine. An anomaly-detection pipeline flags deviations. An agent opens a maintenance ticket and posts to a Slack channel.
   </Accordion>
   <Accordion title="Energy demand forecasting">
-    OPC-UA polls meter readings every minute. A forecasting pipeline (StatsForecast / Prophet) generates next-day demand. The result feeds an optimization pipeline that schedules generation assets.
+    OPC-UA polls meter readings every minute. A forecasting pipeline generates next-day demand. The result feeds an optimization pipeline that schedules generation assets.
   </Accordion>
   <Accordion title="Cold-chain monitoring">
     Webhook endpoints accept temperature events from a fleet of trucks. A pipeline alerts when readings fall outside the cold-chain band, and an agent notifies the dispatcher with the truck's last GPS position.
   </Accordion>
   <Accordion title="Smart-building HVAC">
-    MQTT subscribes to building sensors. A pipeline triggers OPC-UA writes back to the BMS to adjust setpoints based on occupancy and outdoor weather pulled from the data engine.
+    MQTT subscribes to building sensors. A pipeline triggers OPC-UA writes back to the BMS to adjust setpoints based on occupancy and outdoor weather pulled from your data.
   </Accordion>
 </AccordionGroup>
 

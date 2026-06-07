@@ -1,12 +1,12 @@
 ---
-title: "Node Types"
-sidebarTitle: "Node Types"
-description: "All supported node types for DEHA ONE agent graphs. Each node type represents a distinct operation -- from LLM calls to conditional branching to data transformations."
+title: "Building Blocks"
+sidebarTitle: "Building Blocks"
+description: "All supported building blocks for DEHA ONE agents. Each building block represents a distinct operation -- from AI model calls to conditional branching to data transformations."
 ---
 
-Nodes are the building blocks of an agent graph. Each node performs a specific operation and returns a state update that flows into the next node along the graph edges.
+Building blocks are the components of an agent's flow. Each building block performs a specific operation and passes its result on to the next step in the flow.
 
-All nodes share a common structure in YAML:
+All building blocks share a common structure in the configuration:
 
 ```yaml
 - id: "unique_node_id"
@@ -16,7 +16,7 @@ All nodes share a common structure in YAML:
 ```
 
 <Info>
-  The special identifiers `__start__` and `__end__` are reserved for the graph entry and exit points. They are used in edges but never defined as nodes.
+  The special identifiers `__start__` and `__end__` are reserved for the entry and exit points of the flow. They are used to connect building blocks but are never defined as building blocks themselves.
 </Info>
 
 ---
@@ -24,42 +24,41 @@ All nodes share a common structure in YAML:
 <Tabs>
   <Tab title="AI Nodes">
 
-    ## LLM Node (`node_llm`)
+    ## AI Model Block (`node_llm`)
 
-    Calls a large language model with the current conversation history and a system prompt. Optionally binds tools so the LLM can request tool calls.
+    Calls an AI model with the current conversation history and a system prompt. Optionally binds tools so the model can request tool calls.
 
     **Parameters:**
 
     | Parameter | Type | Default | Description |
     |---|---|---|---|
     | `model` | string | (required) | Model name or alias (e.g., `gpt-4o`, `fast`, `claude-3-opus`) |
-    | `provider` | string | (required) | LLM provider: `litellm`, `openai`, `google`, `anthropic`, `deepseek` |
+    | `provider` | string | (required) | AI model provider |
     | `temperature` | float | `0.0` | Sampling temperature (0.0 = deterministic) |
     | `max_tokens` | integer | `null` | Maximum output tokens |
     | `max_input_tokens` | integer | `8192` | Maximum input context window for history trimming |
     | `prompt_ref` | string | `null` | Key in the `prompts` map to use as the system message |
-    | `bind_all_pipelines` | boolean | `false` | Bind every user pipeline as a callable tool (Pipeline-First) |
-    | `bind_pipelines` | string[] | `null` | Selectively bind specific pipeline endpoints |
-    | `allowed_pipelines` | string[] | `null` | Whitelist of pipeline names this LLM may call |
+    | `bind_all_pipelines` | boolean | `false` | Bind every user automation as a callable tool |
+    | `bind_pipelines` | string[] | `null` | Selectively bind specific automation endpoints |
+    | `allowed_pipelines` | string[] | `null` | Whitelist of automation names this model may call |
     | `fallback_models` | string[] | `[]` | Ordered fallback models if the primary fails |
-    | `json_mode` | boolean | `false` | Parse the LLM response as JSON |
+    | `json_mode` | boolean | `false` | Parse the model response as JSON |
     | `_internal_only` | boolean | `false` | When `true`, the response is not sent to the user |
 
     **How it works:**
 
     1. The message history is sanitized and trimmed to fit within `max_input_tokens`.
-    2. The system prompt is rendered from the `prompts` map using Jinja2 templating.
-    3. The model is invoked through the configured provider. If the primary model fails, fallbacks are tried in order.
-    4. If `bind_all_tools` is enabled, all configured tools are attached to the model.
+    2. The system prompt is rendered from the `prompts` map.
+    3. The model is invoked. If the primary model fails, fallbacks are tried in order.
+    4. If tool binding is enabled, the configured tools are attached to the model.
     5. The model is invoked and the response is added to the message history.
-    6. If the response contains tool calls, `has_tool_call` is set to `true` in the context.
+    6. If the response contains tool calls, the flow continues to a tool block.
 
     ```yaml
     - id: "main_llm"
       type: "node_llm"
       parameters:
         model: "fast"
-        provider: "litellm"
         temperature: 0.2
         max_tokens: 4096
         max_input_tokens: 12000
@@ -72,14 +71,14 @@ All nodes share a common structure in YAML:
     </Tip>
 
     <Info>
-      **Pipeline-First architecture**: tools are exposed to agents as pipeline endpoints, not as raw integrations. When you set `bind_all_pipelines: true`, every pipeline endpoint defined for the user becomes a callable tool — with its own input/output schema, API key, rate limit, and timeout. Use `bind_pipelines` or `allowed_pipelines` to scope which pipelines a specific LLM call can invoke.
+      **Automation-first**: tools are exposed to agents as automation endpoints, not as raw integrations. When you set `bind_all_pipelines: true`, every automation endpoint defined for the user becomes a callable tool — with its own input/output schema, API key, rate limit, and timeout. Use `bind_pipelines` or `allowed_pipelines` to scope which automations a specific model call can invoke.
     </Info>
 
     ---
 
-    ## Tool Node (`node_tool`)
+    ## Tool Block (`node_tool`)
 
-    Executes tool calls generated by an LLM node. Routes each call to the appropriate service and pauses the graph until results arrive.
+    Executes tool calls generated by an AI model block. Routes each call to the right place and waits for results to arrive.
 
     **Parameters:**
 
@@ -87,7 +86,7 @@ All nodes share a common structure in YAML:
     |---|---|---|---|
     | `allowed_tools` | string[] | `[]` | Tool whitelist. Empty list allows all tools. |
 
-    The tool node reads pending tool calls from the state, determines the target for each call (REST API, Python sandbox, data engine, etc.), dispatches the request, and pauses the graph. When the result arrives, the graph resumes and the tool result is added to the message history.
+    The tool block reads pending tool calls, determines the target for each call (REST API, sandboxed code, data query, etc.), dispatches the request, and waits. When the result arrives, the flow continues and the tool result is added to the message history.
 
     ```yaml
     - id: "tool_executor"
@@ -100,9 +99,9 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Knowledge Node (`node_knowledge`)
+    ## Knowledge Block (`node_knowledge`)
 
-    Performs a vector similarity search against the knowledge base for retrieval-augmented generation (RAG).
+    Performs a similarity search against the knowledge base for retrieval-augmented generation (RAG).
 
     **Parameters:**
 
@@ -114,7 +113,7 @@ All nodes share a common structure in YAML:
     | `query_source` | string | `"last_message"` | Source for the query text |
     | `filters` | object | `null` | Additional metadata filters |
 
-    The node performs a semantic search, pauses the graph while results are retrieved, and resumes when they arrive. Search results are stored in `context.rag_results` as formatted text.
+    The block performs a semantic search and waits while results are retrieved. Search results are stored in `context.rag_results` as formatted text.
 
     ```yaml
     - id: "search_kb"
@@ -127,7 +126,7 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Approval Node (`node_approval`)
+    ## Approval Block (`node_approval`)
 
     Human-in-the-loop quality gate with two operating modes.
 
@@ -135,21 +134,21 @@ All nodes share a common structure in YAML:
 
     | Parameter | Type | Default | Description |
     |---|---|---|---|
-    | `mode` | string | `"judge"` | `"judge"` for automatic LLM evaluation, `"always"` for manual human review |
-    | `judge_model` | string | `"fast"` | Model used for automatic quality evaluation |
-    | `judge_temperature` | float | `0.0` | Judge sampling temperature |
+    | `mode` | string | `"judge"` | `"judge"` for automatic quality scoring, `"always"` for manual human review |
+    | `judge_model` | string | `"fast"` | Model used for automatic quality scoring |
+    | `judge_temperature` | float | `0.0` | Scoring sampling temperature |
     | `judge_prompt` | string | `null` | Custom evaluation prompt |
     | `approve_threshold` | float | `0.7` | Score at or above this triggers approval |
     | `handoff_threshold` | float | `0.4` | Score below this triggers handoff to a human |
     | `max_revisions` | integer | `2` | Maximum revision cycles before escalation (0--5) |
     | `timeout` | integer | `300` | Approval timeout in seconds (30--3600) |
 
-    **Judge mode:** An LLM evaluates the agent's response and returns a score. Based on the score:
+    **Judge mode:** Automatic quality scoring evaluates the agent's response and returns a score. Based on the score:
     - Below `handoff_threshold` -- the conversation is handed off to a human agent.
     - Between thresholds -- the response is sent back for revision (up to `max_revisions` times).
     - At or above `approve_threshold` -- the response is approved and sent to the user.
 
-    **Always mode:** The graph pauses and waits for a human staff member to approve, revise, or reject the response.
+    **Always mode:** The flow pauses and waits for a human staff member to approve, revise, or reject the response.
 
     ```yaml
     - id: "quality_check"
@@ -163,7 +162,7 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## MCP Server Node (`node_mcp_server`)
+    ## MCP Server Block (`node_mcp_server`)
 
     Executes tools from a specific MCP (Model Context Protocol) server.
 
@@ -188,9 +187,9 @@ All nodes share a common structure in YAML:
 
   <Tab title="Control Flow Nodes">
 
-    ## Condition Node (`node_condition`)
+    ## Condition Block (`node_condition`)
 
-    Evaluates an expression and routes the graph to different branches based on the result.
+    Evaluates an expression and routes the flow to different branches based on the result.
 
     **Parameters:**
 
@@ -213,16 +212,16 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Router Node (`node_router`)
+    ## Router Block (`node_router`)
 
-    Multi-branch routing based on a state value. Maps specific values to target nodes with a default fallback.
+    Multi-branch routing based on a state value. Maps specific values to target blocks with a default fallback.
 
     **Parameters:**
 
     | Parameter | Type | Default | Description |
     |---|---|---|---|
     | `route_key` | string | (required) | Dot-notation path to the routing value (e.g., `context.detected_intent`) |
-    | `routes` | object | (required) | Map of values to target node IDs |
+    | `routes` | object | (required) | Map of values to target block IDs |
     | `default_route` | string | `"__end__"` | Fallback target if no value matches |
 
     ```yaml
@@ -239,7 +238,7 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Logic Node (`node_logic`)
+    ## Logic Block (`node_logic`)
 
     Evaluates a safe expression and stores the result in state. Useful for computed values, counters, and simple transformations.
 
@@ -266,7 +265,7 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Handover Node (`node_handover`)
+    ## Handover Block (`node_handover`)
 
     Transfers the conversation from the AI agent to a human staff member. After handover, the AI stops responding until the session is released.
 
@@ -288,16 +287,16 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Fan-Out Node (`node_fan_out`)
+    ## Fan-Out Block (`node_fan_out`)
 
-    Publishes messages to multiple targets in a fire-and-forget pattern. Does not pause the graph. Useful for triggering side effects such as archiving data or sending notifications.
+    Sends messages to multiple targets without waiting for a reply. Does not pause the flow. Useful for triggering side effects such as archiving data or sending notifications.
 
     **Parameters:**
 
     | Parameter | Type | Default | Description |
     |---|---|---|---|
     | `targets` | array | (required) | List of target definitions |
-    | `targets[].event_type` | string | (required) | Event type for the published message |
+    | `targets[].event_type` | string | (required) | Type of message to send |
     | `targets[].payload_mapping` | object | `{}` | Map of output keys to state paths |
 
     ```yaml
@@ -315,7 +314,7 @@ All nodes share a common structure in YAML:
 
   <Tab title="Data Nodes">
 
-    ## Set Variable Node (`node_set`)
+    ## Set Variable Block (`node_set`)
 
     Updates a state variable with a static value, a dynamically extracted value, or a computed expression.
 
@@ -340,7 +339,7 @@ All nodes share a common structure in YAML:
         variable: "escalation_level"
         value: "high"
 
-    # Dynamic extraction from last LLM response
+    # Dynamic extraction from last AI model response
     - id: "capture_summary"
       type: "node_set"
       parameters:
@@ -350,7 +349,7 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Transform Node (`node_transform`)
+    ## Transform Block (`node_transform`)
 
     Performs data transformation operations on state values.
 
@@ -364,7 +363,7 @@ All nodes share a common structure in YAML:
     |---|---|---|
     | `extract` | Extract a single field from context or input | `input_key`, `output_key` |
     | `map` | Multi-field mapping with dot-notation references | `mapping: {key: "context.path"}` |
-    | `template` | Jinja2 template rendering | `template`, `output_key` |
+    | `template` | Template rendering | `template`, `output_key` |
     | `filter` | Filter a list by condition | `source`, `condition`, `output_key` |
     | `merge` | Merge multiple dicts from state | `sources`, `output_key` |
 
@@ -391,16 +390,16 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## LLM Transform Node (`node_llm_transform`)
+    ## AI Transform Block (`node_llm_transform`)
 
-    Like `node_transform`, but uses an LLM to perform the transformation. Best for tasks where rules-based mapping is insufficient — fuzzy classification, sentiment, extraction, summarization, language detection.
+    Like `node_transform`, but uses an AI model to perform the transformation. Best for tasks where rules-based mapping is insufficient — fuzzy classification, sentiment, extraction, summarization, language detection.
 
     **Parameters:**
 
     | Parameter | Type | Default | Description |
     |---|---|---|---|
     | `model` | string | `"fast"` | Model alias or specific model |
-    | `prompt` | string | (required) | Instruction for the LLM |
+    | `prompt` | string | (required) | Instruction for the model |
     | `input_keys` | string[] | (required) | Which state keys to feed into the prompt |
     | `output_key` | string | (required) | Where to store the result |
     | `schema` | object | `null` | JSON schema; if set, output is validated |
@@ -420,7 +419,7 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## PII Scrub Node (`node_pii_scrub`)
+    ## PII Scrub Block (`node_pii_scrub`)
 
     Detects and anonymizes PII (personal information) in state values. Useful for protecting user data before it is logged, archived, or sent to a downstream service.
 
@@ -446,18 +445,18 @@ All nodes share a common structure in YAML:
 
   </Tab>
 
-  <Tab title="Pipeline & Orchestration">
+  <Tab title="Automation & Orchestration">
 
-    ## Pipeline Node (`node_pipeline`)
+    ## Automation Block (`node_pipeline`)
 
-    Invokes a pipeline as a tool from within an agent graph. This is the cornerstone of **Pipeline-First architecture** — heavy lifting (data extracts, ML, optimization, scraping) lives in pipelines, while agents call them like tools.
+    Invokes an automation as a tool from within an agent's flow. This is the cornerstone of the **automation-first** approach — heavy lifting (data extracts, ML, optimization, scraping) lives in automations, while agents call them like tools.
 
     **Parameters:**
 
     | Parameter | Type | Default | Description |
     |---|---|---|---|
-    | `pipeline_name` | string | (required) | Name of the pipeline endpoint to call |
-    | `input_mapping` | object | `{}` | Map state values to pipeline inputs |
+    | `pipeline_name` | string | (required) | Name of the automation endpoint to call |
+    | `input_mapping` | object | `{}` | Map state values to automation inputs |
     | `output_key` | string | `pipeline_result` | Where to store the result |
     | `sync` | boolean | `true` | Wait for completion; `false` returns immediately with an invocation ID |
     | `timeout` | integer | `120` | Max seconds to wait when `sync: true` |
@@ -475,9 +474,9 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Orchestrator Node (`node_orchestrator`)
+    ## Orchestrator Block (`node_orchestrator`)
 
-    Delegates a sub-task to another agent. The graph pauses while the sub-agent runs and resumes when it returns. Used to build hierarchical agent systems — a generalist routes to specialists who can route to sub-specialists, with no depth limit.
+    Delegates a sub-task to another agent. The flow pauses while the sub-agent runs and resumes when it returns. Used to build hierarchical agent systems — a generalist routes to specialists who can route to sub-specialists, with no depth limit.
 
     **Parameters:**
 
@@ -503,9 +502,9 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## DEHA Node (`node_deha`)
+    ## DEHA Block (`node_deha`)
 
-    Embed the DEHA meta-agent inside your agent graph. Useful for agents that need to inspect or modify platform configuration on the fly ("create me a new connector," "list my pipelines," "what does this agent cost?").
+    Embed the DEHA assistant inside your agent's flow. Useful for agents that need to inspect or modify platform configuration on the fly ("create me a new connector," "list my automations," "what does this agent cost?").
 
     **Parameters:**
 
@@ -528,9 +527,9 @@ All nodes share a common structure in YAML:
 
     ---
 
-    ## Error Recovery Node (`node_error_recovery`)
+    ## Error Recovery Block (`node_error_recovery`)
 
-    Catches unhandled errors from upstream nodes and routes the graph to a recovery flow. Use this to keep agents responsive when tools fail or LLM calls time out.
+    Catches unhandled errors from earlier building blocks and routes the flow to a recovery path. Use this to keep agents responsive when tools fail or model calls time out.
 
     **Parameters:**
 
@@ -556,25 +555,25 @@ All nodes share a common structure in YAML:
 
 ---
 
-## Node type summary
+## Building block summary
 
-| Type | YAML value | Category | Description |
+| Building block | Type value | Category | Description |
 |---|---|---|---|
-| LLM | `node_llm` | AI | Call a large language model |
-| Tool | `node_tool` | AI | Execute LLM-generated tool calls |
-| Knowledge | `node_knowledge` | AI | Vector search for RAG |
+| AI Model | `node_llm` | AI | Call an AI model |
+| Tool | `node_tool` | AI | Execute model-generated tool calls |
+| Knowledge | `node_knowledge` | AI | Knowledge search for RAG |
 | Approval | `node_approval` | AI | Human-in-the-loop quality gate |
 | MCP Server | `node_mcp_server` | AI | Execute MCP server tools |
 | Condition | `node_condition` | Control flow | Branch based on expression |
 | Router | `node_router` | Control flow | Multi-branch value-based routing |
 | Logic | `node_logic` | Control flow | Evaluate and store expressions |
 | Handover | `node_handover` | Control flow | Transfer to human agent |
-| Fan-Out | `node_fan_out` | Control flow | Publish to multiple targets |
+| Fan-Out | `node_fan_out` | Control flow | Send to multiple targets |
 | Set Variable | `node_set` | Data | Update state variables |
 | Transform | `node_transform` | Data | Rule-based data transformation |
-| LLM Transform | `node_llm_transform` | Data | LLM-driven transformation (classify, extract, summarize) |
+| AI Transform | `node_llm_transform` | Data | AI-driven transformation (classify, extract, summarize) |
 | PII Scrub | `node_pii_scrub` | Data | Detect and anonymize personal information |
-| Pipeline | `node_pipeline` | Orchestration | Invoke a pipeline as a tool (Pipeline-First) |
+| Automation | `node_pipeline` | Orchestration | Invoke an automation as a tool |
 | Orchestrator | `node_orchestrator` | Orchestration | Delegate to a sub-agent |
-| DEHA | `node_deha` | Orchestration | Embed DEHA meta-agent in your graph |
-| Error Recovery | `node_error_recovery` | Resilience | Catch errors and route to fallback flow |
+| DEHA | `node_deha` | Orchestration | Embed the DEHA assistant in your flow |
+| Error Recovery | `node_error_recovery` | Resilience | Catch errors and route to fallback path |

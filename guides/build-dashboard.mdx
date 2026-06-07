@@ -79,7 +79,7 @@ If you want hand-control, each widget is a YAML block:
       y: { field: revenue,    type: quantitative }
 ```
 
-You can hand-write Vega-Lite specs for full control, or use the text-to-chart helper to generate them.
+You can hand-write the chart spec for full control, or use the text-to-chart helper to generate it for you.
 
 ---
 
@@ -100,7 +100,7 @@ Mark which widgets each filter applies to. Widgets that don't apply (e.g., a sta
 Save the dashboard. The platform generates a signed embed URL:
 
 ```
-https://embed.deha.one/d/{dashboard_id}?token=<hs256>
+https://embed.deha.one/d/{dashboard_id}?token=<signed-token>
 ```
 
 Drop the URL into an iframe in:

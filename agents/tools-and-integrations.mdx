@@ -8,7 +8,7 @@ icon: "plug"
 On their own, agents can hold conversations. But the real power comes when you connect them to your tools and data. An agent with the right integrations can look up orders, create CRM contacts, query databases, run calculations, search documents, scrape the web, optimize routes, and call any API -- all as part of a natural conversation.
 
 <Info>
-  **Pipeline-First architecture**: agents do not call raw integrations directly. Instead, every external tool (REST API, Python code, MCP server, data step, optimizer, scraper, etc.) is wrapped in a **pipeline endpoint** with its own input/output schema, API key, rate limit, and timeout. Agents bind to pipelines using `bind_all_pipelines`, `bind_pipelines`, or `allowed_pipelines` on the LLM node. This gives you clear separation between "intelligence" (agents) and "execution" (pipelines), and makes the same tool callable from any agent, any other pipeline, or directly via REST API.
+  **Automation-first**: agents do not call raw integrations directly. Instead, every external tool (REST API, code execution, MCP server, data step, optimizer, scraper, etc.) is wrapped in an **automation endpoint** with its own input/output schema, API key, rate limit, and timeout. Agents bind to automations using `bind_all_pipelines`, `bind_pipelines`, or `allowed_pipelines` on the AI model block. This gives you clear separation between "intelligence" (agents) and "execution" (automations), and makes the same tool callable from any agent, any other automation, or directly via REST API.
 </Info>
 
 ---
@@ -40,27 +40,27 @@ On their own, agents can hold conversations. But the real power comes when you c
 
 ## Built-in tools
 
-Every DEHA ONE agent has access to these built-in capabilities (when enabled). Each is a pipeline endpoint under the hood, so they can also be called directly via REST API or chained inside any other pipeline.
+Every DEHA ONE agent has access to these built-in capabilities (when enabled). Each is an automation endpoint under the hood, so they can also be called directly via REST API or chained inside any other automation.
 
 | Capability | What it does |
 |---|---|
-| **Knowledge search** | Vector search + cross-encoder reranking over your uploaded documents |
+| **Knowledge search** | Semantic search + reranking over your uploaded documents |
 | **Text-to-SQL** | Translates plain-English questions into safe SQL and runs them |
 | **Direct SQL** | Runs read-only SQL with cost estimation and validation |
 | **Data profiling** | Statistics, distributions, quality metrics for any table |
-| **Data cleaning & validation** | 12 cleaning operations + schema validation |
-| **PII detection & anonymization** | Presidio-based detection with replace / hash / mask / encrypt |
-| **Entity resolution** | Splink-powered fuzzy deduplication with HITL review |
+| **Data cleaning & validation** | A dozen cleaning operations + schema validation |
+| **PII detection & anonymization** | Detects personal information and applies replace / hash / mask / encrypt |
+| **Entity resolution** | Fuzzy deduplication with human-in-the-loop review |
 | **ML analysis** | Classification, regression, clustering, forecasting, anomaly, drift, survival |
-| **MLflow registry** | Train, register, promote, predict with SHAP explanations |
+| **Model registry** | Train, register, promote, predict with feature-importance explanations |
 | **Data extraction** | Pull from REST, PostgreSQL, MySQL, MongoDB, S3, SFTP, file, webhook |
-| **Code execution** | Sandboxed Python 3.12 with `standard`, `data`, or `ml` runtime profiles |
-| **Web search** | 13-provider parallel web search |
-| **Web scraping** | Markdown / CSS / LLM extraction via Chromium pool |
-| **Optimization** | OR-Tools: routing, scheduling, assignment, packing, network flow, LP/MIP |
-| **Visualization** | Vega-Lite charts, dashboards, PDF reports |
+| **Code execution** | Sandboxed Python with `standard`, `data`, or `ml` runtime profiles |
+| **Web search** | Parallel web search across many providers |
+| **Web scraping** | Markdown / CSS / AI-based extraction |
+| **Optimization** | Industrial-grade solvers: routing, scheduling, assignment, packing, network flow, LP/MIP |
+| **Visualization** | Charts, dashboards, PDF reports |
 | **IoT commands** | Send commands to devices over MQTT, OPC-UA, or Modbus |
-| **Pipeline invocation** | Trigger any user pipeline as a tool |
+| **Automation invocation** | Trigger any user automation as a tool |
 
 These tools are available out of the box -- no integration setup needed.
 
@@ -180,28 +180,28 @@ You can customize how your agent handles failures in its system prompt.
 
 ## Managing tool access
 
-Access is controlled at the LLM node level via three settings (all on `node_llm`):
+Access is controlled at the AI model block level via three settings:
 
 | Setting | What it does |
 |---|---|
-| `bind_all_pipelines: true` | Bind every user pipeline as a callable tool — broadest access. |
-| `bind_pipelines: [a, b, c]` | Bind only the listed pipelines. Most common in production. |
+| `bind_all_pipelines: true` | Bind every user automation as a callable tool — broadest access. |
+| `bind_pipelines: [a, b, c]` | Bind only the listed automations. Most common in production. |
 | `allowed_pipelines: [a, b]` | Whitelist enforced at call time, even if more were bound. Defense in depth. |
 
 ### Give access to all tools
 
-The simplest approach -- your agent can use every pipeline that is configured for your user. Good for prototyping or for general-purpose admin agents.
+The simplest approach -- your agent can use every automation that is configured for your user. Good for prototyping or for general-purpose admin agents.
 
 ### Selective access
 
-Restrict an agent to specific pipelines. For example, your sales agent gets CRM lookup and quote-generation pipelines but not the admin user-management pipeline. Your data analyst gets query and forecast pipelines but not the messaging-send pipelines.
+Restrict an agent to specific automations. For example, your sales agent gets CRM lookup and quote-generation automations but not the admin user-management automation. Your data analyst gets query and forecast automations but not the messaging-send automations.
 
 ### No tools
 
 For simple conversational agents that only need to chat (FAQ bots, greeters), leave all three settings unset. The agent will not call any tools.
 
 <Tip>
-  Start with selective access (`bind_pipelines`) and add more pipelines as needed. Agents work better when they have a focused set of tools relevant to their role -- fewer choices means faster, more accurate tool selection by the LLM.
+  Start with selective access (`bind_pipelines`) and add more automations as needed. Agents work better when they have a focused set of tools relevant to their role -- fewer choices means faster, more accurate tool selection by the AI model.
 </Tip>
 
 ---
@@ -233,7 +233,7 @@ You need the server URL, authentication credentials, and optionally which specif
   <Card title="Multi-Agent Orchestration" icon="sitemap" href="/agents/multi-agent-orchestration">
     Build teams of specialized agents that collaborate.
   </Card>
-  <Card title="Node Types" icon="shapes" href="/agents/node-types">
+  <Card title="Building Blocks" icon="shapes" href="/agents/node-types">
     Explore all the building blocks for agent workflows.
   </Card>
 </CardGroup>

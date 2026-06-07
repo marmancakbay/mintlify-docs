@@ -1,7 +1,7 @@
 ---
 title: "Forecast and detect drift"
 sidebarTitle: "Forecast & drift"
-description: "Generate a forecast, register a model in MLflow, run predictions in production, and monitor for drift."
+description: "Generate a forecast, register a model in the model registry, run predictions in production, and monitor for drift."
 icon: "chart-line"
 ---
 
@@ -14,7 +14,7 @@ This guide walks you through a complete forecasting lifecycle: train a model, re
 ```mermaid
 flowchart LR
     Data[Pull historical sales] --> Train[Train forecast]
-    Train --> Register[Register in MLflow]
+    Train --> Register[Register in model registry]
     Register --> Predict[Predict next 14 days]
     Predict --> Watch[Drift detection]
     Watch --> Slack[Alert on Slack]
@@ -34,7 +34,7 @@ A daily pipeline that:
 
 The fastest path is to ask DEHA:
 
-> "Train a daily revenue forecast from the `sales` table, target column `total`, time column `order_date`. Register the model as `revenue_forecast` in MLflow."
+> "Train a daily revenue forecast from the `sales` table, target column `total`, time column `order_date`. Register the model as `revenue_forecast` in the model registry."
 
 DEHA generates the pipeline, runs the training, and registers the model.
 
@@ -47,7 +47,7 @@ Or build it manually in the **Data Studio → Analytics**:
 5. Horizon: 14 days
 6. **Train and register** as `revenue_forecast`
 
-The platform auto-selects between **StatsForecast**, **Prophet**, and **NeuralForecast** based on the signal in your data.
+The platform auto-selects the best-fit forecasting model -- from fast statistical methods to neural approaches -- based on the signal in your data.
 
 ---
 
@@ -55,7 +55,7 @@ The platform auto-selects between **StatsForecast**, **Prophet**, and **NeuralFo
 
 After training, the model is in the **Staging** alias. Test predictions for a few days, then promote:
 
-1. **MLflow** → `revenue_forecast` → version 1
+1. **Model Registry** → `revenue_forecast` → version 1
 2. **Promote to Production** (or any custom alias like `weekly_run`)
 
 Multiple versions can coexist: one in production, one in staging being evaluated, one in development being trained.
@@ -130,7 +130,7 @@ Now monitor whether the model's inputs and outputs are shifting:
   target: "#mlops"
   text: "*Drift detected on revenue_forecast*: severity `${drift.severity}`, PSI=${drift.psi}, K-S=${drift.ks}"
   attachments:
-    - artifact_path: ${drift.evidently_report_html}
+    - artifact_path: ${drift.report_html}
 ```
 
 Severity grading:
@@ -139,7 +139,7 @@ Severity grading:
 - **Yellow** — small drift, may warrant attention
 - **Red** — significant drift, likely time to retrain
 
-The **Evidently HTML report** is attached for deep inspection.
+A detailed **HTML drift report** is attached for deep inspection.
 
 ---
 

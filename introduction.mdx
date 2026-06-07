@@ -1,25 +1,25 @@
 ---
 title: "Introduction"
 sidebarTitle: "Introduction"
-description: "The AI platform that runs your business -- intelligent agents, automated workflows, live data, optimization, and IoT in one place."
+description: "The AI-native data and ML platform. We engineer the data, you design the intelligence -- autonomous agents, automations, a living data map, and ML, all in one place."
 ---
 
-Welcome to **DEHA ONE**. It is the platform you use to put AI to work across your business: build agents that talk to customers, design workflows that move data around, ask questions about your databases in plain English, optimize routes and schedules, ingest telemetry from devices, and visualize everything in shareable dashboards.
+Welcome to **DEHA ONE** -- a managed data and machine-learning platform with autonomous AI agents and automations on top.
 
-**Just tell DEHA what you need, and it builds it for you.**
+**Describe what you need in plain language, and DEHA designs it, deploys it, and keeps it running.** No glue code, nothing to wire by hand. Connect your data, ask it questions, build agents that act, automate the work, and present the results -- all from one place.
 
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Go from sign-up to a working AI agent in under five minutes.
+    Go from a sentence to a working setup in minutes.
+  </Card>
+  <Card title="The DEHA ONE Model" icon="infinity" href="/concepts">
+    One continuous flow from your intent to a finished outcome -- and the names behind it: İDRAK, DEHA, KURUL, SUNU.
   </Card>
   <Card title="Meet DEHA" icon="sparkles" href="/deha/overview">
-    Your AI assistant that creates agents, automations, and integrations from plain English -- and self-heals when something breaks.
+    Your AI assistant that builds agents, automations, and integrations from plain language -- and self-heals when something breaks.
   </Card>
   <Card title="Platform Overview" icon="diagram-project" href="/platform-overview">
     The big picture: every capability, how they fit together, and when to use which.
-  </Card>
-  <Card title="API Reference" icon="rectangle-terminal" href="/api-reference/overview">
-    Drive everything programmatically with the REST API and per-agent / per-pipeline endpoints.
   </Card>
 </CardGroup>
 
@@ -28,37 +28,41 @@ Welcome to **DEHA ONE**. It is the platform you use to put AI to work across you
 ## What you can build
 
 <CardGroup cols={2}>
-  <Card title="AI Agents" icon="robot" href="/agents/overview">
-    Conversational agents, document processors, and quality judges -- with tools, memory, and approval gates. Agents can call APIs, run code, search your knowledge, and delegate to other agents.
+  <Card title="DEHA — Your AI assistant" icon="sparkles" href="/deha/overview">
+    Turn a sentence into a working, deployed setup. DEHA designs it, checks it, deploys it, tests it, and keeps it healthy -- with a preview and one-click undo before anything goes live.
   </Card>
-  <Card title="Omni-Channel Messaging" icon="messages" href="/channels/overview">
-    Meet customers where they are -- WhatsApp, Telegram, Email, Slack, and Web Chat. One agent, every channel, same context.
+  <Card title="İDRAK — Living data map" icon="diagram-project" href="/idrak/overview">
+    A single, living map of all your data and what every piece of it means -- discovered automatically, and ready to ask questions of with cited answers.
+  </Card>
+  <Card title="AI Agents" icon="robot" href="/agents/overview">
+    Advanced agents that plan, use real tools, run code, search the web, work proactively, and hand off to one another -- with you in control.
   </Card>
   <Card title="Automations & Pipelines" icon="gears" href="/automations/overview">
-    Design multi-step workflows that run on a schedule, on an event, or on demand. Add human review gates and let the platform handle retries, failures, and rollbacks.
+    Multi-step workflows from a rich library of building blocks, on a schedule, on an event, or on demand -- with human review gates and automatic recovery.
   </Card>
   <Card title="Data & Analytics" icon="chart-mixed" href="/data/overview">
-    Connect databases, APIs, and files. Ask questions in plain English. Forecast, detect anomalies, profile data quality, scrub PII, and version snapshots with rollback.
+    Connect databases, APIs, and files. Ask questions in plain language. Forecast, detect anomalies, profile data quality, and protect personal data -- without writing SQL or building models yourself.
   </Card>
-  <Card title="Knowledge Base (RAG)" icon="books" href="/knowledge-base/overview">
-    Upload PDFs, DOCX, PPTX, spreadsheets, and webpages. Your agents search them with semantic ranking and reranking -- accurate, grounded answers with source citations.
+  <Card title="Knowledge Base" icon="books" href="/knowledge-base/overview">
+    Turn PDFs, documents, spreadsheets, audio, video, and webpages into instant, cited answers your agents can rely on.
   </Card>
-  <Card title="IoT & Devices" icon="microchip" href="/iot/overview">
-    Connect sensors, PLCs, and gateways over MQTT, OPC-UA, Modbus, HTTP polling, or webhooks. Per-device schemas, offline detection, and bidirectional commands.
+  <Card title="Reports & Presentations" icon="file-lines" href="/viz/overview">
+    Charts from plain language, shareable dashboards, and polished PDF or Word reports -- generated from your results, on a schedule.
   </Card>
   <Card title="Optimization" icon="route" href="/optimization/overview">
-    Solve routing, scheduling, assignment, packing, and network-flow problems with industrial-grade solvers. Get answers with charts, Gantt views, and plain-English summaries.
+    Solve routing, scheduling, assignment, and packing problems with industrial-grade solvers -- answers with charts and plain-language summaries.
   </Card>
   <Card title="Web Intelligence" icon="globe" href="/web-intel/overview">
-    Search 13 web providers in parallel (Google, Tavily, Brave, YouTube, GDELT, complaints sites). Scrape pages into clean markdown or structured JSON for your agents to consume.
-  </Card>
-  <Card title="Visualizations & Reports" icon="chart-pie" href="/viz/overview">
-    Generate charts from natural language. Build embeddable dashboards. Auto-render multi-page PDF reports on a schedule.
+    Search many leading providers at once and turn any link into clean, structured content for your agents to use.
   </Card>
   <Card title="Integrations" icon="plug" href="/integrations/overview">
-    Connect to any REST API, run sandboxed Python code, or use the MCP protocol. Expose your agents and pipelines as MCP tools for any LLM client.
+    Connect any REST API, run sandboxed Python safely, and plug into the wider tool ecosystem -- including the MCP standard.
   </Card>
 </CardGroup>
+
+<Info>
+  **Reach your customers anywhere.** Your agents can also talk to people on WhatsApp, Telegram, Email, Slack, and Web Chat -- one agent, every channel, same context. See [Channels](/channels/overview).
+</Info>
 
 ---
 
@@ -66,24 +70,24 @@ Welcome to **DEHA ONE**. It is the platform you use to put AI to work across you
 
 <AccordionGroup>
   <Accordion title="Build with natural language">
-    DEHA, your built-in AI assistant, lets you describe what you want in plain English. It generates the configuration, validates it, deploys it, runs tests, and auto-heals if something fails. No code required for 95% of use cases.
+    DEHA, your built-in AI assistant, lets you describe what you want in plain language. It builds the setup, validates it, deploys it, runs tests, and auto-heals if something fails. No code required for the vast majority of use cases.
+  </Accordion>
+  <Accordion title="Understands all your data">
+    İDRAK assembles your tables, files, and documents into one living map and works out how they connect -- so you (and your agents) can ask questions across everything at once and get answers with their sources shown.
   </Accordion>
   <Accordion title="Works with any AI model">
-    Use OpenAI, Anthropic, Google Gemini, DeepSeek, or your own self-hosted models via LiteLLM. Pick a model per agent, swap models without rebuilding, or use semantic aliases like `fast`, `smart`, or `cheap` and let the platform route.
+    Use leading AI providers or your own self-hosted models. Pick a model per agent, swap models without rebuilding, or use simple aliases like `fast`, `smart`, or `cheap` and let the platform route.
   </Accordion>
   <Accordion title="Bring Your Own Data (BYOD)">
-    Your business data stays in your warehouse. DEHA ONE processes data but does not persist it -- results sink back to your PostgreSQL, MySQL, MongoDB, S3, or external Qdrant. Optional internal storage for operational data only.
+    Your business data stays on your own infrastructure. DEHA ONE processes data but does not own it -- results sink back to your own databases and storage. The platform keeps only the operational layer.
   </Accordion>
   <Accordion title="Bring Your Own Keys (BYOK)">
-    Use your own LLM provider credentials (OpenAI, Vertex AI with your GCP service account, Anthropic, etc.). Embeddings, completions, and tools run on your accounts with your rate limits and your billing relationship.
+    Use your own AI provider credentials. Embeddings, completions, and tools run on your accounts, with your rate limits and your billing relationship.
   </Accordion>
-  <Accordion title="Enterprise-grade security">
-    Zero-Trust gateway, Auth0 SSO, role-based access control, per-user data isolation, encrypted vault for credentials, IP whitelisting, signed webhooks, and a full audit trail.
+  <Accordion title="Secure and auditable by default">
+    Single sign-on, fine-grained roles, per-workspace isolation, an encrypted vault for credentials, and a complete, auditable activity trail -- so you can adopt AI with confidence and answer any auditor.
   </Accordion>
   <Accordion title="Transparent, credit-based pricing">
-    Pay only for what you use. Monitor your credit consumption in real time, set quota alerts, and control spending with configurable overage actions (alert, throttle, or block).
-  </Accordion>
-  <Accordion title="Multi-user, multi-region, hot-reloadable">
-    Every change deploys atomically across the cluster -- no restart, no downtime. Run multiple versions of an agent with weighted traffic splits. A/B test in production safely.
+    Pay only for what you use. Monitor consumption in real time, set quota alerts, and control spending with configurable overage actions.
   </Accordion>
 </AccordionGroup>
