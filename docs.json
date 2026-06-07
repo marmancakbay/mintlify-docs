@@ -48,7 +48,7 @@
             "pages": [
               "agents/overview",
               "agents/creating-agents",
-              "agents/node-types",
+              "agents/building-blocks",
               "agents/tools-and-integrations",
               "agents/multi-agent-orchestration"
             ]
