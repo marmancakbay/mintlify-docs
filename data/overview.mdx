@@ -8,7 +8,7 @@ icon: "database"
 DEHA ONE turns your data into something agents and humans can actually work with. Connect a source, define what "good data" means, and the platform handles ingest, cleaning, validation, querying, analysis, privacy, and versioning.
 
 <Info>
-  **Bring Your Own Data (BYOD)**: the platform processes your data but does not own it. Operational state stays in DEHA ONE; business data is sunk back to your own systems, PostgreSQL, MySQL, MongoDB, S3, or your own vector store. Hybrid setups are supported.
+  **Bring Your Own Cloud (BYOC)**: the data side runs on your own infrastructure and your business data never leaves it. DEHA ONE keeps only operational state, your data is never stored on our systems. Connect PostgreSQL, MySQL, MongoDB, S3, or your own vector store.
 </Info>
 
 <Tip>
@@ -38,8 +38,8 @@ DEHA ONE turns your data into something agents and humans can actually work with
   <Card title="Protect privacy" icon="shield-halved" href="/data/privacy-and-pii">
     Automatically detect personal data (PII), including Turkish and other languages, and anonymize with replace / redact / hash / mask / encrypt.
   </Card>
-  <Card title="Version & rollback" icon="clock-rotate-left" href="/data/versioning-and-byod">
-    Versioned snapshots with time-travel and rollback. Route results to your own systems via BYOD.
+  <Card title="Version & rollback" icon="clock-rotate-left" href="/data/versioning-and-byoc">
+    Versioned snapshots with time-travel and rollback. Route results to your own systems via BYOC.
   </Card>
   <Card title="Track drift" icon="chart-line" href="/guides/forecast-and-drift">
     Drift monitoring on inputs and predictions, with severity-graded reports.
@@ -67,7 +67,7 @@ flowchart TB
         Snapshot[Snapshots<br/>versioning + rollback]
     end
 
-    subgraph Sinks["Your sinks (BYOD)"]
+    subgraph Sinks["Your sinks (BYOC)"]
         Warehouse[(Your databases)]
         Vector[(Your vector store)]
         Apps[Your apps]
@@ -133,5 +133,5 @@ Every workspace is completely isolated. Your data, your schemas, your credential
 3. **[Set up data quality](/data/data-quality)**, clean, validate, dedup.
 4. **[Protect personal data](/data/privacy-and-pii)**, detect and anonymize.
 5. **[Run analytics](/data/analytics)**, forecast, anomaly, classify, cluster.
-6. **[Version snapshots](/data/versioning-and-byod)**, time-travel + BYOD sink.
+6. **[Version snapshots](/data/versioning-and-byoc)**, time-travel + BYOC sink.
 7. **[Map it all with İDRAK](/idrak/overview)**, one living map of everything you've connected.

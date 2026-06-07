@@ -1,127 +1,52 @@
 ---
-title: "Communication Channels"
-description: "Connect your AI agents to WhatsApp, Telegram, Email, Web Chat, and more, reach your customers on every platform they use."
+title: "Channels"
+sidebarTitle: "Overview"
+description: "Deliver results and notifications, and accept input, over the messaging platforms your team already uses."
 icon: "comments"
 ---
 
-DEHA ONE lets you connect your AI agents to the messaging platforms your customers already use. Set up once, and the same agent handles conversations across every connected channel, no extra configuration needed.
+Channels are how DEHA ONE reaches people: your agents and automations can **send results, alerts, and reports** to a messaging platform, and **accept input** back from it. It's an input/output layer, not the product, so the same setup works no matter which channel is connected.
 
-## One Agent, Every Channel
+<Info>
+  Channels are optional. Most of DEHA ONE runs without them, your data, agents, automations, and reports work entirely on their own. Add a channel only when you want results delivered to, or input collected from, a messaging platform.
+</Info>
 
-When you build an AI agent in DEHA ONE, it works the same way regardless of how your customer reaches out. Whether someone sends a WhatsApp message, a Telegram chat, an email, or uses your website's chat widget, the same agent responds with the same quality and knowledge.
+---
 
-<Steps>
-  <Step title="Customer sends a message">
-    A customer reaches out through any connected channel.
-  </Step>
-  <Step title="Your AI agent responds">
-    DEHA ONE routes the message to your configured agent. The agent processes the message, looks up relevant information from your knowledge base, and generates a response.
-  </Step>
-  <Step title="Reply is delivered">
-    The response is sent back to the customer on the same channel they used to reach out.
-  </Step>
-</Steps>
-
-## Built-in Channels
-
-DEHA ONE comes with ready-to-use connections for the most popular messaging platforms. They all reuse the same agent and automation routing, with reliable, automatic delivery, so one agent serves every channel.
+## Documented channels
 
 <CardGroup cols={2}>
   <Card title="WhatsApp" icon="whatsapp" href="/channels/whatsapp">
-    Reach billions of users via the WhatsApp Business / Meta Cloud API. Text, images, documents, audio, video, location, and interactive replies.
-  </Card>
-  <Card title="Telegram" icon="telegram" href="/channels/telegram">
-    Telegram Bot API integration with media, inline buttons, commands, and group chat support.
-  </Card>
-  <Card title="Email" icon="envelope" href="/channels/email">
-    Inbound via SendGrid / Mailgun / generic webhook; outbound via async SMTP. Support for HTML, attachments, and reply-threading.
+    Send and receive messages via the WhatsApp Business API, text, images, documents, and interactive replies.
   </Card>
   <Card title="Slack" icon="slack" href="/channels/slack">
-    Bot with DMs, threaded replies, channel mentions, slash commands, interactive blocks, and pipeline notifications.
-  </Card>
-  <Card title="Web Chat" icon="comments" href="/channels/web-chat">
-    Built-in dashboard chat and embeddable widget with real-time streaming and full media support.
+    Post results and alerts to channels, run slash commands, and collect approvals, ideal for internal operations.
   </Card>
 </CardGroup>
 
-## Extensible Channel Architecture
+Email and Telegram are also supported and can be enabled from the dashboard. Need another platform (Teams, SMS, or a custom webhook)? Reach out to your account team.
 
-DEHA ONE's channel system is designed to be **open and extensible**. The five built-in channels are just the starting point, any messaging platform, communication tool, or custom interface can be connected as a new channel.
+---
 
-<Info>
-  Every channel feeds into the same agents, automations, and routing rules, so your setup works across any channel without modification. Adding a new channel never changes the agents you've already built.
-</Info>
+## How it fits
 
-### Channels that can be added
+- **One setup, every channel.** Whatever you build works across any connected channel without changes.
+- **Delivery is reliable.** Outbound messages are sent with automatic retries and failure recovery.
+- **Approvals work everywhere.** If an automation pauses for [human review](/automations/human-review), your team handles it from the dashboard, regardless of channel.
+- **Usage is tracked per channel**, so you can see which ones are active.
 
-Because of this extensible architecture, additional channels can be integrated. Reach out to your account team if you need any of the following on a tighter timeline:
+<Tip>
+  The most common use is **output**: have a [pipeline](/automations/overview) publish a daily report or an alert to Slack or WhatsApp on a schedule. See the `publish` building block in [Automations](/automations/step-types).
+</Tip>
 
-<CardGroup cols={3}>
-  <Card title="Instagram DM" icon="instagram">
-    Customer support and engagement through Instagram Direct Messages.
-  </Card>
-  <Card title="Facebook Messenger" icon="facebook-messenger">
-    Reach customers on Facebook's messaging platform.
-  </Card>
-  <Card title="Microsoft Teams" icon="microsoft">
-    Enterprise communication and helpdesk bots for Teams.
-  </Card>
-  <Card title="SMS / RCS" icon="message-sms">
-    Text-message-based customer interactions via SMS or RCS.
-  </Card>
-  <Card title="Voice / IVR" icon="phone">
-    Phone-based AI assistants with speech-to-text and text-to-speech.
-  </Card>
-  <Card title="Live Chat (Intercom, Zendesk)" icon="headset">
-    Plug into existing live-chat platforms as an AI co-pilot.
-  </Card>
-  <Card title="Custom Webhooks" icon="webhook">
-    Connect any system that can send and receive HTTP webhooks.
-  </Card>
-  <Card title="Mobile App SDK" icon="mobile">
-    Embed AI chat directly into your iOS or Android app.
-  </Card>
-  <Card title="Voice with WhatsApp" icon="microphone">
-    Voice notes on WhatsApp are transcribed and treated as text by your agent.
-  </Card>
-</CardGroup>
+---
 
-## What Can Your Customers Send?
+## Setting up a channel
 
-Different channels support different types of content. Here is what your agent can receive on each built-in channel:
-
-| Content Type | WhatsApp | Telegram | Email | Slack | Web Chat |
-|---|---|---|---|---|---|
-| Text messages | Yes | Yes | Yes | Yes | Yes |
-| Images | Yes | Yes | As attachment | Yes | Yes |
-| Documents (PDF, etc.) | Yes | Yes | As attachment | Yes | Yes |
-| Audio / Voice notes | Yes | Yes | No | No | Yes |
-| Video | Yes | Yes | No | Yes | Yes |
-| Location | Yes | Yes | No | No | No |
-| Buttons / Interactive | Yes | Yes (inline) | No | Yes (blocks) | Yes |
-| Threaded replies | No | Reply-to | Yes | Yes | No |
-| HTML content | No | No | Yes | No | Yes |
-| Slash commands | No | Bot commands | No | Yes | No |
-
-## Setting Up Channels
-
-You can enable and configure channels from the DEHA ONE dashboard. Each channel has its own setup guide:
-
-1. **Go to Settings** in your dashboard
-2. **Select Channels** from the menu
-3. **Enable** the channels you want to use
-4. **Follow the setup steps** for each channel (linking your WhatsApp Business account, Telegram bot, email provider, etc.)
+1. Go to **Settings → Channels** in your dashboard
+2. Enable the channel you want
+3. Follow its setup steps (linking your WhatsApp Business account, Slack workspace, etc.)
 
 <Info>
-  All credentials (API tokens, passwords, secrets) are stored securely and encrypted. You never need to worry about them being exposed.
+  All credentials are stored securely in your encrypted vault and never exposed.
 </Info>
-
-## How It All Connects
-
-Once a channel is set up, everything works automatically:
-
-- **Conversations are tracked** across channels, so you can see all customer interactions in one place
-- **Your agent uses the same knowledge** regardless of the channel
-- **Human review** works the same way, if an agent flags a response for review, your team sees it in the dashboard no matter which channel the customer used
-- **Usage and billing** are tracked per channel, so you can see which channels are most active
-- **New channels integrate seamlessly**, when you add a new channel, all your existing agents and automations work with it immediately

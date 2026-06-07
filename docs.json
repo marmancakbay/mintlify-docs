@@ -73,7 +73,7 @@
               "data/transformations",
               "data/data-quality",
               "data/privacy-and-pii",
-              "data/versioning-and-byod"
+              "data/versioning-and-byoc"
             ]
           },
           {
@@ -122,10 +122,7 @@
             "pages": [
               "channels/overview",
               "channels/whatsapp",
-              "channels/telegram",
-              "channels/email",
-              "channels/slack",
-              "channels/web-chat"
+              "channels/slack"
             ]
           },
           {
@@ -188,10 +185,7 @@
             "group": "Channel Setup",
             "pages": [
               "guides/setup-whatsapp",
-              "guides/setup-telegram",
-              "guides/setup-email",
-              "guides/setup-slack",
-              "guides/setup-web-chat"
+              "guides/setup-slack"
             ]
           }
         ]

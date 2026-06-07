@@ -63,7 +63,7 @@ You can also control which collections an agent can access. For example, your cu
 Every organization's knowledge base is completely isolated:
 
 - Per-user collections with a **mandatory user-id filter** on every query
-- **BYOD option**: point the knowledge base at your own vector store, your data never sits on platform infrastructure
+- **BYOC option**: point the knowledge base at your own vector store, your data never sits on platform infrastructure
 - **BYOK option**: use your own search-indexing API keys (OpenAI, Google, etc.), indexing is billed to your account, not platform credits
 - Automatic deduplication, re-uploading the same content does not double-bill or duplicate entries
 - Zero-downtime re-indexing: when you change how content is indexed for search, the platform builds the new search index in the background and only flips reads once it is healthy

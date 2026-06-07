@@ -1,14 +1,14 @@
 ---
-title: "Versioning & BYOD"
-sidebarTitle: "Versioning & BYOD"
+title: "Versioning & BYOC"
+sidebarTitle: "Versioning & BYOC"
 description: "Snapshot your data with time-travel and rollback. Route results back to your own warehouse, MongoDB, or vector store."
 icon: "clock-rotate-left"
 ---
 
-DEHA ONE processes your data, but it does not want to own it. Two features make that practical:
+The data side of DEHA ONE runs on your own infrastructure, and your data never leaves it. Two features make that practical:
 
 1. **Versioning**, every snapshot is point-in-time, time-travelable, and rollback-able
-2. **BYOD (Bring Your Own Data)**, results sink back to your own storage, with the platform keeping only operational state
+2. **BYOC (Bring Your Own Cloud)**, the data side runs in your environment and your data stays in your own systems; the platform keeps only operational state
 
 ---
 
@@ -44,11 +44,11 @@ DEHA validates the request, performs the atomic re-point (no data movement), and
 
 ---
 
-## BYOD, Bring Your Own Data
+## BYOC, Bring Your Own Cloud
 
-DEHA ONE's BYOD model means **your business data lives in your warehouse, not ours**. The platform processes data ephemerally and sinks the results back to systems you own.
+DEHA ONE's BYOC model means **your business data lives and stays on your own infrastructure, never ours**. The data-processing side runs in your environment, and results stay in systems you own. The platform never receives or stores your business data, it keeps only operational state.
 
-### BYOD destinations
+### BYOC destinations
 
 | Destination | What you can sink to it |
 |---|---|
@@ -71,7 +71,7 @@ Pick how data flows for your workspace:
 
 Per-data-category routing is supported: `BUSINESS_DATA`, `ANALYTICS_RESULTS`, `EMBEDDINGS`, `FILES`, `CONVERSATIONS` can each go to a different destination.
 
-### Why BYOD matters
+### Why BYOC matters
 
 - **Data residency**, keep data in your region of choice
 - **Existing investments**, leverage your warehouse, your Mongo, your vector store, your S3
@@ -86,11 +86,11 @@ Per-data-category routing is supported: `BUSINESS_DATA`, `ANALYTICS_RESULTS`, `E
 | Data category | Where it lives |
 |---|---|
 | **Operational** (the platform's own runtime state) | Platform |
-| **Business data** (your tables, your customers, your transactions) | You (BYOD) or platform (your choice) |
-| **Analytics results** | You (BYOD) or platform |
-| **Conversations / messages** | You (BYOD) or platform |
-| **Embeddings** | You (BYOD vector store) or platform search index |
-| **Files / attachments** | You (BYOD S3) or platform |
+| **Business data** (your tables, your customers, your transactions) | You (BYOC) or platform (your choice) |
+| **Analytics results** | You (BYOC) or platform |
+| **Conversations / messages** | You (BYOC) or platform |
+| **Embeddings** | You (BYOC vector store) or platform search index |
+| **Files / attachments** | You (BYOC S3) or platform |
 
 You decide which category goes where on a per-workspace basis.
 
@@ -103,7 +103,7 @@ For transient analytics work, text-to-SQL, profiling, ad-hoc queries, DEHA ONE u
 - Fully isolated per workspace
 - Read-only for analytics / query workloads
 - Ephemeral by default (process and discard)
-- Optionally persistent with a retention-period sink to your BYOD destination
+- Optionally persistent with a retention-period sink to your BYOC destination
 
 The analytics engine connects directly to your warehouse (PostgreSQL, MySQL, MongoDB), so queries against your live warehouse work without moving data into the platform.
 
@@ -111,7 +111,7 @@ The analytics engine connects directly to your warehouse (PostgreSQL, MySQL, Mon
 
 ## Audit and lineage
 
-Every snapshot and every BYOD write produces a lineage event for built-in lineage tracking (or your own lineage system). You can:
+Every snapshot and every BYOC write produces a lineage event for built-in lineage tracking (or your own lineage system). You can:
 
 - Trace any downstream artifact back to every input that produced it
 - See which pipeline / agent / user triggered the write

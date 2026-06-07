@@ -29,7 +29,7 @@ DEHA ONE can pull data from a variety of sources. Whether your data lives in a d
   <Tab title="Databases">
     Connect directly to your relational or document database and read tables and views.
 
-    **Best for:** Importing structured data from your existing databases. With BYOD, the platform can query live without copying.
+    **Best for:** Importing structured data from your existing databases. With BYOC, the platform can query live without copying.
 
     **Supported databases:**
     - **PostgreSQL** 12+
@@ -128,9 +128,9 @@ Choose how your data stays up to date:
   For most production use cases, incremental sync is the best choice. Cursors persist across runs so a failed sync resumes where it left off, and only changed records are pulled.
 </Tip>
 
-### BYOD: skip the import entirely
+### BYOC: skip the import entirely
 
-For databases the platform supports natively (PostgreSQL, MySQL, MongoDB, SQLite), the platform can query your warehouse **without copying data into the platform**. You configure the connection once and queries run against your live tables. This is the BYOD model, see [Versioning & BYOD](/data/versioning-and-byod) for details.
+For databases the platform supports natively (PostgreSQL, MySQL, MongoDB, SQLite), the platform can query your warehouse **without copying data into the platform**. You configure the connection once and queries run against your live tables. This is the BYOC model, see [Versioning & BYOC](/data/versioning-and-byoc) for details.
 
 ---
 

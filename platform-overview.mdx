@@ -23,7 +23,7 @@ flowchart TB
     end
 
     subgraph Entry["How work comes in"]
-        Channels[Channels & Web Chat]
+        Channels[Channels]
         API[Your APIs & webhooks]
     end
 
@@ -69,7 +69,7 @@ Every way work comes in, a customer message, a scheduled job, an API call, flows
 | Ask questions about your database in plain language | [Ask your data](/data/querying-data) |
 | Forecast demand or detect anomalies | [Analytics](/data/analytics) |
 | Clean, validate, deduplicate, or protect personal data | [Data Quality](/data/data-quality) + [Privacy & PII](/data/privacy-and-pii) |
-| Snapshot data with rollback (time-travel) | [Data versioning & BYOD](/data/versioning-and-byod) |
+| Snapshot data with rollback (time-travel) | [Data versioning & BYOC](/data/versioning-and-byoc) |
 | Answer questions from documents, spreadsheets, or webpages | [Knowledge Base](/knowledge-base/overview) |
 | Solve routing, scheduling, assignment, or packing problems | [Optimization](/optimization/overview) |
 | Search the web and turn any link into clean content | [Web Intelligence](/web-intel/overview) |
@@ -81,15 +81,15 @@ Every way work comes in, a customer message, a scheduled job, an API call, flows
 
 ---
 
-## Bring Your Own Data and Keys
+## Bring Your Own Cloud and Keys
 
-DEHA ONE processes data but does not own it. Your business data lives on your own infrastructure.
+The data side of DEHA ONE runs on your own infrastructure, and your business data never leaves it. The platform keeps only the operational layer, never your data.
 
-**BYOD (Bring Your Own Data)**
-- Connect databases, REST APIs, cloud storage, and files (CSV, Excel, JSON, Parquet) and webhooks
-- Results sink back to your own databases and storage, the platform keeps only the operational layer
-- Route to your own vector store and your own archive
-- Snapshot versioning with time-travel and rollback
+**BYOC (Bring Your Own Cloud)**
+- The data-processing components run in your environment, your data is never sent to us
+- Connect your databases, cloud storage, files, and APIs in place, no copying out
+- Results stay in your own systems; DEHA ONE holds only operational state
+- Snapshot versioning with time-travel and rollback, on your infrastructure
 
 **BYOK (Bring Your Own Keys)**
 - Bring your own AI provider credentials, including self-hosted models
