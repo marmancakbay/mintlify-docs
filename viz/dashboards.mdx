@@ -5,7 +5,7 @@ description: "Multi-widget layouts with live data, filters, and version history.
 icon: "table-cells-large"
 ---
 
-A dashboard is a collection of widgets — charts, tables, big numbers, text blocks — laid out on a grid. Dashboards are versioned, embeddable, and renderable to PDF.
+A dashboard is a collection of widgets, charts, tables, big numbers, text blocks, laid out on a grid. Dashboards are versioned, embeddable, and renderable to PDF.
 
 ---
 
@@ -15,7 +15,7 @@ A dashboard is a collection of widgets — charts, tables, big numbers, text blo
 |---|---|
 | **Widgets** | Individual cells. Up to 48 per dashboard. Each widget has its own data source, refresh cadence, and (optionally) filter bindings. |
 | **Layout** | A grid where every widget has position (row, col) and size (width, height). |
-| **Filters** | Global controls — date range, segment selector, user filter — that propagate to bound widgets. |
+| **Filters** | Global controls, date range, segment selector, user filter, that propagate to bound widgets. |
 | **Theme** | Inherits your user brand by default; per-dashboard overrides allowed. |
 | **Refresh** | Each widget can refresh on a cadence (live, every minute, hourly, daily) or only on user action. |
 
@@ -23,12 +23,12 @@ A dashboard is a collection of widgets — charts, tables, big numbers, text blo
 
 ## Widget types
 
-- **Chart** — anything from the [Charts](/viz/charts) page
-- **Table** — paginated tabular view of a query result, with sort and column formatting
-- **Big number / KPI** — single value with optional delta vs. prior period
-- **Text** — Markdown notes, section headers, callouts
-- **Image** — embedded artifact (logo, diagram, screenshot)
-- **Map** — geo widget when your data has coordinates
+- **Chart**, anything from the [Charts](/viz/charts) page
+- **Table**, paginated tabular view of a query result, with sort and column formatting
+- **Big number / KPI**, single value with optional delta vs. prior period
+- **Text**, Markdown notes, section headers, callouts
+- **Image**, embedded artifact (logo, diagram, screenshot)
+- **Map**, geo widget when your data has coordinates
 
 ---
 
@@ -42,7 +42,7 @@ Every widget pulls from one of:
 - A **REST API call** via an integration
 - A **static dataset** uploaded directly
 
-Per-user access controls always apply — a widget cannot pull data the viewer is not entitled to.
+Per-user access controls always apply, a widget cannot pull data the viewer is not entitled to.
 
 ---
 
@@ -69,7 +69,7 @@ Every dashboard definition is fully versioned:
 - Each save creates a new version
 - You can diff any two versions side-by-side
 - Rollback to any previous version with one click
-- Live updates — viewers see the new version on next refresh without losing scroll position or filter selections
+- Live updates, viewers see the new version on next refresh without losing scroll position or filter selections
 
 ---
 
@@ -91,7 +91,7 @@ You control:
 
 ## PDF & PNG snapshots
 
-A dashboard rendered to PDF is a multi-page document with one widget per page (or grouped per layout, your choice). PNG snapshots are flatter — one image per dashboard.
+A dashboard rendered to PDF is a multi-page document with one widget per page (or grouped per layout, your choice). PNG snapshots are flatter, one image per dashboard.
 
 Pair a dashboard with a [scheduled report](/viz/embeds-and-reports) to auto-deliver snapshots via email or Slack.
 

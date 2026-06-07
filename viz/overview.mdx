@@ -7,11 +7,11 @@ icon: "chart-pie"
 
 DEHA ONE turns data into visuals at three levels:
 
-1. **Single charts** — bar, line, area, scatter, pie, heatmap, etc.
-2. **Dashboards** — multi-widget layouts with filters and live data
-3. **Reports** — auto-rendered multi-page PDFs (and PNGs) for fleet, executive, and ops summaries
+1. **Single charts**, bar, line, area, scatter, pie, heatmap, etc.
+2. **Dashboards**, multi-widget layouts with filters and live data
+3. **Reports**, auto-rendered multi-page PDFs (and PNGs) for fleet, executive, and ops summaries
 
-Every visual is rendered server-side. You get PNG, SVG, PDF, or an embeddable HTML iframe — no frontend code required.
+Every visual is rendered server-side. You get PNG, SVG, PDF, or an embeddable HTML iframe, no frontend code required.
 
 <Info>
   All renders are user-scoped, cached by content, and stored in a per-user artifact store. Sharing is via signed iframe links that expire and are revokable.
@@ -32,13 +32,13 @@ Every visual is rendered server-side. You get PNG, SVG, PDF, or an embeddable HT
     Up to 48 widgets per dashboard, each with its own data source, filter binding, and refresh cadence.
   </Card>
   <Card title="Embed anywhere" icon="square-arrow-up-right">
-    Signed iframe URLs embed charts and dashboards in your internal tools — without exposing data or credentials.
+    Signed iframe URLs embed charts and dashboards in your internal tools, without exposing data or credentials.
   </Card>
   <Card title="Auto-render PDF reports" icon="file-pdf">
     Schedule daily/weekly/monthly PDF snapshots of any dashboard, with optional cover pages and table of contents.
   </Card>
   <Card title="Fleet PDF reports" icon="file-lines">
-    Multi-page health reports across hundreds of users, teams, or business units — auto-archived per user.
+    Multi-page health reports across hundreds of users, teams, or business units, auto-archived per user.
   </Card>
 </CardGroup>
 
@@ -54,9 +54,9 @@ flowchart LR
     Cache --> Out[PNG / SVG / PDF / HTML iframe]
 ```
 
-- **Single charts** render in a fast, browser-free path.
-- **Dashboards and PDF reports** render in a managed browser pool with templated layouts.
-- Outputs are cached by the spec, format, and dimensions — repeated requests are instant.
+- **Single charts** render on a fast, lightweight path.
+- **Dashboards and PDF reports** render with fully managed, templated layouts.
+- Outputs are cached by the spec, format, and dimensions, repeated requests are instant.
 
 ---
 
@@ -83,7 +83,7 @@ The platform:
 2. Generates an interactive chart spec
 3. Validates it (safe SQL, correct field types)
 4. Renders it
-5. Returns the chart and the spec — so you can save, tweak, or re-use
+5. Returns the chart and the spec, so you can save, tweak, or re-use
 
 If anything goes wrong (e.g. the requested column does not exist), the platform tells you why in plain English and offers an alternative.
 
@@ -99,7 +99,7 @@ https://embed.deha.one/c/{chart_id}?token=<signed-token>
 
 - The token encodes user ID, expiry, and (optionally) a filter set
 - Tokens are revokable per chart
-- The iframe is fully isolated — no platform cookies, no SDK to install
+- The iframe is fully isolated, no platform cookies, no SDK to install
 
 For internal-only dashboards, you can also serve them through your existing reverse proxy with no public exposure.
 

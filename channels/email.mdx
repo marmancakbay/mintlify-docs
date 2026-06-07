@@ -1,10 +1,10 @@
 ---
 title: "Email"
-description: "Let your AI agents handle customer emails -- receive, understand, and respond automatically."
+description: "Let your AI agents handle customer emails, receive, understand, and respond automatically."
 icon: "envelope"
 ---
 
-Connect your email to DEHA ONE and let your AI agents handle incoming customer emails. Every email gets an intelligent, context-aware response -- just like having a dedicated support team working around the clock.
+Connect your email to DEHA ONE and let your AI agents handle incoming customer emails. Every email gets an intelligent, context-aware response, just like having a dedicated support team working around the clock.
 
 ## What You Need
 
@@ -17,10 +17,10 @@ Connect your email to DEHA ONE and let your AI agents handle incoming customer e
 <Steps>
   <Step title="Set up your sending email">
     In your DEHA ONE dashboard, go to **Settings > Channels > Email** and click **Connect Email**. Enter your SMTP details:
-    - **SMTP Host** -- Your email server address (e.g., `smtp.gmail.com`)
-    - **SMTP Port** -- Usually `587` for most providers
-    - **Username and Password** -- Your email login credentials
-    - **From Email** -- The email address replies will be sent from
+    - **SMTP Host**, Your email server address (e.g., `smtp.gmail.com`)
+    - **SMTP Port**, Usually `587` for most providers
+    - **Username and Password**, Your email login credentials
+    - **From Email**, The email address replies will be sent from
   </Step>
   <Step title="Configure inbound email forwarding">
     Set up your email provider to forward incoming emails to DEHA ONE. The webhook URL is:
@@ -44,11 +44,11 @@ Connect your email to DEHA ONE and let your AI agents handle incoming customer e
 When a customer sends an email to your connected address:
 
 1. **Your email provider forwards it** to DEHA ONE via webhook
-2. **Your AI agent reads the email** -- subject line, body text, and any attachments are all processed
+2. **Your AI agent reads the email**, subject line, body text, and any attachments are all processed
 3. **The agent generates a reply** using its knowledge base and configured instructions
 4. **The reply is sent** back to the customer from your email address
 
-The customer sees a normal email reply -- they do not need to know they are interacting with an AI.
+The customer sees a normal email reply, they do not need to know they are interacting with an AI.
 
 ## Supported Email Formats
 
@@ -65,7 +65,7 @@ The customer sees a normal email reply -- they do not need to know they are inte
 ## Tips and Best Practices
 
 <Tip>
-  Configure your agent with a professional email style. Email responses should include a greeting, clear body content, and a sign-off -- unlike the shorter responses appropriate for chat channels.
+  Configure your agent with a professional email style. Email responses should include a greeting, clear body content, and a sign-off, unlike the shorter responses appropriate for chat channels.
 </Tip>
 
 ### Use a dedicated email address
@@ -76,9 +76,9 @@ Set up a dedicated address like `support@yourcompany.com` or `ai@yourcompany.com
 
 To prevent your AI-sent emails from landing in spam folders, configure these DNS records for your sending domain:
 
-- **SPF** -- Authorizes your SMTP server to send emails on behalf of your domain
-- **DKIM** -- Adds a digital signature to verify email authenticity
-- **DMARC** -- Tells receiving servers how to handle emails that fail SPF/DKIM checks
+- **SPF**, Authorizes your SMTP server to send emails on behalf of your domain
+- **DKIM**, Adds a digital signature to verify email authenticity
+- **DMARC**, Tells receiving servers how to handle emails that fail SPF/DKIM checks
 
 Your email provider or IT team can help you set these up.
 
@@ -88,4 +88,4 @@ Keep an eye on bounce rates and spam complaints. If too many of your emails boun
 
 ### Choose the right agent
 
-Consider creating a dedicated email agent with instructions tailored for email communication -- longer, more detailed responses with proper formatting, compared to the shorter replies used for chat channels.
+Consider creating a dedicated email agent with instructions tailored for email communication, longer, more detailed responses with proper formatting, compared to the shorter replies used for chat channels.

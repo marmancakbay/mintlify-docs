@@ -17,17 +17,17 @@ When a customer asks a question, here is what happens behind the scenes:
   <Step title="Agent recognizes the need for information">
     Your agent reads the customer's question and decides whether it needs to look something up. For factual questions ("What is your return policy?"), it will search the knowledge base. For general conversation ("Hello!"), it will not.
   </Step>
-  <Step title="Question is embedded">
-    The question is converted into a high-dimensional vector using the embedding model configured for the collection (OpenAI `text-embedding-3-small`, Google embeddings, HuggingFace local models, or your own).
+  <Step title="Question is matched against the index">
+    The question is analyzed for meaning and matched against the semantic index built for the collection.
   </Step>
-  <Step title="Vector search retrieves candidates">
-    The vector is compared against every chunk in the collection. The top-N most similar chunks are returned as candidates.
+  <Step title="Search retrieves candidates">
+    The question is compared against every passage in the collection. The top-N most similar passages are returned as candidates.
   </Step>
-  <Step title="Semantic reranking re-scores the candidates">
-    Semantic reranking reads each candidate together with the question and produces a more accurate relevance score. This typically lifts top-1 accuracy by 15-30% over similarity alone.
+  <Step title="Relevance ranking re-scores the candidates">
+    Relevance ranking reads each candidate together with the question and produces a more accurate relevance score, putting the most relevant results first. This typically lifts top-1 accuracy by 15-30% over similarity alone.
   </Step>
   <Step title="Agent crafts a response">
-    Your agent reads the top-scored chunks and uses them to write an answer. The response can include citations back to the source documents so users see where the information came from.
+    Your agent reads the top-scored passages and uses them to write an answer. The response can include citations back to the source documents so users see where the information came from.
   </Step>
 </Steps>
 
@@ -35,21 +35,20 @@ This entire process takes a few hundred milliseconds and is completely automatic
 
 ---
 
-## Choosing an embedding model
+## Choosing how content is indexed for search
 
-Different models suit different content. You can configure per-collection embedding models from the dashboard.
+Different indexing options suit different content. You can configure per-collection search indexing from the dashboard.
 
-| Provider | Model | Best for |
-|---|---|---|
-| **OpenAI** | `text-embedding-3-small` | General-purpose English/multilingual, fast |
-| **OpenAI** | `text-embedding-3-large` | Higher quality, slower, more expensive |
-| **Google** | `text-embedding-004` | Multilingual, free tier available |
-| **HuggingFace** | `sentence-transformers/all-MiniLM-L6-v2` | Local, fast, no API cost |
-| **HuggingFace** | `BAAI/bge-large-en` | Top-of-leaderboard quality (local) |
-| **Custom** | Anything in the embedding marketplace | Bring your own model |
+| Option | Best for |
+|---|---|
+| **General-purpose** | Fast, multilingual, well-rounded for most content |
+| **Higher quality** | Best accuracy when precision matters most |
+| **Multilingual** | Content spanning many languages |
+| **Local / no API cost** | Fast indexing with no external usage fees |
+| **Bring your own** | Use your own indexing provider and keys |
 
 <Info>
-  Switching embedding models on an existing collection triggers a **zero-downtime re-index** — the platform builds the new index in the background, runs a comparison, and only flips reads once the new index is healthy. Zero downtime, zero stale results.
+  Changing how an existing collection is indexed for search triggers a **zero-downtime re-index**, the platform builds the new search index in the background, runs a comparison, and only flips reads once the new index is healthy. Zero downtime, zero stale results.
 </Info>
 
 ---
@@ -102,7 +101,7 @@ You can test how well your knowledge base answers questions directly from the da
 1. Go to **Knowledge Base** in the dashboard
 2. Select a collection
 3. Use the **Search** feature to type a question
-4. Review the results -- you will see the matching document sections and how relevant they are
+4. Review the results, you will see the matching document sections and how relevant they are
 
 This is a great way to verify that your documents are being found correctly before connecting them to a customer-facing agent.
 
@@ -123,9 +122,9 @@ To enable an agent to use your knowledge base:
 
 You can give different agents access to different collections. For example:
 
-- **Customer support agent** -- Searches "Product Documentation" and "FAQs"
-- **HR assistant** -- Searches "HR Policies" and "Employee Benefits"
-- **Sales bot** -- Searches "Product Catalog" and "Pricing"
+- **Customer support agent**, Searches "Product Documentation" and "FAQs"
+- **HR assistant**, Searches "HR Policies" and "Employee Benefits"
+- **Sales bot**, Searches "Product Catalog" and "Pricing"
 
 <Info>
   Agents can search across multiple collections at once. You do not need to put all your documents in a single collection for an agent to find them.

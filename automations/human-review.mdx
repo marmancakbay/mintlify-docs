@@ -5,7 +5,7 @@ description: "Add approval gates to your automations so a team member or AI judg
 icon: "user-check"
 ---
 
-Human Review (also called Human-in-the-Loop) lets you add review points to your automations where someone on your team -- or an AI quality judge -- reviews the output before the automation continues. This is essential for maintaining quality, catching errors, and ensuring sensitive operations get the oversight they need.
+Human Review (also called Human-in-the-Loop) lets you add review points to your automations where someone on your team, or an AI quality judge, reviews the output before the automation continues. This is essential for maintaining quality, catching errors, and ensuring sensitive operations get the oversight they need.
 
 ---
 
@@ -45,7 +45,7 @@ DEHA ONE offers two review modes, each suited to different situations.
         A preceding step (usually an AI agent) generates a response, report, or data result.
       </Step>
       <Step title="The AI judge evaluates">
-        A specialized judge reviews the output against quality criteria -- accuracy, completeness, tone, policy compliance -- and assigns a score from 0 to 1.
+        A specialized judge reviews the output against quality criteria, accuracy, completeness, tone, policy compliance, and assigns a score from 0 to 1.
       </Step>
       <Step title="The score determines the action">
         Based on thresholds you set, the automation takes one of three actions.
@@ -68,7 +68,7 @@ DEHA ONE offers two review modes, each suited to different situations.
   <Tab title="Manual Approval">
     The automation pauses and sends a review request to your dashboard. A team member reviews the content and explicitly approves or rejects it.
 
-    **Best for:** Sensitive operations where automated approval is not acceptable -- data writes, configuration changes, high-stakes customer communications.
+    **Best for:** Sensitive operations where automated approval is not acceptable, data writes, configuration changes, high-stakes customer communications.
 
     ### How it works
 
@@ -88,8 +88,8 @@ DEHA ONE offers two review modes, each suited to different situations.
     </Steps>
 
     **Optional features:**
-    - **Show a diff** -- display a before/after comparison for data changes
-    - **Auto-approve after timeout** -- automatically approve if no one responds within a set time (useful for low-risk items with a "silence means consent" policy)
+    - **Show a diff**, display a before/after comparison for data changes
+    - **Auto-approve after timeout**, automatically approve if no one responds within a set time (useful for low-risk items with a "silence means consent" policy)
   </Tab>
 </Tabs>
 
@@ -108,9 +108,9 @@ When a review is needed, here is what your team sees:
   </Accordion>
   <Accordion title="3. Reviewer takes action">
     Three options are available:
-    - **Approve** -- the automation continues with the current output
-    - **Reject** -- the automation follows the rejection path (e.g., archive without sending)
-    - **Request revision** -- send feedback to the agent and ask it to try again
+    - **Approve**, the automation continues with the current output
+    - **Reject**, the automation follows the rejection path (e.g., archive without sending)
+    - **Request revision**, send feedback to the agent and ask it to try again
   </Accordion>
   <Accordion title="4. Automation continues">
     The automation picks up from where it paused and proceeds based on the reviewer's decision.

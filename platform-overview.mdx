@@ -5,10 +5,10 @@ description: "Everything DEHA ONE can do, how the pieces fit together, and when 
 icon: "diagram-project"
 ---
 
-DEHA ONE is a single platform with many capabilities. This page is the map -- read it once to understand the whole platform, then dive into the section you need.
+DEHA ONE is a single platform with many capabilities. This page is the map, read it once to understand the whole platform, then dive into the section you need.
 
 <Tip>
-  Prefer the story behind the platform? Read [The DEHA ONE Model](/concepts) -- one continuous flow from your intent to a finished outcome.
+  Prefer the story behind the platform? Read [The DEHA ONE Model](/concepts), one continuous flow from your intent to a finished outcome.
 </Tip>
 
 ---
@@ -28,7 +28,7 @@ flowchart TB
     end
 
     subgraph Brain["Intelligence"]
-        DEHA[DEHA<br/>your AI assistant]
+        DEHA[DEHA<br/>your AI mastermind]
         Agents[AI Agents<br/>plan & act]
         Pipelines[Automations<br/>& pipelines]
     end
@@ -54,16 +54,16 @@ flowchart TB
     Pipelines <--> Capability
 ```
 
-Every way work comes in -- a customer message, a scheduled job, an API call -- flows into the **Agents** or **Automations** layer. From there, your agents and automations compose any of the platform's capabilities to get the job done.
+Every way work comes in, a customer message, a scheduled job, an API call, flows into the **Agents** or **Automations** layer. From there, your agents and automations compose any of the platform's capabilities to get the job done.
 
 ---
 
-## Capability map -- when to use what
+## Capability map, when to use what
 
 | If you want to ... | Use ... |
 |---|---|
-| Build all of the below by describing it in plain language | [DEHA Assistant](/deha/overview) |
-| See all your data in one map and ask questions across it | [İDRAK -- Living Data Map](/idrak/overview) |
+| Build all of the below by describing it in plain language | [DEHA Mastermind](/deha/overview) |
+| See all your data in one map and ask questions across it | [İDRAK, Living Data Map](/idrak/overview) |
 | Build a multi-step workflow with retries, branching, and rollback | [Automations & Pipelines](/automations/overview) |
 | Have agents plan, use tools, and act on your behalf | [AI Agents](/agents/overview) |
 | Ask questions about your database in plain language | [Ask your data](/data/querying-data) |
@@ -87,7 +87,7 @@ DEHA ONE processes data but does not own it. Your business data lives on your ow
 
 **BYOD (Bring Your Own Data)**
 - Connect databases, REST APIs, cloud storage, and files (CSV, Excel, JSON, Parquet) and webhooks
-- Results sink back to your own databases and storage -- the platform keeps only the operational layer
+- Results sink back to your own databases and storage, the platform keeps only the operational layer
 - Route to your own vector store and your own archive
 - Snapshot versioning with time-travel and rollback
 
@@ -103,7 +103,7 @@ DEHA ONE processes data but does not own it. Your business data lives on your ow
 | Dimension | How it works |
 |---|---|
 | **Workspaces** | Hard isolation across every layer: data, knowledge, credentials, lineage, billing, and logs. Cross-workspace access is structurally impossible. |
-| **Models** | Pick a model per agent or per call. Use simple aliases (`fast`, `smart`, `cheap`, `reasoning`) and the platform routes -- with cross-provider fallback. |
+| **Models** | Pick a model per agent or per call. Use simple aliases (`fast`, `smart`, `cheap`, `reasoning`) and the platform routes, with cross-provider fallback. |
 | **Versions** | Run multiple versions of an agent at once with weighted traffic. Returning users stay on the same variant. |
 | **Always live** | Every change deploys with zero downtime. Agents, automations, schedules, and channels reconfigure live. |
 | **Channels** | One agent serves every channel with the same context, knowledge, and tools, wherever the customer messaged from. |
@@ -128,8 +128,8 @@ DEHA ONE processes data but does not own it. Your business data lives on your ow
 
 | Capability | What it does | Read more |
 |---|---|---|
-| **DEHA Assistant** | Builds and heals your setup from plain language | [DEHA →](/deha/overview) |
-| **İDRAK -- Living Data Map** | One living map of all your data and what it means | [İDRAK →](/idrak/overview) |
+| **DEHA Mastermind** | Builds and heals your setup from plain language | [DEHA →](/deha/overview) |
+| **İDRAK, Living Data Map** | One living map of all your data and what it means | [İDRAK →](/idrak/overview) |
 | **AI Agents** | Agents that plan, use tools, act, and delegate | [Agents →](/agents/overview) |
 | **Automations & Pipelines** | A rich library of building blocks, scheduling, human review, automatic recovery | [Automations →](/automations/overview) |
 | **Data & Analytics** | Connectors, ask-your-data, ML, forecasting, drift, privacy & PII | [Data →](/data/overview) |
@@ -138,7 +138,7 @@ DEHA ONE processes data but does not own it. Your business data lives on your ow
 | **Optimization** | Routing, scheduling, assignment, packing, and more | [Optimization →](/optimization/overview) |
 | **Web Intelligence** | Multi-provider search + clean content extraction | [Web Intel →](/web-intel/overview) |
 | **Integrations** | REST tools, sandboxed Python, and MCP | [Integrations →](/integrations/overview) |
-| **Channels** | WhatsApp, Telegram, Email, Slack, Web -- unified | [Channels →](/channels/overview) |
+| **Channels** | WhatsApp, Telegram, Email, Slack, Web, unified | [Channels →](/channels/overview) |
 | **Billing & Usage** | Credits, quotas, forecasts, and cost attribution | [Billing →](/billing/overview) |
 | **Security & Trust** | SSO, roles, API keys, vault, isolation, audit | [Security →](/security/overview) |
 
@@ -146,8 +146,8 @@ DEHA ONE processes data but does not own it. Your business data lives on your ow
 
 ## How to learn the platform
 
-1. **Read the [Quickstart](/quickstart)** -- build your first agent or automation.
-2. **Skim each section's Overview** -- the cards above link to one-page intros.
-3. **Build something small with DEHA** -- describe a use case in plain language and watch it deploy.
-4. **Walk through a Guide** -- step-by-step tutorials for common scenarios: [Guides →](/guides/first-agent).
+1. **Read the [Quickstart](/quickstart)**, build your first agent or automation.
+2. **Skim each section's Overview**, the cards above link to one-page intros.
+3. **Build something small with DEHA**, describe a use case in plain language and watch it deploy.
+4. **Walk through a Guide**, step-by-step tutorials for common scenarios: [Guides →](/guides/first-agent).
 5. **Reference the API** when you start integrating: [API Reference →](/api-reference/overview).

@@ -7,14 +7,14 @@ icon: "shield-halved"
 DEHA ONE is built with security at its core. Your data stays on your own infrastructure, your workspace is fully isolated, your access is controlled, and your credentials are encrypted. This page is an overview of how DEHA ONE keeps your account safe.
 
 <Info>
-  **Your data. Your cloud. Your rules.** DEHA ONE is built around data sovereignty -- the data side runs on your own infrastructure and the platform keeps only the operational layer. See [Bring Your Own Data](/data/versioning-and-byod).
+  **Your data. Your cloud. Your rules.** DEHA ONE is built around data sovereignty, the data side runs on your own infrastructure and the platform keeps only the operational layer. See [Bring Your Own Data](/data/versioning-and-byod).
 </Info>
 
 ---
 
 ## Your workspace is fully isolated
 
-Every organization on DEHA ONE operates in its own isolated workspace. Isolation is enforced at every layer -- your data, your knowledge, your credentials, your configuration, your usage, and your activity history are all kept separate. **Cross-workspace access is structurally impossible**, so one customer can never see another's data, results, or settings.
+Every organization on DEHA ONE operates in its own isolated workspace. Isolation is enforced at every layer, your data, your knowledge, your credentials, your configuration, your usage, and your activity history are all kept separate. **Cross-workspace access is structurally impossible**, so one customer can never see another's data, results, or settings.
 
 ---
 
@@ -26,7 +26,7 @@ DEHA ONE uses **single sign-on (SSO)** for dashboard access, built on open ident
 - Sessions are verified on every request and expire automatically after a period of inactivity
 - New team members can be auto-provisioned on first sign-in (configurable per role)
 
-For programmatic access (your apps, CI/CD, integrations), use API keys instead -- see [API Keys](/security/api-keys).
+For programmatic access (your apps, CI/CD, integrations), use API keys instead, see [API Keys](/security/api-keys).
 
 ---
 
@@ -48,7 +48,7 @@ See [Roles and Permissions](/security/roles-and-permissions) for the full breakd
 
 ## API keys for programmatic access
 
-When you need to connect external systems to DEHA ONE -- automation tools, custom applications, or backend services -- create API keys from the dashboard. Three scopes are supported:
+When you need to connect external systems to DEHA ONE, automation tools, custom applications, or backend services, create API keys from the dashboard. Three scopes are supported:
 
 | Scope | What it can access |
 |---|---|
@@ -80,7 +80,7 @@ Your workspace and each individual agent or pipeline can have an IP allow-list, 
 
 ## How we protect your credentials
 
-All sensitive values -- API tokens, database passwords, OAuth credentials, certificates -- are stored in an encrypted vault. Your agents and integrations reference these secrets by name, so the actual values never appear in your configuration.
+All sensitive values, API tokens, database passwords, OAuth credentials, certificates, are stored in an encrypted vault. Your agents and integrations reference these secrets by name, so the actual values never appear in your configuration.
 
 - Strong encryption at rest (AES-256)
 - Secrets are resolved only at the moment they're needed, and are never logged

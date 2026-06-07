@@ -1,7 +1,7 @@
 ---
 title: "Optimize routes and schedules"
 sidebarTitle: "Optimize routes & schedules"
-description: "End-to-end walkthrough of a real optimization pipeline -- pull orders, solve, send routes to drivers."
+description: "End-to-end walkthrough of a real optimization pipeline, pull orders, solve, send routes to drivers."
 icon: "route"
 ---
 
@@ -25,7 +25,7 @@ A weekly pipeline that runs Sunday night and gives every driver their next morni
 
 ---
 
-## Step 1 — Pull tomorrow's orders
+## Step 1, Pull tomorrow's orders
 
 ```yaml
 - id: orders
@@ -47,7 +47,7 @@ You can also pull from your ERP via a connector if the data lives outside the wa
 
 ---
 
-## Step 2 — Solve the VRP
+## Step 2, Solve the VRP
 
 ```yaml
 - id: route
@@ -89,7 +89,7 @@ The solver returns:
 
 ---
 
-## Step 3 — Push the plan to your ERP
+## Step 3, Push the plan to your ERP
 
 ```yaml
 - id: write_back
@@ -104,7 +104,7 @@ Mark this step with `compensate: erp_clear_route` so if anything downstream fail
 
 ---
 
-## Step 4 — Notify each driver
+## Step 4, Notify each driver
 
 Use `fan_out` to send a personalized WhatsApp message to each driver:
 
@@ -137,7 +137,7 @@ Three drivers → three WhatsApp messages, each with their route map and a frien
 
 ---
 
-## Step 5 — Generate the dispatcher's PDF
+## Step 5, Generate the dispatcher's PDF
 
 ```yaml
 - id: dispatcher_pdf
@@ -180,7 +180,7 @@ Every Sunday at 22:00, the entire pipeline runs. By Monday morning everyone has 
 | `strategy` | `cheapest_arc`, `guided_local_search`, `tabu`, etc. |
 | `drop_penalty` | Higher = drop fewer stops; lower = drop more stops |
 | `objective_tolerance` | Stop early once gap is below threshold |
-| `warm_start` | Seed with last week's solution -- typically 2-5x speedup |
+| `warm_start` | Seed with last week's solution, typically 2-5x speedup |
 
 For 50-100 stops, expect 5-30 seconds. For 500+, you may need to relax `time_limit_seconds` or accept a near-optimal solution.
 

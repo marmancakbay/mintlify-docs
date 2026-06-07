@@ -3,7 +3,7 @@ title: "API Overview"
 description: "Base URL, versioning, response format, error codes, rate limits, and pagination for the DEHA ONE API."
 ---
 
-The DEHA ONE API lets you drive the platform programmatically -- most importantly, it exposes **your own agents and pipelines as REST endpoints** so your apps can call them directly.
+The DEHA ONE API lets you drive the platform programmatically, most importantly, it exposes **your own agents and pipelines as REST endpoints** so your apps can call them directly.
 
 ## Base URL
 
@@ -30,8 +30,8 @@ Every request must include authentication credentials. DEHA ONE supports:
 | Method | Header | Use Case |
 |--------|--------|----------|
 | **Single sign-on (SSO) session** | `Authorization: Bearer <token>` | Dashboard and interactive sessions |
-| **Account API key** | `Authorization: Bearer <key>` | Programmatic access -- every agent and pipeline in your workspace |
-| **Per-entity API key** | `Authorization: Bearer <key>` | Programmatic access -- scoped to one specific agent or pipeline |
+| **Account API key** | `Authorization: Bearer <key>` | Programmatic access, every agent and pipeline in your workspace |
+| **Per-entity API key** | `Authorization: Bearer <key>` | Programmatic access, scoped to one specific agent or pipeline |
 
 API keys are securely hashed at rest and shown in full only once, at creation. See the [Authentication](/api-reference/authentication) page for details on obtaining and using credentials.
 
@@ -84,17 +84,17 @@ Include this ID when contacting support to help diagnose issues.
 
 | Status Code | Description |
 |-------------|-------------|
-| `400` | Bad Request -- Invalid request body or parameters |
-| `401` | Unauthorized -- Missing or invalid authentication credentials |
-| `403` | Forbidden -- Insufficient permissions, IP not allow-listed, or workspace mismatch |
-| `404` | Not Found -- Resource or route does not exist |
-| `405` | Method Not Allowed -- HTTP method not supported for this endpoint |
-| `409` | Conflict -- Resource already exists or a concurrent write is in progress |
-| `422` | Unprocessable Entity -- Request validation failed |
-| `429` | Too Many Requests -- Rate limit exceeded |
-| `500` | Internal Server Error -- Unexpected server-side failure |
-| `503` | Service Unavailable -- Service temporarily degraded |
-| `504` | Gateway Timeout -- Request timed out |
+| `400` | Bad Request, Invalid request body or parameters |
+| `401` | Unauthorized, Missing or invalid authentication credentials |
+| `403` | Forbidden, Insufficient permissions, IP not allow-listed, or workspace mismatch |
+| `404` | Not Found, Resource or route does not exist |
+| `405` | Method Not Allowed, HTTP method not supported for this endpoint |
+| `409` | Conflict, Resource already exists or a concurrent write is in progress |
+| `422` | Unprocessable Entity, Request validation failed |
+| `429` | Too Many Requests, Rate limit exceeded |
+| `500` | Internal Server Error, Unexpected server-side failure |
+| `503` | Service Unavailable, Service temporarily degraded |
+| `504` | Gateway Timeout, Request timed out |
 
 ## Rate Limiting
 
@@ -136,6 +136,6 @@ Paginated responses include a `total` field indicating the total number of avail
 
 You can interact with the DEHA ONE API using any HTTP client. Examples in this documentation use:
 
-- **cURL** -- command-line HTTP client
-- **Python** -- using the `httpx` library
-- **Node.js** -- using the native `fetch` API
+- **cURL**, command-line HTTP client
+- **Python**, using the `httpx` library
+- **Node.js**, using the native `fetch` API

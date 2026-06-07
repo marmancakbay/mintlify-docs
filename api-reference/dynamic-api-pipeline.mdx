@@ -1,5 +1,5 @@
 ---
-title: "Pipelines — Dynamic API"
+title: "Pipelines, Dynamic API"
 api: "POST /api/v1/pipelines/{user_id}/{name}/{invoke|invoke-async|stream}"
 description: "Invoke a compiled pipeline in sync, async, or streaming mode."
 ---
@@ -13,7 +13,7 @@ Authorization: Bearer <api_key>
 X-User-Id:   <user_id>
 ```
 
-The API key is user-scoped — it must match the path `{user_id}` or the request is rejected with `403`.
+The API key is user-scoped, it must match the path `{user_id}` or the request is rejected with `403`.
 
 ## Path parameters
 

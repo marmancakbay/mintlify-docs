@@ -1,7 +1,7 @@
 ---
 title: "Automations"
 sidebarTitle: "Overview"
-description: "Build multi-step workflows that run automatically -- route messages, process data, generate reports, and more, without writing code."
+description: "Build multi-step workflows that run automatically, route messages, process data, generate reports, and more, without writing code."
 icon: "wand-magic-sparkles"
 ---
 
@@ -14,7 +14,7 @@ Instead of manually handling every incoming message or running reports by hand, 
 </Info>
 
 <Info>
-  Automations are **durable**. Failures, restarts, and timeouts are handled automatically with retries, failure recovery, and rollback — side-effect steps (REST writes, data loads, publishes) can be reversed if the automation aborts mid-flight.
+  Automations are **durable**. Failures, restarts, and timeouts are handled automatically with retries, failure recovery, and rollback, side-effect steps (REST writes, data loads, publishes) can be reversed if the automation aborts mid-flight.
 </Info>
 
 ---
@@ -29,13 +29,13 @@ Instead of manually handling every incoming message or running reports by hand, 
     Generate daily sales summaries, weekly analytics, or monthly performance reports and deliver them to your team.
   </Card>
   <Card title="Data Processing" icon="gears">
-    Pull data from external systems, clean and transform it, run quality checks, and push it back -- all on autopilot.
+    Pull data from external systems, clean and transform it, run quality checks, and push it back, all on autopilot.
   </Card>
   <Card title="Quality Assurance" icon="shield-check">
     Review AI-generated responses before they reach customers. Add approval gates for sensitive operations.
   </Card>
   <Card title="Customer Workflows" icon="users">
-    Onboard new customers, handle support tickets, escalate complaints, and follow up -- triggered by a single message.
+    Onboard new customers, handle support tickets, escalate complaints, and follow up, triggered by a single message.
   </Card>
   <Card title="Data Sync" icon="arrows-rotate">
     Keep your CRM, databases, and knowledge base in sync with scheduled data imports and exports.
@@ -53,7 +53,7 @@ Every automation follows a simple pattern: a trigger starts it, steps do the wor
     A new message arrives, a scheduled time is reached, or you trigger it manually from the dashboard or API.
   </Step>
   <Step title="Steps run in sequence">
-    Each step performs one action -- calling an AI agent, transforming data, checking a condition, or sending a message. Results from one step flow into the next.
+    Each step performs one action, calling an AI agent, transforming data, checking a condition, or sending a message. Results from one step flow into the next.
   </Step>
   <Step title="Decisions are made along the way">
     Condition steps can branch the workflow based on message content, data values, or AI-powered classification. Different situations get handled differently.
@@ -67,7 +67,7 @@ Every automation follows a simple pattern: a trigger starts it, steps do the wor
 
 ## Triggers
 
-Every automation starts with a trigger -- the event that kicks off the workflow. Triggers can have **conditions** attached (e.g., only fire if the result of a SQL check is above a threshold).
+Every automation starts with a trigger, the event that kicks off the workflow. Triggers can have **conditions** attached (e.g., only fire if the result of a SQL check is above a threshold).
 
 | Trigger | Description | Example |
 | --- | --- | --- |
@@ -83,13 +83,13 @@ Every automation starts with a trigger -- the event that kicks off the workflow.
 
 Conditions you can attach to any trigger:
 
-- `always` — unconditional
-- `sql` — a SQL query that returns boolean / number
-- `threshold` — SQL value above / below a threshold
-- `llm` — an AI yes/no decision
-- `composite` — AND / OR / NOT of other conditions
-- `data_changed` — change-detection on a SQL query
-- `time_window` — only fire during certain hours / weekdays
+- `always`, unconditional
+- `sql`, a SQL query that returns boolean / number
+- `threshold`, SQL value above / below a threshold
+- `llm`, an AI yes/no decision
+- `composite`, AND / OR / NOT of other conditions
+- `data_changed`, change-detection on a SQL query
+- `time_window`, only fire during certain hours / weekdays
 
 ---
 

@@ -27,7 +27,7 @@
             "pages": ["introduction", "concepts", "platform-overview", "quickstart"]
           },
           {
-            "group": "DEHA · The Assistant",
+            "group": "DEHA · The Mastermind",
             "pages": [
               "deha/overview",
               "deha/natural-language-config",

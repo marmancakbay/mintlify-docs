@@ -26,11 +26,11 @@ A daily pipeline that:
 2. Predicts the next 14 days using a registered forecast model
 3. Compares predicted vs. actual for the prior 7 days
 4. Computes drift across input features
-5. Posts a chart-attached summary to Slack -- with severity-graded warnings
+5. Posts a chart-attached summary to Slack, with severity-graded warnings
 
 ---
 
-## Step 1 — Train a forecast model
+## Step 1, Train a forecast model
 
 The fastest path is to ask DEHA:
 
@@ -47,11 +47,11 @@ Or build it manually in the **Data Studio → Analytics**:
 5. Horizon: 14 days
 6. **Train and register** as `revenue_forecast`
 
-The platform auto-selects the best-fit forecasting model -- from fast statistical methods to neural approaches -- based on the signal in your data.
+The platform auto-selects the best-fit forecasting model, from fast statistical methods to neural approaches, based on the signal in your data.
 
 ---
 
-## Step 2 — Promote to Production
+## Step 2, Promote to Production
 
 After training, the model is in the **Staging** alias. Test predictions for a few days, then promote:
 
@@ -62,7 +62,7 @@ Multiple versions can coexist: one in production, one in staging being evaluated
 
 ---
 
-## Step 3 — Run scheduled predictions
+## Step 3, Run scheduled predictions
 
 Set up a daily pipeline:
 
@@ -105,7 +105,7 @@ The pipeline runs every morning at 7am and posts a chart to Slack.
 
 ---
 
-## Step 4 — Add drift detection
+## Step 4, Add drift detection
 
 Now monitor whether the model's inputs and outputs are shifting:
 
@@ -135,15 +135,15 @@ Now monitor whether the model's inputs and outputs are shifting:
 
 Severity grading:
 
-- **Green** — within expected band, no action needed
-- **Yellow** — small drift, may warrant attention
-- **Red** — significant drift, likely time to retrain
+- **Green**, within expected band, no action needed
+- **Yellow**, small drift, may warrant attention
+- **Red**, significant drift, likely time to retrain
 
 A detailed **HTML drift report** is attached for deep inspection.
 
 ---
 
-## Step 5 — Retrain automatically
+## Step 5, Retrain automatically
 
 Tie drift back to retraining. When severity goes red, kick off retraining:
 
@@ -164,7 +164,7 @@ Tie drift back to retraining. When severity goes red, kick off retraining:
   wait_for_result: false
 ```
 
-The MLOps agent will retrain, evaluate, and promote a new model version -- with a human approval gate before swapping the production alias if you want one.
+The MLOps agent will retrain, evaluate, and promote a new model version, with a human approval gate before swapping the production alias if you want one.
 
 ---
 

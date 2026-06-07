@@ -45,7 +45,7 @@ Add documents to your knowledge base through the DEHA ONE dashboard or API. Once
 | **JSON** | `.json` | Structured data |
 
 <Tip>
-  For best results, upload clean, well-structured documents. Remove unnecessary headers, footers, and boilerplate content before uploading -- this helps your agent find relevant information faster.
+  For best results, upload clean, well-structured documents. Remove unnecessary headers, footers, and boilerplate content before uploading, this helps your agent find relevant information faster.
 </Tip>
 
 ---
@@ -65,17 +65,17 @@ Collections are like folders that group related documents together. They help yo
 Here are some common ways to organize your collections:
 
 **By department:**
-- `hr_policies` -- Employee handbook, benefits guide, onboarding materials
-- `engineering_docs` -- API documentation, architecture guides, runbooks
-- `sales_playbooks` -- Sales scripts, competitive analysis, pricing guides
+- `hr_policies`, Employee handbook, benefits guide, onboarding materials
+- `engineering_docs`, API documentation, architecture guides, runbooks
+- `sales_playbooks`, Sales scripts, competitive analysis, pricing guides
 
 **By content type:**
-- `faqs` -- Frequently asked questions and answers
-- `product_guides` -- User manuals and how-to guides
-- `company_policies` -- Terms of service, privacy policy, return policy
+- `faqs`, Frequently asked questions and answers
+- `product_guides`, User manuals and how-to guides
+- `company_policies`, Terms of service, privacy policy, return policy
 
 **Single collection** (for smaller knowledge bases):
-- `all_documents` -- Everything in one place
+- `all_documents`, Everything in one place
 
 <Note>
   Use lowercase letters, numbers, and underscores for collection names. Avoid spaces and special characters.
@@ -90,7 +90,7 @@ For automation or bulk uploads, use the API to add documents programmatically.
 ### Upload a file
 
 ```bash
-POST /vector/ingest
+POST /knowledge/upload
 Content-Type: multipart/form-data
 
 file: company_handbook.pdf
@@ -101,7 +101,7 @@ metadata: {"category": "policy", "department": "hr"}
 ### Upload text content
 
 ```bash
-POST /vector/ingest
+POST /knowledge/upload
 {
   "collection_name": "company_knowledge",
   "content": "Our return policy allows returns within 30 days of purchase...",
@@ -115,7 +115,7 @@ POST /vector/ingest
 ### Upload multiple documents at once
 
 ```bash
-POST /vector/ingest/batch
+POST /knowledge/upload/batch
 {
   "collection_name": "company_knowledge",
   "documents": [
@@ -136,7 +136,7 @@ After uploading, documents go through automatic processing. You can track the st
 | **Pending** | Document received, waiting to be processed |
 | **Processing** | Document is being analyzed and indexed |
 | **Completed** | Document is ready and available for your agents |
-| **Failed** | Something went wrong -- check the error details and try again |
+| **Failed** | Something went wrong, check the error details and try again |
 
 Processing time depends on the document size. Most documents are processed within a few seconds, while larger files may take up to a minute.
 

@@ -3,7 +3,7 @@ title: "Dynamic API Overview"
 description: "Schema-driven pipeline & agent endpoints with sync, async, and streaming invocation modes."
 ---
 
-The **Dynamic API** exposes every compiled pipeline and agent as a first-class HTTP endpoint. Endpoints are generated from your user configuration at compile time — no code changes required to add or evolve them.
+The **Dynamic API** exposes every compiled pipeline and agent as a first-class HTTP endpoint. Endpoints are generated from your user configuration at compile time, no code changes required to add or evolve them.
 
 ## Endpoint shape
 
@@ -13,10 +13,10 @@ Every endpoint follows the same URL shape:
 /api/v1/{kind}/{user_id}/{name}/{mode}
 ```
 
-- `kind` — `pipelines` or `agents`
-- `user_id` — your user identifier
-- `name` — the pipeline or agent name
-- `mode` — one of `invoke` (sync), `invoke-async`, `stream`
+- `kind`, `pipelines` or `agents`
+- `user_id`, your user identifier
+- `name`, the pipeline or agent name
+- `mode`, one of `invoke` (sync), `invoke-async`, `stream`
 
 A result polling endpoint is available for async invocations:
 
@@ -36,8 +36,8 @@ The set of allowed modes is declared per endpoint in the pipeline/agent YAML `ap
 
 ## Content negotiation
 
-- **Request** — `Content-Type` must match one of the declared `api.input.content_type` values. Built-in codecs: `application/json`, `multipart/form-data`, `text/plain`.
-- **Response** — `Accept` header selects one of the declared `api.output.content_type` values. Built-in formatters: `application/json`, `text/event-stream`, `application/x-ndjson`, `application/octet-stream` (file streaming).
+- **Request**, `Content-Type` must match one of the declared `api.input.content_type` values. Built-in codecs: `application/json`, `multipart/form-data`, `text/plain`.
+- **Response**, `Accept` header selects one of the declared `api.output.content_type` values. Built-in formatters: `application/json`, `text/event-stream`, `application/x-ndjson`, `application/octet-stream` (file streaming).
 
 ## Standard headers
 

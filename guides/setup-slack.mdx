@@ -5,7 +5,7 @@ description: "Connect your Slack workspace, route agent conversations and pipeli
 icon: "slack"
 ---
 
-This guide walks you through connecting Slack to DEHA ONE. You can let DEHA do most of this for you with a single sentence -- but here is the manual walkthrough if you want full control.
+This guide walks you through connecting Slack to DEHA ONE. You can let DEHA do most of this for you with a single sentence, but here is the manual walkthrough if you want full control.
 
 ---
 
@@ -20,7 +20,7 @@ This guide walks you through connecting Slack to DEHA ONE. You can let DEHA do m
 
 1. Go to [api.slack.com/apps](https://api.slack.com/apps) → **Create New App** → **From scratch**
 2. Name the app (e.g., "DEHA Assistant") and pick your workspace
-3. On the **Basic Information** page, copy the **Signing Secret** -- you will need it shortly
+3. On the **Basic Information** page, copy the **Signing Secret**, you will need it shortly
 
 ---
 
@@ -62,10 +62,10 @@ Or ask DEHA to do it:
 Back in your Slack app:
 
 1. Open **Event Subscriptions** → enable
-2. **Request URL**: `https://<your-deha-domain>/webhook/{user_id}/slack` -- paste the URL from the dashboard
+2. **Request URL**: `https://<your-deha-domain>/webhook/{user_id}/slack`, paste the URL from the dashboard
 3. Slack will send a verification challenge; DEHA ONE responds automatically
 4. Subscribe to bot events: `app_mention`, `message.im`, `message.channels` (and any others you want)
-5. **Save Changes** -- and you may need to **Reinstall to Workspace** to apply the new scopes
+5. **Save Changes**, and you may need to **Reinstall to Workspace** to apply the new scopes
 
 ---
 
@@ -117,8 +117,8 @@ Pair this with a cron trigger and you have a daily, fully-automated Slack digest
 
 ## Common patterns
 
-- **Single bot, single agent** — simplest setup, all DMs and mentions go to one agent
-- **Channel-scoped agents** — `#support` → support agent, `#engineering` → on-call agent
-- **Slash-command-scoped** — `/ask` → general, `/forecast` → analyst, `/incident` → on-call
-- **Alerts only** — no bot conversations, just inbound notifications from pipelines
-- **HITL approvals in Slack** — agent posts an interactive block; reviewer clicks approve/reject; the agent resumes with the decision
+- **Single bot, single agent**, simplest setup, all DMs and mentions go to one agent
+- **Channel-scoped agents**, `#support` → support agent, `#engineering` → on-call agent
+- **Slash-command-scoped**, `/ask` → general, `/forecast` → analyst, `/incident` → on-call
+- **Alerts only**, no bot conversations, just inbound notifications from pipelines
+- **HITL approvals in Slack**, agent posts an interactive block; reviewer clicks approve/reject; the agent resumes with the decision

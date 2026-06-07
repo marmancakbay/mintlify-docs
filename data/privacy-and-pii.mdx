@@ -1,7 +1,7 @@
 ---
 title: "Privacy & PII"
 sidebarTitle: "Privacy & PII"
-description: "Detect and anonymize personal information across your data — with built-in recognizers for Turkish identifiers."
+description: "Detect and anonymize personal information across your data, with built-in recognizers for Turkish identifiers."
 icon: "shield-halved"
 ---
 
@@ -27,14 +27,14 @@ Automatic PII detection runs across your data, with platform-managed augmentatio
 | **Tax IDs** | Turkish VKN |
 | **Passport numbers** | Pattern + checksum (where applicable) |
 | **Driver's license** | Country-specific patterns |
-| **Person names** | NER model + custom dictionaries |
+| **Person names** | Automatic name detection + custom dictionaries |
 | **Locations** | Cities, addresses, postcodes |
 | **IP addresses** | IPv4 and IPv6 |
 | **Dates of birth** | Combined date + age context |
 | **Medical identifiers** | Hospital IDs, prescription numbers |
 | **Custom patterns** | Bring your own regex or dictionary |
 
-The Turkish recognizers (TCKN, VKN, BSN, phone formats) are tuned for the Turkish market — the same approach extends to any locale.
+The Turkish recognizers (TCKN, VKN, BSN, phone formats) are tuned for the Turkish market, the same approach extends to any locale.
 
 ---
 
@@ -46,13 +46,13 @@ Once detected, choose how to handle each entity:
 |---|---|
 | **Replace** | Substitute with a fixed token (e.g. `[REDACTED]`) |
 | **Redact** | Remove entirely |
-| **Hash** | One-way hash (SHA-256) — same input always hashes to same output |
+| **Hash** | One-way hash (SHA-256), same input always hashes to same output |
 | **Mask** | Show partial (e.g. `0532***45 67`) |
 | **Encrypt** | Two-way symmetric encryption with your vault key (reversible) |
 | **Pseudonymize** | Replace with a stable fake (same person → same fake name everywhere) |
 | **Tokenize** | Replace with a vault-stored token that can be detokenized when authorized |
 
-You can mix operations per column — e.g., mask phone numbers visible to support agents but encrypt them for the warehouse.
+You can mix operations per column, e.g., mask phone numbers visible to support agents but encrypt them for the warehouse.
 
 ---
 
@@ -69,7 +69,7 @@ You can mix operations per column — e.g., mask phone numbers visible to suppor
 
 ---
 
-## DSR — Data Subject Requests
+## DSR, Data Subject Requests
 
 For GDPR / KVKK access, rectification, and deletion requests:
 
@@ -78,7 +78,7 @@ For GDPR / KVKK access, rectification, and deletion requests:
 - **Deletion (right to be forgotten)**: cascade-delete with tombstones, preserving audit but removing personal data
 - **Portability**: export the access bundle in a structured format the subject can import elsewhere
 
-These flows are pipeline-driven, so you can fully automate them — including the customer-facing email confirmation.
+These flows are pipeline-driven, so you can fully automate them, including the customer-facing email confirmation.
 
 ---
 

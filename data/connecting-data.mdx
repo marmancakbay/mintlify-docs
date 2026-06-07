@@ -24,10 +24,10 @@ DEHA ONE can pull data from a variety of sources. Whether your data lives in a d
     - OAuth2 (with automatic token lifecycle management)
     - Signed requests (HMAC)
 
-    **Pagination support:** Offset-based, cursor-based, page numbers, and link-header pagination — auto-detected when possible.
+    **Pagination support:** Offset-based, cursor-based, page numbers, and link-header pagination, auto-detected when possible.
   </Tab>
   <Tab title="Databases">
-    Connect directly to your relational or document database and read tables, views, or aggregation pipelines.
+    Connect directly to your relational or document database and read tables and views.
 
     **Best for:** Importing structured data from your existing databases. With BYOD, the platform can query live without copying.
 
@@ -37,7 +37,7 @@ DEHA ONE can pull data from a variety of sources. Whether your data lives in a d
     - **MSSQL** (SQL Server)
     - **Oracle**
     - **SQLite**
-    - **MongoDB** 4.4+ (with aggregation pipelines, read + write)
+    - **MongoDB** (read + write)
   </Tab>
   <Tab title="Files & SFTP">
     Upload files directly, point at an S3 bucket, or pull from SFTP with glob patterns.
@@ -65,11 +65,11 @@ DEHA ONE can pull data from a variety of sources. Whether your data lives in a d
 
 ### Bidirectional connectors
 
-Many connectors are bidirectional — you can both **pull** from them and **push** results back. Push modes:
+Many connectors are bidirectional, you can both **pull** from them and **push** results back. Push modes:
 
-- **Append** — add new records
-- **Replace** — truncate-and-load
-- **Upsert** — insert or update by key
+- **Append**, add new records
+- **Replace**, truncate-and-load
+- **Upsert**, insert or update by key
 
 Common use cases:
 
@@ -92,7 +92,7 @@ Common use cases:
     DEHA ONE will test the connection and confirm it can reach your data source. If there is an issue, you will see a clear error message with troubleshooting guidance.
   </Step>
   <Step title="Review the detected schema">
-    The platform automatically detects the structure of your data -- field names, data types, and relationships. You can review and adjust the detected schema before importing.
+    The platform automatically detects the structure of your data, field names, data types, and relationships. You can review and adjust the detected schema before importing.
   </Step>
   <Step title="Import your data">
     Choose your sync mode and start the import. Your data will be loaded into your organization's isolated database.
@@ -121,7 +121,7 @@ Choose how your data stays up to date:
 |------|-------------|----------|
 | **One-time import** | Pull all records once | Initial data loads, file uploads, reference data |
 | **Incremental** | Pull new and changed records using a persistent cursor (e.g. `updated_at`) | Most production cases |
-| **CDC (change data capture)** | Subscribe to row-level changes from the source (Postgres logical decoding, MySQL binlog, Mongo change streams) | Low-latency, low-overhead sync from supported databases |
+| **CDC (change data capture)** | Low-latency sync of row-level changes from the source | Low-latency, low-overhead sync from supported databases |
 | **Full refresh** | Replace all records on each sync | Small reference datasets that change entirely between syncs |
 
 <Tip>
@@ -130,13 +130,13 @@ Choose how your data stays up to date:
 
 ### BYOD: skip the import entirely
 
-For databases the platform supports natively (PostgreSQL, MySQL, MongoDB, SQLite), the platform can query your warehouse **without copying data into the platform**. You configure the connection once and queries run against your live tables. This is the BYOD model — see [Versioning & BYOD](/data/versioning-and-byod) for details.
+For databases the platform supports natively (PostgreSQL, MySQL, MongoDB, SQLite), the platform can query your warehouse **without copying data into the platform**. You configure the connection once and queries run against your live tables. This is the BYOD model, see [Versioning & BYOD](/data/versioning-and-byod) for details.
 
 ---
 
 ## Credentials and security
 
-Connection credentials -- API keys, database passwords, OAuth tokens -- are stored in your organization's encrypted vault. They are never exposed in configuration files and are only accessed securely at runtime.
+Connection credentials, API keys, database passwords, OAuth tokens, are stored in your organization's encrypted vault. They are never exposed in configuration files and are only accessed securely at runtime.
 
 For connectors that use OAuth2, DEHA ONE manages the full token lifecycle, including automatic refresh when tokens expire.
 
@@ -146,9 +146,9 @@ For connectors that use OAuth2, DEHA ONE manages the full token lifecycle, inclu
 
 After setting up a connection, you can monitor its status from the dashboard:
 
-- **Last sync time** -- When the most recent import ran
-- **Records imported** -- How many records were pulled in the last sync
-- **Status** -- Whether the connection is healthy or has errors
-- **Sync history** -- A log of all previous sync runs
+- **Last sync time**, When the most recent import ran
+- **Records imported**, How many records were pulled in the last sync
+- **Status**, Whether the connection is healthy or has errors
+- **Sync history**, A log of all previous sync runs
 
 If a sync fails, DEHA ONE provides diagnostic information to help you identify and fix the issue.

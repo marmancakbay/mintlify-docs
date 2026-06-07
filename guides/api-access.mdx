@@ -7,7 +7,7 @@ icon: "key"
 
 ## What You Will Set Up
 
-Create API keys so you can interact with DEHA ONE programmatically -- send messages to agents, trigger automations, query data, and more from your own applications.
+Create API keys so you can interact with DEHA ONE programmatically, send messages to agents, trigger automations, query data, and more from your own applications.
 
 <Info>
 Before you begin, you need:
@@ -24,8 +24,8 @@ Before you begin, you need:
 2. Click **Create API Key**.
 3. Give it a descriptive name (e.g., "Production Backend" or "Reporting Script").
 4. Choose a role:
-   - **Admin** -- Full access to all features
-   - **User** -- Standard access (send messages, query data)
+   - **Admin**, Full access to all features
+   - **User**, Standard access (send messages, query data)
 5. Set an expiration (optional but recommended for security).
 6. Click **Create**.
 
@@ -99,7 +99,7 @@ curl -X POST https://api.deha.one/query/ask \
 
 **Upload a document to the knowledge base:**
 ```bash
-curl -X POST https://api.deha.one/vector/ingest \
+curl -X POST https://api.deha.one/knowledge/upload \
   -H "X-API-Key: your_key" \
   -F "file=@document.pdf" \
   -F "collection_name=my_knowledge"
@@ -142,7 +142,7 @@ Test your API key by making a simple request to the health endpoint: `curl https
 ## Security Best Practices
 
 - **Never expose API keys in client-side code** (browser JavaScript, mobile apps).
-- **Rotate keys periodically** -- set expiration dates and generate new keys before they expire.
+- **Rotate keys periodically**, set expiration dates and generate new keys before they expire.
 - **Use the minimum required role** for each key.
 - **Store keys in environment variables or a secret manager**, never in source code.
 - **Revoke unused keys** promptly.

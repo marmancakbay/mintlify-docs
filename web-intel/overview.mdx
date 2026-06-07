@@ -5,13 +5,13 @@ description: "Search the open web across many leading search providers and scrap
 icon: "globe"
 ---
 
-Sometimes the answer is not in your database -- it is on the web. DEHA ONE's Web Intelligence layer gives your agents and pipelines two complementary tools:
+Sometimes the answer is not in your database, it is on the web. DEHA ONE's Web Intelligence layer gives your agents and pipelines two complementary tools:
 
-- **Search** — fan a query out to many leading search providers in parallel and get one deduplicated, re-scored result set
-- **Scraping** — fetch any URL and turn it into clean markdown, structured JSON, or LLM-extracted data
+- **Search**, fan a query out to many leading search providers in parallel and get one deduplicated, relevance-ranked result set
+- **Scraping**, fetch any URL and turn it into clean markdown, structured JSON, or LLM-extracted data
 
 <Info>
-  Both capabilities are user-scoped, rate-limited, and cached. Costs are charged in credits per call. No browser pool, no proxy management, no per-provider key juggling -- you bring API keys for the providers you want enabled, and DEHA ONE handles the rest.
+  Both capabilities are user-scoped, rate-limited, and cached. Costs are charged in credits per call. No infrastructure to run, no proxy management, no per-provider key juggling, you bring API keys for the providers you want enabled, and DEHA ONE handles the rest.
 </Info>
 
 ---
@@ -32,14 +32,14 @@ Sometimes the answer is not in your database -- it is on the web. DEHA ONE's Web
 
 ## Wired into your workflows
 
-Search and scraping are pipeline building blocks -- you can chain them with anything:
+Search and scraping are pipeline building blocks, you can chain them with anything:
 
 ```mermaid
 flowchart LR
-    Search[Search many providers] --> Dedup[Deduplicate & rerank]
+    Search[Search many providers] --> Dedup[Deduplicate & rank by relevance]
     Dedup --> Scrape[Scrape top 5 URLs]
     Scrape --> Extract[Extract entities & summaries]
-    Extract --> Vector[Index into Knowledge Base]
+    Extract --> Index[Index into Knowledge Base]
     Extract --> Agent[Hand to agent for analysis]
     Extract --> Notify[Notify on Slack]
 ```
@@ -53,7 +53,7 @@ A common pattern: every morning, search for news mentioning your brand, scrape t
 | | Search | Scraping |
 |---|---|---|
 | **Providers** | Many leading search providers (see [Search](/web-intel/search)) | Any HTTP/HTTPS page |
-| **Bring your own keys** | Yes -- vaulted per user | n/a |
+| **Bring your own keys** | Yes, vaulted per user | n/a |
 | **Concurrency** | Parallel provider fan-out | Parallel page fetching |
 | **Rate limits** | Per-provider quotas (you control) | Per-domain sliding window |
 | **Caching** | 30 minutes default, user-scoped | 1 hour default, user-scoped |
@@ -65,11 +65,11 @@ A common pattern: every morning, search for news mentioning your brand, scrape t
 
 ## What you do NOT have to manage
 
-- **Browser fleets** — clean content extraction runs in a managed browser pool
-- **Captcha / JS-rendering** — handled internally
-- **Per-provider quirks** — every search result is normalized into one schema
-- **Token bloat** — markdown extraction is on average 67% fewer tokens than raw HTML
-- **Stale caches across users** — every cache key is namespaced by user
+- **Rendering infrastructure**, clean content extraction is fully managed for you
+- **Captcha / JS-rendering**, handled internally
+- **Per-provider quirks**, every search result is normalized into one schema
+- **Token bloat**, markdown extraction is on average 67% fewer tokens than raw HTML
+- **Stale caches across users**, every cached result is namespaced by user
 
 ---
 

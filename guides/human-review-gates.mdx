@@ -42,9 +42,9 @@ When building an automation, add a **Human Review** step at any point where you 
 1. Go to **Automations** and create or edit an automation.
 2. Add a step with type **Human Review**.
 3. Configure:
-   - **Review prompt** -- What should the reviewer check? (e.g., "Review this report for accuracy and brand alignment.")
-   - **Reviewer role** -- Who should review? (e.g., supervisor, editor)
-   - **Timeout** -- How long to wait for a review before the automation times out (e.g., 24 hours)
+   - **Review prompt**, What should the reviewer check? (e.g., "Review this report for accuracy and brand alignment.")
+   - **Reviewer role**, Who should review? (e.g., supervisor, editor)
+   - **Timeout**, How long to wait for a review before the automation times out (e.g., 24 hours)
 
 ### Review Requests in the Dashboard
 
@@ -70,10 +70,10 @@ For high-volume workflows, you can add an AI quality gate that automatically sco
 > "Add a quality check to my support agent. If a response scores below 70% on accuracy and completeness, pause it for human review. Otherwise, send it automatically."
 
 The AI quality gate evaluates responses on criteria like:
-- **Accuracy** -- Is the information factually correct?
-- **Completeness** -- Does it address the full question?
-- **Tone** -- Is it appropriately professional?
-- **Safety** -- Does it avoid harmful or misleading content?
+- **Accuracy**, Is the information factually correct?
+- **Completeness**, Does it address the full question?
+- **Tone**, Is it appropriately professional?
+- **Safety**, Does it avoid harmful or misleading content?
 
 High-scoring responses pass through automatically, while low-scoring ones go to your team for review.
 
@@ -83,7 +83,7 @@ Track your team's review activity in the dashboard:
 
 1. Go to **Reviews** to see pending, approved, and rejected items.
 2. See average review times and approval rates.
-3. Use this data to improve your agent's prompts -- if certain types of responses are consistently rejected, adjust the agent's instructions.
+3. Use this data to improve your agent's prompts, if certain types of responses are consistently rejected, adjust the agent's instructions.
 
 <Check>
 Create an automation with a human review step, run it, and verify that it pauses for review. Approve the request in the dashboard and confirm the automation completes.

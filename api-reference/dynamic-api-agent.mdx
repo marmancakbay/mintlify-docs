@@ -1,10 +1,10 @@
 ---
-title: "Agents — Dynamic API"
+title: "Agents, Dynamic API"
 api: "POST /api/v1/agents/{user_id}/{name}/{invoke|invoke-async|stream}"
 description: "Invoke one of your agents in sync, async, or streaming mode."
 ---
 
-Agent endpoints share the same envelope and semantics as pipeline endpoints — only the target kind differs.
+Agent endpoints share the same envelope and semantics as pipeline endpoints, only the target kind differs.
 
 ## Authentication
 
@@ -91,4 +91,4 @@ curl -X POST "$BASE/api/v1/agents/acme_corp/customer_support/invoke" \
 
 ## Errors
 
-See the [pipeline error table](/api-reference/dynamic-api-pipeline) — agent endpoints return the same codes with the `AGENT-*` namespace instead of `PIPELINE-*`.
+See the [pipeline error table](/api-reference/dynamic-api-pipeline), agent endpoints return the same codes with the `AGENT-*` namespace instead of `PIPELINE-*`.

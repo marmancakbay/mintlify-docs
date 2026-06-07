@@ -1,7 +1,7 @@
 ---
 title: "Building Blocks"
 sidebarTitle: "Building Blocks"
-description: "All supported building blocks for DEHA ONE agents. Each building block represents a distinct operation -- from AI model calls to conditional branching to data transformations."
+description: "All supported building blocks for DEHA ONE agents. Each building block represents a distinct operation, from AI model calls to conditional branching to data transformations."
 ---
 
 Building blocks are the components of an agent's flow. Each building block performs a specific operation and passes its result on to the next step in the flow.
@@ -71,7 +71,7 @@ All building blocks share a common structure in the configuration:
     </Tip>
 
     <Info>
-      **Automation-first**: tools are exposed to agents as automation endpoints, not as raw integrations. When you set `bind_all_pipelines: true`, every automation endpoint defined for the user becomes a callable tool — with its own input/output schema, API key, rate limit, and timeout. Use `bind_pipelines` or `allowed_pipelines` to scope which automations a specific model call can invoke.
+      **Automation-first**: tools are exposed to agents as automation endpoints, not as raw integrations. When you set `bind_all_pipelines: true`, every automation endpoint defined for the user becomes a callable tool, with its own input/output schema, API key, rate limit, and timeout. Use `bind_pipelines` or `allowed_pipelines` to scope which automations a specific model call can invoke.
     </Info>
 
     ---
@@ -107,7 +107,7 @@ All building blocks share a common structure in the configuration:
 
     | Parameter | Type | Default | Description |
     |---|---|---|---|
-    | `collection` | string | `"default"` | Vector collection name |
+    | `collection` | string | `"default"` | Search index name |
     | `limit` | integer | `3` | Maximum number of results (1--20) |
     | `threshold` | float | `0.7` | Minimum similarity score (0.0--1.0) |
     | `query_source` | string | `"last_message"` | Source for the query text |
@@ -144,9 +144,9 @@ All building blocks share a common structure in the configuration:
     | `timeout` | integer | `300` | Approval timeout in seconds (30--3600) |
 
     **Judge mode:** Automatic quality scoring evaluates the agent's response and returns a score. Based on the score:
-    - Below `handoff_threshold` -- the conversation is handed off to a human agent.
-    - Between thresholds -- the response is sent back for revision (up to `max_revisions` times).
-    - At or above `approve_threshold` -- the response is approved and sent to the user.
+    - Below `handoff_threshold`, the conversation is handed off to a human agent.
+    - Between thresholds, the response is sent back for revision (up to `max_revisions` times).
+    - At or above `approve_threshold`, the response is approved and sent to the user.
 
     **Always mode:** The flow pauses and waits for a human staff member to approve, revise, or reject the response.
 
@@ -392,7 +392,7 @@ All building blocks share a common structure in the configuration:
 
     ## AI Transform Block (`node_llm_transform`)
 
-    Like `node_transform`, but uses an AI model to perform the transformation. Best for tasks where rules-based mapping is insufficient — fuzzy classification, sentiment, extraction, summarization, language detection.
+    Like `node_transform`, but uses an AI model to perform the transformation. Best for tasks where rules-based mapping is insufficient, fuzzy classification, sentiment, extraction, summarization, language detection.
 
     **Parameters:**
 
@@ -449,7 +449,7 @@ All building blocks share a common structure in the configuration:
 
     ## Automation Block (`node_pipeline`)
 
-    Invokes an automation as a tool from within an agent's flow. This is the cornerstone of the **automation-first** approach — heavy lifting (data extracts, ML, optimization, scraping) lives in automations, while agents call them like tools.
+    Invokes an automation as a tool from within an agent's flow. This is the cornerstone of the **automation-first** approach, heavy lifting (data extracts, ML, optimization, scraping) lives in automations, while agents call them like tools.
 
     **Parameters:**
 
@@ -476,7 +476,7 @@ All building blocks share a common structure in the configuration:
 
     ## Orchestrator Block (`node_orchestrator`)
 
-    Delegates a sub-task to another agent. The flow pauses while the sub-agent runs and resumes when it returns. Used to build hierarchical agent systems — a generalist routes to specialists who can route to sub-specialists, with no depth limit.
+    Delegates a sub-task to another agent. The flow pauses while the sub-agent runs and resumes when it returns. Used to build hierarchical agent systems, a generalist routes to specialists who can route to sub-specialists, with no depth limit.
 
     **Parameters:**
 
@@ -504,7 +504,7 @@ All building blocks share a common structure in the configuration:
 
     ## DEHA Block (`node_deha`)
 
-    Embed the DEHA assistant inside your agent's flow. Useful for agents that need to inspect or modify platform configuration on the fly ("create me a new connector," "list my automations," "what does this agent cost?").
+    Embed DEHA inside your agent's flow. Useful for agents that need to inspect or modify platform configuration on the fly ("create me a new connector," "list my automations," "what does this agent cost?").
 
     **Parameters:**
 
@@ -575,5 +575,5 @@ All building blocks share a common structure in the configuration:
 | PII Scrub | `node_pii_scrub` | Data | Detect and anonymize personal information |
 | Automation | `node_pipeline` | Orchestration | Invoke an automation as a tool |
 | Orchestrator | `node_orchestrator` | Orchestration | Delegate to a sub-agent |
-| DEHA | `node_deha` | Orchestration | Embed the DEHA assistant in your flow |
+| DEHA | `node_deha` | Orchestration | Embed DEHA in your flow |
 | Error Recovery | `node_error_recovery` | Resilience | Catch errors and route to fallback path |

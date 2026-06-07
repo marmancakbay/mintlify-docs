@@ -1,11 +1,11 @@
 ---
 title: "Scheduling"
 sidebarTitle: "Scheduling"
-description: "Run automations on a schedule -- daily reports, hourly syncs, weekly checks, or one-time tasks at a specific date and time."
+description: "Run automations on a schedule, daily reports, hourly syncs, weekly checks, or one-time tasks at a specific date and time."
 icon: "clock"
 ---
 
-Not every automation needs to be triggered by a message. You can schedule automations to run at specific times -- daily, hourly, weekly, or even just once at a particular moment.
+Not every automation needs to be triggered by a message. You can schedule automations to run at specific times, daily, hourly, weekly, or even just once at a particular moment.
 
 ---
 
@@ -33,7 +33,7 @@ DEHA ONE supports eight trigger types. Pick the one that matches how your work a
     Polls a SQL query and fires when a numeric value crosses a threshold (gt / lt / eq / gte / lte / neq).
   </Card>
   <Card title="Webhook" icon="webhook">
-    External system POSTs to a signed URL — HMAC-SHA256 verification, optional IP allow-list, sliding-window rate limiting.
+    External system POSTs to a signed URL, HMAC-SHA256 verification, optional IP allow-list, sliding-window rate limiting.
   </Card>
   <Card title="Composite" icon="diagram-project">
     AND / OR / SEQUENCE of multiple sub-triggers with a configurable timeout window.
@@ -107,7 +107,7 @@ Sometimes you want a scheduled automation to run only when certain conditions ar
 | **Threshold** | Runs a query and proceeds only if the value crosses a limit |
 | **AI** | Asks an AI model yes/no whether to proceed, with the current data as context |
 | **Composite** | AND / OR / NOT of multiple sub-conditions, recursively |
-| **Data changed** | Hash-based change detection — proceeds only if the underlying data changed since the last run |
+| **Data changed** | Hash-based change detection, proceeds only if the underlying data changed since the last run |
 | **Time window** | Only fires during configured hours / weekdays (with timezone) |
 
 ### Example: Only run if there is new data
@@ -166,16 +166,16 @@ You can temporarily pause a scheduled automation without deleting it. Toggle the
 
 ### Editing a schedule
 
-Change the schedule pattern, conditions, or timezone at any time from the dashboard. Changes take effect immediately -- no restart required.
+Change the schedule pattern, conditions, or timezone at any time from the dashboard. Changes take effect immediately, no restart required.
 
 ### Monitoring run history
 
 Each scheduled automation tracks its execution history:
 
-- **Total runs** -- how many times it has executed
-- **Successes and failures** -- how many runs completed vs. failed
-- **Last run time** -- when it last executed
-- **Consecutive failures** -- how many times in a row it has failed (useful for spotting issues)
+- **Total runs**, how many times it has executed
+- **Successes and failures**, how many runs completed vs. failed
+- **Last run time**, when it last executed
+- **Consecutive failures**, how many times in a row it has failed (useful for spotting issues)
 
 ---
 

@@ -11,8 +11,8 @@ Web Chat gives you two ways to interact with your AI agents in real time: throug
 The DEHA ONE dashboard includes a built-in chat panel where you and your team can interact with your AI agents directly. This is useful for:
 
 - **Testing your agents** before connecting them to customer-facing channels
-- **Internal use** -- let your team ask questions and get AI-powered answers
-- **Monitoring conversations** -- watch live conversations and step in when needed
+- **Internal use**, let your team ask questions and get AI-powered answers
+- **Monitoring conversations**, watch live conversations and step in when needed
 
 Simply open the chat panel in the dashboard, select an agent, and start typing. Responses appear in real time.
 
@@ -28,7 +28,7 @@ When an AI agent flags a response for human review, your team gets a notificatio
 | **Take over** | Pause the AI and handle the conversation yourself |
 | **Release** | Hand the conversation back to the AI agent |
 
-This works across all channels -- whether the customer is on WhatsApp, Telegram, Email, or Web Chat, your team manages reviews from the same dashboard.
+This works across all channels, whether the customer is on WhatsApp, Telegram, Email, or Web Chat, your team manages reviews from the same dashboard.
 
 ## Embedding Chat on Your Website
 
@@ -95,20 +95,14 @@ const session = "session-" + Date.now();
 await sendMessage(session, "What is your return policy?");
 // Agent responds with return policy details
 
-// Follow-up message -- agent remembers the context
+// Follow-up message: agent remembers the context
 await sendMessage(session, "How long do I have?");
 // Agent knows you are asking about the return window
 ```
 
 ### Real-Time Responses
 
-For applications that need real-time message delivery (like a live chat widget), you can connect to the WebSocket endpoint instead of polling the API:
-
-```
-wss://api.deha.one/bff/ws/events?user_id={user_id}&token={jwt_token}
-```
-
-This gives you instant delivery of agent responses, typing indicators, and other live updates without any polling.
+For applications that need real-time message delivery (like a live chat widget), you can use the real-time streaming connection instead of polling the API. This gives you instant delivery of agent responses, typing indicators, and other live updates without any polling.
 
 ## Tips and Best Practices
 
@@ -117,6 +111,6 @@ This gives you instant delivery of agent responses, typing indicators, and other
 </Tip>
 
 - **Use consistent session IDs** to maintain conversation context across messages
-- **Handle timeouts gracefully** -- show a "still thinking" indicator if the response takes more than a few seconds
-- **Add reconnection logic** if using WebSocket connections, so the chat recovers smoothly from network interruptions
-- **Test on mobile** -- make sure your embedded chat works well on mobile devices, where most web traffic comes from
+- **Handle timeouts gracefully**, show a "still thinking" indicator if the response takes more than a few seconds
+- **Add reconnection logic** if using the real-time streaming connection, so the chat recovers smoothly from network interruptions
+- **Test on mobile**, make sure your embedded chat works well on mobile devices, where most web traffic comes from

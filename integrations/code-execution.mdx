@@ -5,7 +5,7 @@ description: "Let your agents run custom Python code for calculations, data proc
 icon: "code"
 ---
 
-Sometimes your agents need to do more than call an API -- they need to run custom logic. DEHA ONE's code execution capability lets your agents write and run Python code during conversations and workflows. The code runs in a secure, isolated environment that is destroyed after each execution.
+Sometimes your agents need to do more than call an API, they need to run custom logic. DEHA ONE's code execution capability lets your agents write and run Python code during conversations and workflows. The code runs in a secure, isolated environment that is destroyed after each execution.
 
 ---
 
@@ -13,11 +13,11 @@ Sometimes your agents need to do more than call an API -- they need to run custo
 
 Code execution is useful when your agents need to:
 
-- **Perform calculations** -- Financial computations, unit conversions, statistical analysis
-- **Process data** -- Parse files, transform datasets, aggregate records
-- **Run custom logic** -- Business rules, validation routines, format conversions
-- **Analyze information** -- Summarize data, find patterns, generate reports
-- **Scrape web pages** -- Extract information from websites (when network access is enabled)
+- **Perform calculations**, Financial computations, unit conversions, statistical analysis
+- **Process data**, Parse files, transform datasets, aggregate records
+- **Run custom logic**, Business rules, validation routines, format conversions
+- **Analyze information**, Summarize data, find patterns, generate reports
+- **Scrape web pages**, Extract information from websites (when network access is enabled)
 
 ---
 
@@ -86,11 +86,11 @@ The agent sends in the sales data, the code processes it using pandas, and the r
 
 Code execution is designed with security as a top priority:
 
-- **Isolated environment** -- Each execution runs in its own container, completely separate from other users and the platform
-- **No persistent state** -- Nothing is saved between executions; each run starts fresh
-- **Resource limits** -- Memory, CPU, and execution time are all capped to prevent abuse
-- **Network controls** -- By default, code cannot make network requests. Network access can be enabled when needed.
-- **No elevated privileges** -- Code runs as an unprivileged user with a read-only filesystem (except for a small temporary directory)
+- **Isolated environment**, Each execution runs in its own container, completely separate from other users and the platform
+- **No persistent state**, Nothing is saved between executions; each run starts fresh
+- **Resource limits**, Memory, CPU, and execution time are all capped to prevent abuse
+- **Network controls**, By default, code cannot make network requests. Network access can be enabled when needed.
+- **No elevated privileges**, Code runs as an unprivileged user with a read-only filesystem (except for a small temporary directory)
 
 ---
 

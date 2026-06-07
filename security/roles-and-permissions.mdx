@@ -20,7 +20,7 @@ Full operational access. Admins can create and edit configurations, deploy chang
 
 ### Supervisor
 
-Supervisors can view and edit configurations -- agents, pipelines, channels, and data sources -- but they cannot deploy changes to production. This provides a natural review layer: Supervisors prepare changes, and Admins or Owners deploy them.
+Supervisors can view and edit configurations, agents, pipelines, channels, and data sources, but they cannot deploy changes to production. This provides a natural review layer: Supervisors prepare changes, and Admins or Owners deploy them.
 
 ### Agent
 
@@ -37,12 +37,12 @@ Read-only access to dashboards, analytics, and reports. Viewers cannot modify an
 | Permission | Owner | Admin | Supervisor | Agent | Viewer |
 |-----------|-------|-------|------------|-------|--------|
 | View dashboards and reports | Yes | Yes | Yes | Yes | Yes |
-| Handle conversations and reviews | Yes | Yes | Yes | Yes | -- |
-| Create and edit configurations | Yes | Yes | Yes | -- | -- |
-| Deploy changes to production | Yes | Yes | -- | -- | -- |
-| Test configurations | Yes | Yes | -- | -- | -- |
-| Manage team members | Yes | Yes | -- | -- | -- |
-| Manage billing | Yes | -- | -- | -- | -- |
+| Handle conversations and reviews | Yes | Yes | Yes | Yes | No |
+| Create and edit configurations | Yes | Yes | Yes | No | No |
+| Deploy changes to production | Yes | Yes | No | No | No |
+| Test configurations | Yes | Yes | No | No | No |
+| Manage team members | Yes | Yes | No | No | No |
+| Manage billing | Yes | No | No | No | No |
 
 ---
 

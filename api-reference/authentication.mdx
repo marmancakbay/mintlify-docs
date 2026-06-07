@@ -39,7 +39,7 @@ Authorization: Bearer <your-api-key>
 
 You create and manage API keys from the dashboard. Keys can be scoped to your whole workspace, to a single agent, or to a single pipeline. See [API Keys](/security/api-keys).
 
-### Example -- call your agent
+### Example, call your agent
 
 <CodeGroup>
 ```bash cURL
@@ -87,7 +87,7 @@ Each API key has a configurable rate limit (default: 60 requests per minute), se
 API keys grant access to your workspace resources. Treat them like passwords.
 </Warning>
 
-- Store API keys in environment variables or a secret manager -- never in source code.
+- Store API keys in environment variables or a secret manager, never in source code.
 - Rotate keys regularly from the dashboard.
 - Restrict each key's access to specific IP addresses when possible.
 - Each key is shown in full only once, at creation. If lost, rotate it to generate a new one.

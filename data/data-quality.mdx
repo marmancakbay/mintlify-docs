@@ -1,11 +1,11 @@
 ---
 title: "Data Quality"
 sidebarTitle: "Data Quality"
-description: "Clean, standardize, validate, dedup, and generate synthetic data — without hand-writing transforms."
+description: "Clean, standardize, validate, dedup, and generate synthetic data, without hand-writing transforms."
 icon: "broom"
 ---
 
-Most data problems are not analytics problems — they are quality problems. DEHA ONE includes a full suite of data-quality operations you can chain into any pipeline.
+Most data problems are not analytics problems, they are quality problems. DEHA ONE includes a full suite of data-quality operations you can chain into any pipeline.
 
 ---
 
@@ -26,7 +26,7 @@ Most data problems are not analytics problems — they are quality problems. DEH
 | **Replace patterns** | Regex find-and-replace with column scoping |
 | **Strip diacritics** | Normalize accented characters (good for Turkish, Spanish, etc.) |
 
-Operations chain together — declare your cleaning pipeline in the configuration once, and every load applies it consistently.
+Operations chain together, declare your cleaning pipeline in the configuration once, and every load applies it consistently.
 
 ---
 
@@ -60,14 +60,14 @@ Drop rows where a key (or composite key) is duplicated. Configurable conflict po
 
 ### Fuzzy dedup with intelligent record matching
 
-For "the same customer entered with three different spellings", DEHA ONE applies intelligent record matching — a probabilistic entity-resolution capability.
+For "the same customer entered with three different spellings", DEHA ONE applies intelligent record matching, a probabilistic entity-resolution capability.
 
 | Phase | What happens |
 |---|---|
 | **Blocking** | Cheap candidate-pair generation (e.g. matching ZIP code) |
-| **Comparison** | Per-field similarity scoring (e.g. Levenshtein on names, exact match on phones) |
-| **Probabilistic match** | Bayesian model produces a match probability |
-| **Human review** | Borderline pairs go to a HITL queue for one-click yes/no |
+| **Comparison** | Per-field similarity scoring (e.g. close-match on names, exact match on phones) |
+| **Probabilistic match** | A match probability is produced for each candidate pair |
+| **Human review** | Borderline pairs go to a review queue for one-click yes/no |
 | **Cluster assignment** | Confirmed matches collapse into a single golden record |
 
 The output is a `(cluster_id, source_row_id)` mapping you can join back into your data.
@@ -137,8 +137,8 @@ steps:
   - type: dedup_fuzzy
     blocking: [postal_code]
     compare:
-      first_name: levenshtein
-      last_name:  levenshtein
+      first_name: fuzzy
+      last_name:  fuzzy
       phone:      exact
     threshold: 0.85
 
@@ -151,4 +151,4 @@ steps:
     upsert_key: cluster_id
 ```
 
-This pipeline is realistic, production-ready, and entirely declarative. DEHA can generate it from one sentence — "build me a daily customer-master pipeline that cleans, dedups, scrubs PII, snapshots, and loads to my warehouse."
+This pipeline is realistic, production-ready, and entirely declarative. DEHA can generate it from one sentence, "build me a daily customer-master pipeline that cleans, dedups, scrubs PII, snapshots, and loads to my warehouse."

@@ -24,11 +24,11 @@ api:
 
 ## Delivery guarantees
 
-- **Retries** — up to 3 attempts with exponential backoff (1 s → 3 s → 9 s, each with ±25 % jitter).
-- **Retryable conditions** — 5xx responses, 408, 429, and transport/timeout errors.
-- **Non-retryable** — any other 4xx / 3xx status. Delivery stops.
-- **Permanent failures** — recorded and surfaced in your dashboard for inspection, so nothing is silently lost.
-- **SSRF guard** — destination URLs are re-validated on every send (private/loopback/internal ranges are refused even if DNS is spoofed).
+- **Retries**, up to 3 attempts with exponential backoff (1 s → 3 s → 9 s, each with ±25 % jitter).
+- **Retryable conditions**, 5xx responses, 408, 429, and transport/timeout errors.
+- **Non-retryable**, any other 4xx / 3xx status. Delivery stops.
+- **Permanent failures**, recorded and surfaced in your dashboard for inspection, so nothing is silently lost.
+- **SSRF guard**, destination URLs are re-validated on every send (private/loopback/internal ranges are refused even if DNS is spoofed).
 
 ## Request headers
 
@@ -37,7 +37,7 @@ api:
 | `Content-Type` | `application/json` |
 | `X-Deha-Event` | `invocation.completed` or `invocation.failed` |
 | `X-Deha-Trace-Id` | Correlates with the original invocation |
-| `X-Deha-Delivery-Id` | Unique per delivery attempt — use it for replay protection |
+| `X-Deha-Delivery-Id` | Unique per delivery attempt, use it for replay protection |
 | `X-Deha-Signature` | `sha256=<hex>` HMAC of the raw body (if a signing secret is configured) |
 | `X-Deha-Timestamp` | Unix seconds at signing time (if signed) |
 
@@ -79,7 +79,7 @@ export function verify(secret, body, sigHeader) {
 ```
 </CodeGroup>
 
-Always verify before acting on a payload — rejecting unsigned or mis-signed calls keeps an attacker from replaying arbitrary invocation results into your system.
+Always verify before acting on a payload, rejecting unsigned or mis-signed calls keeps an attacker from replaying arbitrary invocation results into your system.
 
 ## Idempotency
 

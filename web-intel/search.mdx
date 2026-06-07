@@ -1,7 +1,7 @@
 ---
 title: "Web Search"
 sidebarTitle: "Search"
-description: "Search many leading providers in parallel with one normalized result set, deduplication, and relevance reranking."
+description: "Search many leading providers in parallel with one normalized result set, deduplication, and relevance ranking."
 icon: "magnifying-glass"
 ---
 
@@ -43,15 +43,15 @@ Every result, regardless of provider, comes back in a unified schema:
 | `provider` | Which provider returned it |
 | `provider_score` | The raw score the provider gave |
 | `published_at` | When the page was published (when known) |
-| `relevance_score` | The platform's reranked score (0..1) |
+| `relevance_score` | The platform's relevance-ranked score (0..1) |
 
-The reranker blends three signals:
+Relevance ranking blends three signals:
 
 - **40%** provider score
 - **30%** keyword match against the query
 - **30%** recency (newer = higher)
 
-You can adjust the weights or disable the rerank if you want raw provider output.
+You can adjust the weights or turn off relevance ranking if you want raw provider output.
 
 ---
 
@@ -63,7 +63,7 @@ Search results are cached for 30 minutes per `(user, query, provider set)` tuple
 
 ## Monitor mode
 
-Long-running monitors run a query on a schedule (typically every 15 minutes to a few hours) and emit an event whenever **new URLs** appear -- not seen in any previous run.
+Long-running monitors run a query on a schedule (typically every 15 minutes to a few hours) and emit an event whenever **new URLs** appear, not seen in any previous run.
 
 Monitors are cheaper (2 credits each) and ideal for:
 
@@ -115,7 +115,7 @@ DEHA can generate exactly this pipeline from one sentence. Once deployed, it run
 
 Provider keys are vaulted per user. You can:
 
-- Use your own keys (recommended for production -- your quota, your billing)
+- Use your own keys (recommended for production, your quota, your billing)
 - Use platform-provided keys for prototyping (subject to platform rate limits)
 - Mix and match: e.g. your own SerpAPI key but platform Tavily for spillover
 

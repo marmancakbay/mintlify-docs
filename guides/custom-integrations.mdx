@@ -1,7 +1,7 @@
 ---
 title: "Custom Integrations"
 sidebarTitle: "Custom Integrations"
-description: "Connect your business tools -- CRMs, helpdesks, weather APIs, and more -- so your agents can take real actions."
+description: "Connect your business tools, CRMs, helpdesks, weather APIs, and more, so your agents can take real actions."
 icon: "plug"
 ---
 
@@ -23,13 +23,13 @@ Before you begin, make sure you have:
 
 When you connect an external API, it becomes a **tool** your agent can use during conversations. For example:
 
-- A customer asks "What is my order status?" -- the agent calls your order management API to look it up.
-- A customer asks "Create a support ticket for my issue" -- the agent creates a ticket in your helpdesk.
-- A customer asks "What is the weather in Istanbul?" -- the agent calls a weather API and reports back.
+- A customer asks "What is my order status?", the agent calls your order management API to look it up.
+- A customer asks "Create a support ticket for my issue", the agent creates a ticket in your helpdesk.
+- A customer asks "What is the weather in Istanbul?", the agent calls a weather API and reports back.
 
 ### Add an Integration with DEHA
 
-The easiest way to add an integration is to describe it to the DEHA AI Assistant:
+The easiest way to add an integration is to describe it to the DEHA mastermind:
 
 > "Add a weather API integration. The base URL is https://api.weatherapi.com/v1, it uses an API key in the query parameter 'key', and I want a tool called get_current_weather that calls /current.json with a city name parameter."
 
@@ -42,14 +42,14 @@ DEHA generates the integration configuration for you.
 1. Go to **Settings > Integrations** in the dashboard.
 2. Click **Add Integration**.
 3. Fill in:
-   - **Name** -- A label for this integration (e.g., "CRM API")
-   - **Base URL** -- The API's root URL
-   - **Authentication** -- How to authenticate (see below)
-4. Add **tools** -- each tool maps to an API endpoint your agent can call:
-   - **Tool name** -- What the agent sees (e.g., `get_customer`)
-   - **Description** -- When to use this tool (the agent reads this to decide)
-   - **Method and path** -- The HTTP method and endpoint path
-   - **Parameters** -- What inputs the tool accepts
+   - **Name**, A label for this integration (e.g., "CRM API")
+   - **Base URL**, The API's root URL
+   - **Authentication**, How to authenticate (see below)
+4. Add **tools**, each tool maps to an API endpoint your agent can call:
+   - **Tool name**, What the agent sees (e.g., `get_customer`)
+   - **Description**, When to use this tool (the agent reads this to decide)
+   - **Method and path**, The HTTP method and endpoint path
+   - **Parameters**, What inputs the tool accepts
 
 ### Authentication Options
 

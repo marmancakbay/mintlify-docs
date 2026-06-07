@@ -33,10 +33,10 @@ Before you begin, you need:
 1. Go to **Data > Connectors** in the dashboard.
 2. Click **Add Connector** and choose **REST API**.
 3. Fill in the connection details:
-   - **Name** -- A label for this connector (e.g., "CRM Customers")
-   - **URL** -- The API endpoint to pull data from
-   - **Authentication** -- Choose your auth type (API key, Bearer token, Basic Auth, or OAuth2) and enter or link your credentials from the vault
-   - **Target table** -- Where to store the data in your workspace database
+   - **Name**, A label for this connector (e.g., "CRM Customers")
+   - **URL**, The API endpoint to pull data from
+   - **Authentication**, Choose your auth type (API key, Bearer token, Basic Auth, or OAuth2) and enter or link your credentials from the vault
+   - **Target table**, Where to store the data in your workspace database
 4. Click **Test Connection** to verify it works.
 5. Click **Run** to pull the data.
 
@@ -48,10 +48,10 @@ DEHA ONE automatically detects pagination in common API patterns. For custom pag
 
 1. Go to **Data > Connectors** and choose **Database**.
 2. Enter your connection details:
-   - **Driver** -- PostgreSQL or MySQL
-   - **Connection string** -- Store this in the vault for security
-   - **Query** -- The SQL query to extract data (read-only queries only)
-   - **Target table** -- Where to store the results
+   - **Driver**, PostgreSQL or MySQL
+   - **Connection string**, Store this in the vault for security
+   - **Query**, The SQL query to extract data (read-only queries only)
+   - **Target table**, Where to store the results
 3. Test and run the connector.
 
 <Warning>
@@ -95,9 +95,9 @@ Verify that your data appears in the **Tables** view with the correct number of 
 To keep your data fresh, set up a sync schedule:
 
 1. In the connector settings, choose a **sync mode**:
-   - **Full** -- Replace all data each time
-   - **Incremental** -- Only fetch records changed since the last sync
-   - **Append** -- Add new records without modifying existing ones
+   - **Full**, Replace all data each time
+   - **Incremental**, Only fetch records changed since the last sync
+   - **Append**, Add new records without modifying existing ones
 2. Set a **schedule** (e.g., every hour, daily at midnight).
 3. Save and publish.
 

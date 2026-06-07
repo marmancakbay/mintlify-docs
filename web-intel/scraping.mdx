@@ -13,7 +13,7 @@ Once you know which URL you want, scraping turns it into something your agents a
 
 <CardGroup cols={3}>
   <Card title="Markdown" icon="paragraph">
-    Clean, content-focused markdown — roughly 67% fewer tokens than raw HTML. Best for agent context.
+    Clean, content-focused markdown, roughly 67% fewer tokens than raw HTML. Best for agent context.
     **2 credits / URL**
   </Card>
   <Card title="CSS selectors" icon="code">
@@ -45,7 +45,7 @@ You can extend these or create your own.
 
 Hand the scraper a list of up to 50 URLs and it processes them in parallel, respecting per-domain rate limits. You can raise the concurrency for high-volume jobs.
 
-Failed URLs do not stop the batch — you get a partial result with success/failure per URL.
+Failed URLs do not stop the batch, you get a partial result with success/failure per URL.
 
 ---
 
@@ -91,7 +91,7 @@ steps:
     records: ${previous.results.list}
 ```
 
-This pipeline scrapes a category page and upserts every product into your data warehouse — zero LLM tokens consumed, fully deterministic.
+This pipeline scrapes a category page and upserts every product into your data warehouse, zero LLM tokens consumed, fully deterministic.
 
 ---
 
@@ -123,9 +123,9 @@ For high-volume runs, CSS selectors are cheaper and more reliable.
 
 ## What you can NOT do
 
-- **Bulk web crawling** — the scraper is designed for known URL lists. For crawling sitemaps, use a separate orchestration that feeds URLs into batch mode.
-- **Captcha solving** — pages behind aggressive bot protection may fail. The scraper does not auto-solve captchas.
-- **Authentication beyond simple bearer/cookie injection** — for OAuth-protected content, scrape from a logged-in proxy you control or use a REST API instead.
+- **Bulk web crawling**, the scraper is designed for known URL lists. For crawling sitemaps, use a separate orchestration that feeds URLs into batch mode.
+- **Captcha solving**, pages behind aggressive bot protection may fail. The scraper does not auto-solve captchas.
+- **Authentication beyond simple bearer/cookie injection**, for OAuth-protected content, scrape from a logged-in proxy you control or use a REST API instead.
 
 ---
 
@@ -148,4 +148,4 @@ The most common pattern is **search → top-N URLs → scrape**:
   documents: ${previous.results}
 ```
 
-This builds a fresh, topic-scoped knowledge base every time it runs — useful for current-events agents that need to answer "what happened today?".
+This builds a fresh, topic-scoped knowledge base every time it runs, useful for current-events agents that need to answer "what happened today?".

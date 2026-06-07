@@ -5,7 +5,7 @@ description: "Generate single charts from natural language or hand-authored spec
 icon: "chart-line"
 ---
 
-A chart is a single visual — one bar chart, one line chart, one scatter plot. For multi-widget views, see [Dashboards](/viz/dashboards).
+A chart is a single visual, one bar chart, one line chart, one scatter plot. For multi-widget views, see [Dashboards](/viz/dashboards).
 
 ---
 
@@ -46,7 +46,7 @@ A chart is a single visual — one bar chart, one line chart, one scatter plot. 
   </Tab>
 
   <Tab title="Plotly spec">
-    Hand authoring a Plotly figure works too — the renderer normalizes it for you:
+    Hand authoring a Plotly figure works too, the renderer normalizes it for you:
 
     ```python
     fig = px.line(df, x="month", y="users", title="Monthly Active Users")
@@ -92,12 +92,12 @@ You request the format you need; the platform renders and caches it.
 
 You can configure per-user defaults that apply to every chart generated from plain English:
 
-- **Brand color palette** — used for categorical encodings
-- **Diverging palette** — used for sequential and diverging scales
-- **Font family** — used for titles, labels, and annotations
-- **Logo / watermark** — optional, applied to PDF exports
+- **Brand color palette**, used for categorical encodings
+- **Diverging palette**, used for sequential and diverging scales
+- **Font family**, used for titles, labels, and annotations
+- **Logo / watermark**, optional, applied to PDF exports
 
-Hand-authored specs always win over defaults — you can override anything per chart.
+Hand-authored specs always win over defaults, you can override anything per chart.
 
 ---
 
@@ -105,7 +105,7 @@ Hand-authored specs always win over defaults — you can override anything per c
 
 A chart you save gets a unique ID, a slug, and a versioned definition with full version history. From there:
 
-- **Embed**: `https://embed.deha.one/c/{chart_id}?token=<signed-token>` — signed, expiring, revokable
+- **Embed**: `https://embed.deha.one/c/{chart_id}?token=<signed-token>`, signed, expiring, revokable
 - **Reference from an agent**: agents can fetch a saved chart by name and include it in a response
 - **Re-render programmatically**: hit the renderer API with the saved chart ID and a format
 - **Diff across versions**: see exactly what changed between any two versions
@@ -122,4 +122,4 @@ A chart you save gets a unique ID, a slug, and a versioned definition with full 
 
 **Slack reports.** A daily pipeline renders a chart of yesterday's metrics and posts it to a Slack channel as a PNG.
 
-**Customer-facing dashboards.** Embed live charts in your own product using signed iframe tokens — no data leaves the platform, no SDK to install.
+**Customer-facing dashboards.** Embed live charts in your own product using signed iframe tokens, no data leaves the platform, no SDK to install.

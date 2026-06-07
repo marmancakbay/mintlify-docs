@@ -1,7 +1,7 @@
 ---
 title: "Optimization Problem Types"
 sidebarTitle: "Problem Types"
-description: "Linear programming, MIP, vehicle routing, scheduling, assignment, bin packing, and network flow -- what each does, when to use it, what it returns."
+description: "Linear programming, MIP, vehicle routing, scheduling, assignment, bin packing, and network flow, what each does, when to use it, what it returns."
 icon: "shapes"
 ---
 
@@ -145,4 +145,4 @@ flowchart TD
 - **Use time limits.** A near-optimal solution in 5 seconds usually beats an optimal one in 5 minutes.
 - **Warm start when possible.** If you optimize daily, seed today's run with yesterday's solution.
 - **Soft constraints beat infeasibility.** Adding a penalty for "drop this customer" lets the solver return a useful plan even when demand exceeds capacity.
-- **Validate the input.** Bad data is the most common cause of bad solutions -- use [data quality](/data/data-quality) to clean and validate first.
+- **Validate the input.** Bad data is the most common cause of bad solutions, use [data quality](/data/data-quality) to clean and validate first.

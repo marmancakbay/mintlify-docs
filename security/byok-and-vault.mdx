@@ -1,7 +1,7 @@
 ---
 title: "BYOK & Vault"
 sidebarTitle: "BYOK & Vault"
-description: "Bring your own LLM, embedding, and integration keys. Store every credential in an encrypted, audited vault."
+description: "Bring your own LLM, search indexing, and integration keys. Store every credential in an encrypted, audited vault."
 icon: "key"
 ---
 
@@ -11,17 +11,17 @@ DEHA ONE is designed to run on **your** API keys and **your** credentials. The v
 
 ## What the vault stores
 
-Anything sensitive that any service needs at runtime:
+Anything sensitive that the platform needs at runtime:
 
 | Category | Examples |
 |---|---|
 | **LLM provider keys** | OpenAI, Anthropic, Google Gemini, Google Vertex AI service-account JSON, DeepSeek |
-| **Embedding provider keys** | OpenAI, Google, HuggingFace, custom |
+| **Search indexing provider keys** | OpenAI, Google, HuggingFace, custom |
 | **Database credentials** | PostgreSQL, MySQL, MSSQL, Oracle, MongoDB |
 | **Channel tokens** | WhatsApp, Telegram, Slack, mail provider |
 | **REST API credentials** | Bearer tokens, API keys, OAuth client secrets, refresh tokens |
 | **Cloud credentials** | S3 access keys, GCP service-account JSON, Azure SP keys |
-| **Webhook secrets** | HMAC signing keys, JWT signing keys |
+| **Webhook secrets** | HMAC signing keys |
 | **MCP server tokens** | Per-server bearer tokens |
 
 ---
@@ -39,7 +39,7 @@ connector:
   password: $vault:warehouse_password
 ```
 
-At runtime, each service resolves `$vault:<key>` to the actual secret value, with the resolved value never written to logs, traces, or downstream artifacts.
+At runtime, the platform resolves `$vault:<key>` to the actual secret value, with the resolved value never written to logs, traces, or downstream artifacts.
 
 ---
 
@@ -51,7 +51,7 @@ At runtime, each service resolves `$vault:<key>` to the actual secret value, wit
 - **Backup**: durably replicated for restart resilience
 - **Audit**: every read and every write is logged with caller identity, but the value itself is never recorded
 
-The encryption layer is **content-agnostic** — it works for short tokens, long passphrases, and multi-line JSON blobs (e.g., a full Vertex AI service-account JSON).
+The encryption layer is **content-agnostic**, it works for short tokens, long passphrases, and multi-line JSON blobs (e.g., a full Vertex AI service-account JSON).
 
 ---
 
@@ -68,7 +68,7 @@ There is no length cap on values. You can paste a full Vertex AI service-account
 
 ---
 
-## BYOK — Bring Your Own Keys
+## BYOK, Bring Your Own Keys
 
 ### LLM BYOK
 
@@ -89,9 +89,9 @@ llm_providers:
 
 At call time, the agent uses `smart` or `smart_vertex` and the platform routes via your account. Cost: zero platform credits, paid directly to the LLM provider.
 
-### Embedding BYOK
+### Search indexing BYOK
 
-Same model for embeddings:
+Same model for search indexing:
 
 ```yaml
 knowledge_base:
@@ -103,7 +103,7 @@ Every ingest and search uses your key. Platform credits stay untouched.
 
 ### Why use BYOK
 
-- **No credit consumption** for AI calls — pay your provider directly
+- **No credit consumption** for AI calls, pay your provider directly
 - **Your rate limits** apply, not the platform's
 - **Your provider compliance** (e.g., enterprise SOC 2, BAA for healthcare)
 - **Audit trail in your provider's billing** consolidates with your existing reporting
@@ -120,7 +120,7 @@ Beyond vault entries, the platform issues **API keys** for accessing your own ag
 | **Per-agent API key** | Only that one agent |
 | **Per-pipeline API key** | Only that one pipeline |
 
-All keys are SHA-256 hashed at rest. Rate limits and IP whitelists apply per key. Keys are revokable and rotatable from the dashboard.
+All keys are securely hashed at rest. Rate limits and IP whitelists apply per key. Keys are revokable and rotatable from the dashboard.
 
 See [API Keys](/security/api-keys) for full details.
 
@@ -131,8 +131,8 @@ See [API Keys](/security/api-keys) for full details.
 Every vault read produces an audit event with:
 
 - The vault key name
-- The calling service and user
-- The trace ID for correlation
+- The caller identity
+- A correlation reference for the request
 - The timestamp
 - **Never** the resolved value
 
