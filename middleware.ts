@@ -113,13 +113,13 @@ function gatePage(state: GateState, actionPath: string): string {
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; display: grid; place-items: center;
-    background: radial-gradient(1200px 600px at 50% -10%, #16233a 0%, #0a0f1a 55%, #070b13 100%);
+    background: #05070e;
     color: #e6edf6;
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
     padding: 32px;
   }
   .wrap { width: 100%; max-width: 420px; }
-  .logo { height: 40px; width: auto; max-width: 100%; display: block; margin-bottom: 26px; }
+  .logo { height: 56px; width: auto; max-width: 100%; display: block; margin-bottom: 28px; }
   h1 { font-size: 22px; margin: 0 0 8px; letter-spacing: -.01em; }
   .lead { margin: 0 0 22px; color: #9fb0c7; font-size: 14.5px; line-height: 1.55; }
   .card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
