@@ -158,7 +158,12 @@ async function logAccessRequest(req: Request, email: string): Promise<void> {
   const url = process.env.DOCS_ACCESS_LOG_URL?.trim() || DEFAULT_LOG_URL;
   const token = process.env.DOCS_ACCESS_LOG_TOKEN?.trim();
 
+  // docs.dehalab.com is fronted by Cloudflare → Vercel, so the Vercel-derived
+  // headers (x-real-ip / x-vercel-forwarded-for / x-vercel-ip-country) see the
+  // Cloudflare edge hop, not the visitor. Prefer Cloudflare's own real-visitor
+  // headers; fall back to the Vercel/XFF chain for a non-Cloudflare origin.
   const ip =
+    req.headers.get("cf-connecting-ip") ||
     req.headers.get("x-real-ip") ||
     (req.headers.get("x-vercel-forwarded-for") || req.headers.get("x-forwarded-for") || "")
       .split(",")[0]
@@ -168,7 +173,11 @@ async function logAccessRequest(req: Request, email: string): Promise<void> {
   const payload = {
     email,
     ip,
-    country: (req.headers.get("x-vercel-ip-country") || "").toUpperCase(),
+    country: (
+      req.headers.get("cf-ipcountry") ||
+      req.headers.get("x-vercel-ip-country") ||
+      ""
+    ).toUpperCase(),
     ua: (req.headers.get("user-agent") || "").slice(0, 300),
     referer: (req.headers.get("referer") || "").slice(0, 300),
   };
